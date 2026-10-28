@@ -11,7 +11,6 @@ import {
   FileCheck2,
   ChevronRight,
   Search,
-  ShieldCheck,
 } from "lucide-react";
 
 export default function Header() {
@@ -230,17 +229,6 @@ export default function Header() {
                   </div>
                   <ChevronRight className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
                 </Link>
-              </div>
-            </div>
-
-            {/* Drawer Footer (Clean like Cloudflare bottom anchor) */}
-            <div className="border-t border-zinc-100 px-3 py-3 bg-zinc-50/50">
-              <div className="flex items-center justify-between text-[11px] text-zinc-500 font-medium">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>Tim 404Forbidden</span>
-                </div>
-                <span className="text-[10px] text-zinc-400">MIT-002</span>
               </div>
             </div>
           </div>
