@@ -120,9 +120,10 @@ export default function HomeTab() {
                 </p>
               </div>
             </div>
-            <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Mulai Pindai</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+            <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                Mulai Pindai
+              </span>
             </div>
           </Link>
 
@@ -144,9 +145,10 @@ export default function HomeTab() {
                 </p>
               </div>
             </div>
-            <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Masuk Simulasi</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+            <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                Masuk Simulasi
+              </span>
             </div>
           </Link>
 
@@ -168,9 +170,10 @@ export default function HomeTab() {
                 </p>
               </div>
             </div>
-            <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Cek Daftar Hitam</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+            <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                Cek Daftar Hitam
+              </span>
             </div>
           </Link>
         </div>
