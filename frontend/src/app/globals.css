@@ -17,13 +17,62 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Gemini Signature Aurora: Pure Pitch Black with Glowing Royal Blue Ambient Light */
-.gemini-aura-bg {
-  background-color: #000000;
-  background-image:
-    radial-gradient(ellipse 90% 50% at 50% 18%, rgba(37, 99, 235, 0.55) 0%, rgba(29, 78, 216, 0.30) 40%, transparent 72%),
-    radial-gradient(ellipse 85% 45% at 50% 75%, rgba(30, 64, 175, 0.45) 0%, rgba(30, 58, 138, 0.20) 40%, transparent 70%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+/* Gemini Dynamic Floating Animations - Visible real-time organic movement */
+@keyframes gemini-float {
+  0% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(-32%, 55px, 0) scale(1.2);
+  }
+  50% {
+    transform: translate3d(-68%, 20px, 0) scale(0.92);
+  }
+  75% {
+    transform: translate3d(-38%, -45px, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+}
+
+@keyframes gemini-drift {
+  0% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(-65%, -55px, 0) scale(1.25);
+  }
+  66% {
+    transform: translate3d(-34%, 40px, 0) scale(0.88);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+}
+
+@keyframes gemini-pulse {
+  0%, 100% {
+    transform: translate3d(-50%, 0, 0) scale(0.95);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(-46%, 40px, 0) scale(1.22);
+    opacity: 0.85;
+  }
+}
+
+.animate-gemini-float {
+  animation: gemini-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-gemini-drift {
+  animation: gemini-drift 10s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-gemini-pulse {
+  animation: gemini-pulse 12s ease-in-out infinite;
+  will-change: transform, opacity;
 }
