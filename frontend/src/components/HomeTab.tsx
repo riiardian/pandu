@@ -18,6 +18,7 @@ import {
   Users,
   Wallet,
   AlertTriangle,
+  ChevronDown,
 } from "lucide-react";
 
 const ACRONYM_PHRASE = "Protective Analysis & Navigation for Digital Users";
@@ -57,6 +58,23 @@ function TypewriterAcronymHeadline() {
 }
 
 export default function HomeTab() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const FAQS = [
+    {
+      q: "Apakah sistem PANDU menyimpan data pesan atau nomor yang saya periksa?",
+      a: "Tidak sama sekali. PANDU beroperasi secara stateless dengan arsitektur Zero-Knowledge. Seluruh token teks dan URL diproses langsung di memori server dan segera dibuang tanpa pernah dicatat ke dalam database riwayat pengguna.",
+    },
+    {
+      q: "Bagaimana cara kerja deteksi tanpa menggunakan model AI pihak ketiga?",
+      a: "PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal oleh engine keamanan PANDU. Hal ini menjamin kecepatan analisa < 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.",
+    },
+    {
+      q: "Bagaimana sistem Basis Data Daftar Hitam (Threat Registry) PANDU bekerja?",
+      a: "Setiap laporan nomor WhatsApp, rekening bank, atau tautan penipuan yang masuk diverifikasi dan dicatat ke dalam database ancaman PANDU. Pengguna lain dapat memeriksa keabsahan suatu nomor atau rekening secara real-time sebelum bertransaksi.",
+    },
+  ];
+
   return (
     <div className="max-w-4xl mx-auto space-y-14 sm:space-y-20 pt-8 pb-12 sm:py-12">
       {/* 1. Hero Section */}
@@ -247,44 +265,48 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 6. FAQ Teknis & Operasional */}
-      <section className="space-y-5 text-left">
+      {/* 6. Pertanyaan Umum (FAQ) - Clean Accordion Blending with Background */}
+      <section className="space-y-4 text-left">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-            Pertanyaan Umum (Technical FAQ)
+            Pertanyaan Umum (FAQ)
           </h3>
         </div>
 
-        <div className="space-y-3">
-          {/* FAQ 1 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
-            <h5 className="text-sm font-bold text-white">
-              Apakah sistem PANDU menyimpan data pesan atau nomor yang saya periksa?
-            </h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Tidak sama sekali. PANDU beroperasi secara stateless dengan arsitektur Zero-Knowledge. Seluruh token teks dan URL diproses langsung di memori server dan segera dibuang tanpa pernah dicatat ke dalam database riwayat pengguna.
-            </p>
-          </div>
+        <div className="divide-y divide-white/10">
+          {FAQS.map((item, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div key={idx} className="py-4">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="flex w-full items-center justify-between text-left gap-3 focus:outline-none group cursor-pointer"
+                >
+                  <span
+                    className={`text-sm sm:text-base font-semibold transition-colors leading-snug ${
+                      isOpen ? "text-blue-400" : "text-white group-hover:text-blue-300"
+                    }`}
+                  >
+                    {item.q}
+                  </span>
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                    <ChevronDown
+                      className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${
+                        isOpen ? "rotate-180 text-blue-400" : ""
+                      }`}
+                    />
+                  </div>
+                </button>
 
-          {/* FAQ 2 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
-            <h5 className="text-sm font-bold text-white">
-              Bagaimana cara kerja deteksi tanpa menggunakan model AI pihak ketiga?
-            </h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal oleh engine keamanan PANDU. Hal ini menjamin kecepatan analisa &lt; 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.
-            </p>
-          </div>
-
-          {/* FAQ 3 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
-            <h5 className="text-sm font-bold text-white">
-              Bagaimana sistem Basis Data Daftar Hitam (Threat Registry) PANDU bekerja?
-            </h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Setiap laporan nomor WhatsApp, rekening bank, atau tautan penipuan yang masuk diverifikasi dan dicatat ke dalam database ancaman PANDU. Pengguna lain dapat memeriksa keabsahan suatu nomor atau rekening secara real-time sebelum bertransaksi.
-            </p>
-          </div>
+                {isOpen && (
+                  <div className="pt-3 pr-8 text-xs sm:text-sm text-slate-300 leading-relaxed animate-in fade-in duration-200">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
