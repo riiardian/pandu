@@ -12,8 +12,10 @@ import {
   Lock,
   Search,
   CheckCircle2,
-  Cpu,
-  Layers,
+  Smartphone,
+  Globe,
+  Users,
+  AlertTriangle,
 } from "lucide-react";
 
 const ACRONYM_PHRASE = "Protective Analysis & Navigation for Digital Users";
@@ -54,20 +56,17 @@ function TypewriterAcronymHeadline() {
 
 export default function HomeTab() {
   return (
-    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 pt-8 pb-8 sm:py-10">
-      {/* OSINT-Style Left-Aligned Hero Section */}
+    <div className="max-w-4xl mx-auto space-y-14 sm:space-y-20 pt-8 pb-12 sm:py-12">
+      {/* 1. Hero Section */}
       <section className="text-left space-y-4 max-w-xl">
-        {/* Main Headline - Typewriter strictly on Protective Analysis & Navigation for Digital Users */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.14] font-sans">
           <TypewriterAcronymHeadline />
         </h1>
 
-        {/* Project Purpose & Mission Statement */}
         <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
           Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi. Saatnya memperkuat pertahanan siber dan menghentikan manipulasi di ruang digital.
         </p>
 
-        {/* Left-Aligned Action Controls */}
         <div className="pt-1 flex items-center">
           <Link
             href="/xray"
@@ -79,7 +78,7 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* OSINT Live Forensic Preview Card (Visibly Tilted 3D Isometric Perspective & Compact Width) */}
+      {/* 2. OSINT Live Forensic Preview Card (Tilted 3D Isometric Perspective) */}
       <section className="relative pt-2 pb-6" style={{ perspective: "1000px" }}>
         <div
           className="rounded-2xl border border-white/20 bg-[#121316] p-1.5 sm:p-2.5 shadow-2xl transition-all duration-300 hover:rotate-0"
@@ -94,58 +93,35 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 3 Core Forensic Capabilities (Clean OSINT Capability Grid) */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-blue-400" />
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-              Modul Investigasi &amp; Pertahanan
-            </h3>
-          </div>
-          <span className="text-[11px] font-mono text-slate-400">
-            ARSITEKTUR 3 PILAR
-          </span>
+      {/* 3. Tiga Modul Utama (Clean Cards, No Badges) */}
+      <section className="space-y-5">
+        <div className="border-b border-white/10 pb-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 text-left">
+            Tiga Modul Utama
+          </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
           {/* Module 1: X-Ray */}
           <Link
             href="/xray"
-            className="group rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#12151e] transition-all flex flex-col justify-between shadow-xl"
+            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#171a24] text-blue-400 border border-white/10 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <Search className="h-4 w-4" />
-                </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/40 px-2 py-0.5 rounded">
-                  PILAR 01 · RECOGNIZE
-                </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <Search className="h-5 w-5" />
               </div>
-
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  Deception X-Ray Scanner
+                  Deception X-Ray
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Mesin aturan heuristik deterministik untuk membedah pesan mencurigakan, melacak redirect shortlink, dan mengecek anomali pendaftaran domain perbankan.
+                  Bedah pesan teks dan tautan mencurigakan berbasis aturan heuristik transparan. Memetakan indikator manipulasi dan forensik domain tanpa menyimpan data pribadi.
                 </p>
               </div>
-
-              {/* Technical Capability Tags */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Analisis Teks &amp; URL
-                </span>
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Deteksi Typosquatting
-                </span>
-              </div>
             </div>
-
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buka X-Ray Scanner</span>
+              <span>Buka X-Ray</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
@@ -153,40 +129,23 @@ export default function HomeTab() {
           {/* Module 2: Simulasi */}
           <Link
             href="/simulasi"
-            className="group rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#12151e] transition-all flex flex-col justify-between shadow-xl"
+            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#171a24] text-blue-400 border border-white/10 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <BookOpen className="h-4 w-4" />
-                </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/40 px-2 py-0.5 rounded">
-                  PILAR 02 · LEARN
-                </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <BookOpen className="h-5 w-5" />
               </div>
-
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
                   The Deception Arena
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Arena simulasi percakapan interaktif gaya WhatsApp untuk melatih ketahanan menghadapi skenario loker tugas freelance, kurir paket .APK, dan impersonasi kerabat.
+                  Simulator percakapan interaktif untuk melatih ketahanan menghadapi skenario penipuan lokal seperti loker freelance, kurir paket .APK, dan impersonasi kerabat.
                 </p>
               </div>
-
-              {/* Technical Capability Tags */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Simulasi Chat WhatsApp
-                </span>
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Skor Imunitas Kognitif
-                </span>
-              </div>
             </div>
-
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Masuk Arena Simulasi</span>
+              <span>Buka Simulasi</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
@@ -194,95 +153,213 @@ export default function HomeTab() {
           {/* Module 3: Dossier */}
           <Link
             href="/aksi"
-            className="group rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#12151e] transition-all flex flex-col justify-between shadow-xl"
+            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#171a24] text-blue-400 border border-white/10 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <FileCheck2 className="h-4 w-4" />
-                </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/40 px-2 py-0.5 rounded">
-                  PILAR 03 · ACT
-                </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <FileCheck2 className="h-5 w-5" />
               </div>
-
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  Incident First-Aid Dossier
+                  First-Aid Dossier
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Generator berkas bukti insiden dan checklist isolasi darurat. Menghasilkan draf laporan berstandar hukum siap kirim ke Komdigi, CekRekening.id, dan Bareskrim Polri.
+                  Panduan darurat pertolongan pertama dan generator draf laporan resmi siap kirim ke Komdigi, CekRekening.id, dan Bareskrim Polri dalam satu klik.
                 </p>
               </div>
-
-              {/* Technical Capability Tags */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Checklist Isolasi 5 Menit
-                </span>
-                <span className="text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                  Draf Laporan 1-Klik
-                </span>
-              </div>
             </div>
-
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buka Pusat Aksi &amp; Laporan</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              <span>Buka Pusat Aksi</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </div>
           </Link>
         </div>
       </section>
 
-      {/* Security & Privacy Invariants (CSIRT Zero-Knowledge Standard) */}
-      <section className="rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl text-left">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-blue-400" />
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-              Prinsip Privasi &amp; Standar Teknis
-            </h3>
-          </div>
-          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2 py-0.5 rounded">
-            ZERO-KNOWLEDGE VERIFIED
-          </span>
+      {/* 4. Alur Kerja Investigasi (4-Step Pipeline) */}
+      <section className="space-y-5 text-left">
+        <div className="border-b border-white/10 pb-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+            Alur Kerja Sistem (Pipeline Investigasi)
+          </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="space-y-1.5 rounded-xl border border-white/5 bg-[#12151e]/60 p-3.5">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Nol Pengumpulan Data Sensitif</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed text-[11px]">
-              Sistem tidak pernah meminta nomor KTP, PIN perbankan, kata sandi, atau data rahasia riil. Analisis token berjalan secara lokal di server tanpa database penyimpanan pesan pengguna.
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+          {/* Step 1 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+            <span className="text-xs font-mono font-bold text-blue-400">01 // INGEST</span>
+            <h5 className="text-sm font-bold text-white">Input Muatan Pesan</h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Pengguna menempelkan tangkapan teks pesan WhatsApp, Telegram, SMS, atau tautan web yang dicurigai.
             </p>
           </div>
 
-          <div className="space-y-1.5 rounded-xl border border-white/5 bg-[#12151e]/60 p-3.5">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <Lock className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Lingkungan Uji Terisolasi</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed text-[11px]">
-              Arena simulasi percakapan beroperasi dalam sandbox aman tanpa mendistribusikan malware aktif atau tautan eksploitasi nyata. Seluruh kontak dan entitas adalah sampel simulasi.
+          {/* Step 2 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+            <span className="text-xs font-mono font-bold text-blue-400">02 // DECOMPOSE</span>
+            <h5 className="text-sm font-bold text-white">Pembedahan Heuristik</h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Mesin backend memetakan pola manipulasi psikologis (urgensi palsu, iming-iming komisi) dan menghitung skor entropi teks.
             </p>
           </div>
 
-          <div className="space-y-1.5 rounded-xl border border-white/5 bg-[#12151e]/60 p-3.5">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Deteksi Heuristik Transparan</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed text-[11px]">
-              PANDU tidak menggunakan klaim black-box mutlak 100%. Setiap skor risiko diuraikan secara ilmiah berdasarkan indikator teknis dan pemetaan manipulasi psikologis yang objektif.
+          {/* Step 3 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+            <span className="text-xs font-mono font-bold text-blue-400">03 // FORENSIC</span>
+            <h5 className="text-sm font-bold text-white">Pemeriksaan Domain</h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Melacak tujuan akhir shortlink, memeriksa umur pendaftaran domain, dan mendeteksi pencatutan nama bank/instansi.
+            </p>
+          </div>
+
+          {/* Step 4 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+            <span className="text-xs font-mono font-bold text-blue-400">04 // MITIGATE</span>
+            <h5 className="text-sm font-bold text-white">Panduan Aksi Cepat</h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Menghasilkan skor risiko transparan, checklist tindakan darurat isolasi akun, dan draf berkas aduan resmi siap kirim.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Clean Bottom Anchor */}
-      <footer className="pt-2 pb-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-slate-400">
+      {/* 5. Vektor Ancaman Rekayasa Sosial di Indonesia */}
+      <section className="space-y-5 text-left">
+        <div className="border-b border-white/10 pb-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+            Vektor Ancaman yang Ditangani
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left">
+          {/* Vector 1 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <Smartphone className="h-4 w-4 text-blue-400" />
+              <span>Sniffer APK Berkedok Resi / Surat Tilang</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Penyebaran file .APK berbahaya berkedok foto paket kurir ekspedisi atau surat konfirmasi ETLE untuk menyadap izin akses SMS dan mencuri kode OTP perbankan.
+            </p>
+          </div>
+
+          {/* Vector 2 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <AlertTriangle className="h-4 w-4 text-blue-400" />
+              <span>Loker Freelance Tugas Like &amp; Follow</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Tawaran pekerjaan sampingan like video dengan komisi pancingan di awal sebelum korban diarahkan ke grup Telegram untuk deposit tugas VIP hingga puluhan juta rupiah.
+            </p>
+          </div>
+
+          {/* Vector 3 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <Globe className="h-4 w-4 text-blue-400" />
+              <span>Phishing Perbankan Domain Murah (.SITE / .XYZ)</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Situs tiruan yang mencatut nama dan visual perbankan atau e-wallet nasional untuk menjebak korban memasukkan nomor kartu debit, PIN, dan kredensial login.
+            </p>
+          </div>
+
+          {/* Vector 4 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <Users className="h-4 w-4 text-blue-400" />
+              <span>Impersonasi Kerabat Pinjam Dana Darurat</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Pengambilan identitas foto profil kerabat atau teman dekat yang mengaku baru berganti nomor telepon untuk meminjam uang mendesak tanpa verifikasi suara/video.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FAQ Teknis & Operasional */}
+      <section className="space-y-5 text-left">
+        <div className="border-b border-white/10 pb-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+            Pertanyaan Umum (Technical FAQ)
+          </h3>
+        </div>
+
+        <div className="space-y-3">
+          {/* FAQ 1 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
+            <h5 className="text-sm font-bold text-white">
+              Apakah sistem PANDU menyimpan data pesan atau nomor yang saya periksa?
+            </h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Tidak sama sekali. PANDU beroperasi secara stateless dengan arsitektur Zero-Knowledge. Seluruh token teks dan URL diproses langsung di memori server dan segera dibuang tanpa pernah dicatat ke dalam database riwayat pengguna.
+            </p>
+          </div>
+
+          {/* FAQ 2 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
+            <h5 className="text-sm font-bold text-white">
+              Bagaimana cara kerja deteksi tanpa menggunakan model AI pihak ketiga?
+            </h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal di backend Go. Hal ini menjamin kecepatan analisa &lt; 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.
+            </p>
+          </div>
+
+          {/* FAQ 3 */}
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
+            <h5 className="text-sm font-bold text-white">
+              Ke mana saja draf laporan dari modul First-Aid Dossier dapat dikirimkan?
+            </h5>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Draf laporan yang dihasilkan diformat sesuai standar pelaporan resmi instansi terkait di Indonesia: portal AduanKonten.id (Komdigi), CekRekening.id &amp; AduanNomor.id (OJK / Kemenkominfo), dan Patroli Siber Dittipidsiber Bareskrim Polri.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Standar Privasi & Keamanan (Clean Invariants Grid) */}
+      <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl text-left">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+          Standar Privasi &amp; Kepatuhan
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-white">
+              <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
+              <span>Nol Pengumpulan Data</span>
+            </div>
+            <p className="text-slate-400 leading-relaxed">
+              Tidak pernah meminta atau menyimpan KTP, PIN, kata sandi, atau nomor rekening asli pengguna.
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-white">
+              <Lock className="h-4 w-4 text-blue-400 shrink-0" />
+              <span>Simulasi Terkendali</span>
+            </div>
+            <p className="text-slate-400 leading-relaxed">
+              Arena simulasi percakapan beroperasi aman tanpa mendistribusikan malware nyata atau tautan berbahaya.
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-white">
+              <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
+              <span>Deteksi Transparan</span>
+            </div>
+            <p className="text-slate-400 leading-relaxed">
+              Menyajikan indikator peringatan teknis berbasis bukti terukur tanpa klaim hitam-putih 100% mutlak.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. Minimal Bottom Anchor Footer */}
+      <footer className="pt-2 pb-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-slate-400 text-left">
         <div className="flex items-center gap-2">
           <span className="font-bold text-white">PANDU</span>
           <span>—</span>
