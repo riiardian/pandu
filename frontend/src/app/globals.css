@@ -93,33 +93,39 @@ html, body {
   will-change: transform, opacity;
 }
 
-/* Progressive Circuit Light Sweep (Depan menjalar ke belakang, lalu kanan menipis kembali ke kabel) */
-@keyframes circuit-wave-flow {
+/* Phase 1: Progressive Light Sweep (Depan/kiri menjalar halus ke belakang/kanan) */
+@keyframes sweep-in {
   0% {
-    opacity: 0;
     clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-  }
-  20% {
-    opacity: 1;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-  75% {
-    opacity: 1;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-  92% {
-    opacity: 0.4;
-    clip-path: polygon(0 0, 15% 0, 15% 100%, 0 100%);
+    opacity: 0.2;
   }
   100% {
-    opacity: 0;
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 1;
   }
 }
 
-.animate-circuit-wave {
-  animation: circuit-wave-flow 4.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Phase 3: Receding Light Sweep (Ujung kanan warna nya hilang menipis dan surut ke kabel kiri) */
+@keyframes sweep-out {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    opacity: 0;
+  }
+}
+
+.animate-sweep-in {
+  animation: sweep-in 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   will-change: clip-path, opacity;
 }
+
+.animate-sweep-out {
+  animation: sweep-out 1.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: clip-path, opacity;
+}
+
 
 
