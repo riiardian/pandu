@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Compass,
   Home,
-  ShieldAlert,
+  Search,
   BookOpen,
   FileCheck2,
 } from "lucide-react";
@@ -42,7 +42,7 @@ export default function Header() {
 
   const NAV_ITEMS = [
     { href: "/", label: "Beranda", icon: Home, active: isHome },
-    { href: "/xray", label: "Radar Forensik", icon: ShieldAlert, active: isXray },
+    { href: "/xray", label: "Radar Forensik", icon: Search, active: isXray },
     { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
     { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
   ];
