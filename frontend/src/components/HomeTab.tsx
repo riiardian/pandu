@@ -66,20 +66,13 @@ export default function HomeTab() {
         </p>
 
         {/* Left-Aligned Action Controls */}
-        <div className="pt-1 flex items-center gap-3">
+        <div className="pt-1 flex items-center">
           <Link
             href="/xray"
             className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
           >
             <Search className="h-4 w-4" />
             <span>Mulai Bedah Pesan</span>
-          </Link>
-
-          <Link
-            href="/simulasi"
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-2"
-          >
-            <span>Arena Simulasi &gt;</span>
           </Link>
         </div>
       </section>

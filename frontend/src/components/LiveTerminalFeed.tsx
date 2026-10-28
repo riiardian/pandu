@@ -2,103 +2,78 @@
 
 import React, { useState, useEffect } from "react";
 
-const SCAN_LINES = [
-  { prefix: "[SCAN]", type: "info", text: "inbound/resi_paket_kurir_v2.apk -> unpacking payload..." },
-  { prefix: "[DEX]",  type: "proc", text: "classes.dex: 14,820 methods, 3,410 classes indexed" },
-  { prefix: "[PERM]", type: "warn", text: "AndroidManifest.xml: android.permission.RECEIVE_SMS" },
-  { prefix: "[PERM]", type: "crit", text: "AndroidManifest.xml: android.permission.READ_SMS [CRITICAL]" },
-  { prefix: "[HOOK]", type: "crit", text: "smali/com/sec/receiver/SmsHook.smali -> Intercepting OTP broadcast" },
-  { prefix: "[YARA]", type: "crit", text: "rule match: id_banking_stealer_gen (offset: 0x0004a2c0)" },
-  { prefix: "[HASH]", type: "info", text: "sha256: 8f4457b4f0c7e2b1... verified against malware db" },
-  { prefix: "[URL]",  type: "info", text: "found embedded shortlink: bit.ly/3x-shopee-komisi" },
-  { prefix: "[DNS]",  type: "warn", text: "resolving A record: shopee-vip-toko.site -> 185.220.101.4" },
-  { prefix: "[SSL]",  type: "warn", text: "domain age: 2 days | issuer: Free-CA [HIGH_RISK_ANOMALY]" },
-  { prefix: "[HEUR]", type: "warn", text: "NLP pattern: 'tugas like video VIP slot terbatas' (Risk: 88%)" },
-  { prefix: "[C2]",   type: "crit", text: "detected egress command-and-control socket: 185.220.101.4:8443" },
-  { prefix: "[BLOCK]",type: "proc", text: "C2 socket blocked by PANDU active heuristic filter" },
-  { prefix: "[TRIP]", type: "crit", text: "rule ID-902 triggered: TaskScam.DepositPhishing [MALICIOUS]" },
-  { prefix: "[PCAP]", type: "info", text: "session_dump.pcap (48 KB) -> 24 packet streams inspected" },
-  { prefix: "[SCAN]", type: "info", text: "inbound/surat_tilang_elektronik_etle.apk -> scanning bytecode..." },
-  { prefix: "[DEX]",  type: "warn", text: "classes2.dex: obfuscated with ProGuard / DexGuard packers" },
-  { prefix: "[HOOK]", type: "crit", text: "smali/org/etle/service/Forwarder.smali -> Auto-forwarding SMS to Telegram bot" },
-  { prefix: "[YARA]", type: "crit", text: "rule match: sms_forwarder_trojan_v4 [CONFIRMED]" },
-  { prefix: "[EVAL]", type: "crit", text: "threat rating: 94.8% -> Critical infection vector confirmed" },
-  { prefix: "[AUTO]", type: "proc", text: "compiling official CSIRT dossier #DOSSIER-2026-X09" },
-  { prefix: "[DONE]", type: "proc", text: "target analyzed: 1,480 heuristic vectors verified [0.38s]" },
+const TERMINAL_STREAM = [
+  { pfx: "[+]", color: "text-emerald-400", text: "scanning /var/inbound/resi_paket_kurir_v2.apk (4,180 KB)" },
+  { pfx: "[*]", color: "text-blue-400",    text: "classes.dex indexed: 14,820 methods, 3,410 classes" },
+  { pfx: "[!]", color: "text-amber-400",   text: "manifest: found permission android.permission.RECEIVE_SMS" },
+  { pfx: "[!]", color: "text-rose-400",    text: "manifest: found permission android.permission.READ_SMS [CRITICAL]" },
+  { pfx: "[!]", color: "text-rose-400",    text: "smali: hook detected at com/sec/receiver/SmsHook.smali -> Intercepting OTP" },
+  { pfx: "[!]", color: "text-rose-400",    text: "yara: rule matched 'id_banking_stealer_gen' (offset: 0x0004a2c0)" },
+  { pfx: "[*]", color: "text-blue-400",    text: "hash: sha256 8f4457b4f0c7e2b192834c362f3c41e2... [MALICIOUS]" },
+  { pfx: "[+]", color: "text-emerald-400", text: "extracted shortlink: bit.ly/3x-shopee-komisi -> shopee-vip-toko.site" },
+  { pfx: "[!]", color: "text-amber-400",   text: "dns: A record 185.220.101.4 (unregistered brand spoofing)" },
+  { pfx: "[!]", color: "text-amber-400",   text: "ssl: cert age 2 days, issuer Free-CA [HIGH_RISK_ANOMALY]" },
+  { pfx: "[!]", color: "text-amber-400",   text: "nlp heuristic: task scam deposit pattern detected (risk: 88%)" },
+  { pfx: "[!]", color: "text-rose-400",    text: "c2 egress: active socket connection to 185.220.101.4:8443" },
+  { pfx: "[*]", color: "text-blue-400",    text: "iptables: egress socket connection blocked to 185.220.101.4" },
+  { pfx: "[+]", color: "text-emerald-400", text: "scanning /var/inbound/surat_tilang_elektronik_etle.apk (2,840 KB)" },
+  { pfx: "[*]", color: "text-blue-400",    text: "dex: classes2.dex packed with commercial DexGuard protector" },
+  { pfx: "[!]", color: "text-rose-400",    text: "smali: hook detected at org/etle/service/Forwarder.smali -> SMS to Telegram" },
+  { pfx: "[!]", color: "text-rose-400",    text: "yara: rule matched 'sms_forwarder_trojan_v4' [CONFIRMED]" },
+  { pfx: "[!]", color: "text-rose-400",    text: "composite threat score: 94.8% -> Critical infection vector" },
+  { pfx: "[+]", color: "text-emerald-400", text: "triage: incident dossier generated for Komdigi & Bareskrim" },
+  { pfx: "[*]", color: "text-blue-400",    text: "batch scan completed: 1,480 heuristic vectors verified in 0.38s" },
 ];
 
 export default function LiveTerminalFeed() {
   const [lineIndex, setLineIndex] = useState(0);
 
   useEffect(() => {
-    // High-speed file scanning animation (every 140ms new line)
+    // Fast realistic terminal scan speed (130ms per line)
     const interval = setInterval(() => {
       setLineIndex((prev) => prev + 1);
-    }, 140);
+    }, 130);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Compute the rolling visible slice of lines (last 8 lines)
+  // Compute rolling slice of 8 visible lines
   const visibleLines = [];
-  const total = SCAN_LINES.length;
-  for (let i = 0; i < 9; i++) {
+  const total = TERMINAL_STREAM.length;
+  for (let i = 0; i < 8; i++) {
     const idx = (lineIndex + i) % total;
-    visibleLines.push({ ...SCAN_LINES[idx], id: `${lineIndex}-${i}` });
+    visibleLines.push({ ...TERMINAL_STREAM[idx], id: `${lineIndex}-${i}` });
   }
 
-  const getBadgeStyle = (type: string) => {
-    switch (type) {
-      case "crit":
-        return "text-rose-400 bg-rose-950/60 border-rose-800/60";
-      case "warn":
-        return "text-amber-400 bg-amber-950/60 border-amber-800/60";
-      case "proc":
-        return "text-cyan-400 bg-cyan-950/60 border-cyan-800/60";
-      default:
-        return "text-blue-400 bg-blue-950/60 border-blue-800/60";
-    }
-  };
-
   return (
-    <div className="w-full rounded-2xl border border-white/15 bg-[#07080c] shadow-2xl overflow-hidden font-mono text-left select-none pointer-events-none touch-none">
-      {/* Terminal Titlebar - Clean, no live recon badge */}
-      <div className="flex items-center justify-between border-b border-white/10 bg-[#0e1017] px-3.5 py-2.5">
+    <div className="w-full rounded-2xl border border-white/10 bg-[#06070a] shadow-2xl overflow-hidden font-mono text-left select-none pointer-events-none touch-none">
+      {/* Authentic Minimalist Terminal Titlebar */}
+      <div className="flex items-center justify-between border-b border-white/10 bg-[#0d0f15] px-3.5 py-2">
         <div className="flex items-center gap-2">
-          {/* Terminal Window Controls */}
+          {/* Subtle Window Dots */}
           <div className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
           </div>
-          <span className="text-[11px] font-bold text-slate-300 ml-1 truncate">
-            pandu-engine --scan /var/inbound/
+          <span className="text-[11px] text-slate-400 ml-1.5 font-mono">
+            pandu@scanner: ~/forensics
           </span>
-        </div>
-
-        {/* Live File Rate Counter */}
-        <div className="text-[10px] font-mono text-slate-400">
-          <span>{((lineIndex * 47) % 9400) + 1200} files/s</span>
         </div>
       </div>
 
-      {/* Terminal Output Body - Fast streaming, strictly non-scrollable */}
-      <div className="h-[210px] sm:h-[235px] p-3 sm:p-3.5 space-y-1.5 overflow-hidden text-[10px] sm:text-[11px] leading-relaxed">
+      {/* Terminal Output Body - Real terminal syntax, no badges, non-scrollable */}
+      <div className="h-[200px] sm:h-[225px] p-3 sm:p-3.5 space-y-1 overflow-hidden text-[10px] sm:text-[11px] leading-relaxed">
         {visibleLines.map((item, idx) => (
-          <div key={item.id} className="flex items-center gap-2 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
-            <span className="text-slate-400 text-[9px] select-none">&gt;</span>
-            <span
-              className={`px-1.5 py-0.2 rounded border text-[9px] font-bold uppercase shrink-0 ${getBadgeStyle(
-                item.type
-              )}`}
-            >
-              {item.prefix}
+          <div key={item.id} className="flex items-baseline gap-2 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
+            <span className={`${item.color} font-bold select-none shrink-0`}>
+              {item.pfx}
             </span>
-            <span className={`truncate ${idx === visibleLines.length - 1 ? "text-white font-semibold" : "text-slate-300"}`}>
+            <span className={`truncate ${idx === visibleLines.length - 1 ? "text-white font-medium" : "text-slate-300"}`}>
               {item.text}
             </span>
             {idx === visibleLines.length - 1 && (
-              <span className="inline-block w-1.5 h-3 bg-blue-400 animate-pulse shrink-0 ml-0.5" />
+              <span className="inline-block w-1.5 h-3 bg-white animate-pulse shrink-0 ml-0.5" />
             )}
           </div>
         ))}
