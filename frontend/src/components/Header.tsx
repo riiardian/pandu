@@ -42,9 +42,9 @@ export default function Header() {
 
   const NAV_ITEMS = [
     { href: "/", label: "Beranda", icon: Home, active: isHome },
-    { href: "/xray", label: "Deception X-Ray", icon: ShieldAlert, active: isXray },
-    { href: "/simulasi", label: "The Deception Arena", icon: BookOpen, active: isSimulasi },
-    { href: "/aksi", label: "Daftar Hitam & Laporan", icon: FileCheck2, active: isAksi },
+    { href: "/xray", label: "Radar Forensik", icon: ShieldAlert, active: isXray },
+    { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
+    { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
   ];
 
   return (

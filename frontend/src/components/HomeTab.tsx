@@ -113,7 +113,7 @@ export default function HomeTab() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  Deception X-Ray
+                  Radar Forensik
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Periksa pesan WhatsApp, SMS, dan tautan mencurigakan untuk mendeteksi indikasi penipuan serta domain palsu secara instan.
@@ -138,7 +138,7 @@ export default function HomeTab() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  The Deception Arena
+                  Simulasi Modus Penipuan
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Latihan mengenali modus rekayasa sosial lewat simulasi chat interaktif, mulai dari loker bodong hingga kiriman file APK kurir.
