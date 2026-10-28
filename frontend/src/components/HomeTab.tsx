@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import LiveTerminalFeed from "@/components/LiveTerminalFeed";
 import {
   ShieldAlert,
   BookOpen,
@@ -10,10 +11,6 @@ import {
   ShieldCheck,
   Lock,
   Search,
-  AlertTriangle,
-  BrainCircuit,
-  Globe,
-  Terminal,
 } from "lucide-react";
 
 const ACRONYM_PHRASE = "Protective Analysis & Navigation for Digital Users";
@@ -88,99 +85,17 @@ export default function HomeTab() {
       </section>
 
       {/* OSINT Live Forensic Preview Card (Visibly Tilted 3D Isometric Perspective & Compact Width) */}
-      <section className="relative pt-2 pb-4">
+      <section className="relative pt-2 pb-6" style={{ perspective: "1000px" }}>
         <div
-          className="rounded-2xl border border-white/20 bg-[#121316]/95 backdrop-blur-xl p-4 sm:p-6 shadow-2xl transition-all duration-300 hover:rotate-0"
+          className="rounded-2xl border border-white/20 bg-[#121316] p-1.5 sm:p-2.5 shadow-2xl transition-all duration-300 hover:rotate-0"
           style={{
-            transform: "perspective(900px) rotateX(6deg) rotateY(-8deg) rotateZ(1.5deg)",
+            transform: "rotateX(8deg) rotateY(-12deg) rotateZ(1.5deg)",
             transformOrigin: "center left",
+            transformStyle: "preserve-3d",
+            boxShadow: "0 20px 50px -10px rgba(0, 85, 255, 0.25), 0 10px 30px -15px rgba(0, 0, 0, 0.8)",
           }}
         >
-          {/* Card Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3 mb-4">
-            <div className="flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-blue-400" />
-              <span className="text-xs font-mono font-bold text-slate-300">
-                Live Forensic Intelligence Feed
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-blue-300 bg-blue-950/60 border border-blue-700/40 px-2 py-0.5 rounded">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-              <span>STATUS: ARMED &amp; ANALYZING</span>
-            </div>
-          </div>
-
-          {/* Simulated Query Box (Strict Biru, Hitam, Putih) */}
-          <div className="rounded-lg border border-white/10 bg-[#090a0d] p-2.5 sm:p-3 mb-4 flex items-center justify-between gap-3 text-xs font-mono">
-            <div className="flex items-center gap-2 min-w-0">
-              <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-              <span className="text-slate-300 truncate">
-                "Halo kak, loker sampingan tugas like video komisi 300rb/hari..."
-              </span>
-            </div>
-            <span className="rounded bg-blue-600/30 border border-blue-500/50 px-2 py-0.5 text-[10px] font-bold text-blue-200 shrink-0">
-              88% RISIKO TINGGI
-            </span>
-          </div>
-
-          {/* 2x2 Metric Grid (Just like OSINT Industries) */}
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 text-left">
-            {/* Tile 1 */}
-            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                <AlertTriangle className="h-3.5 w-3.5 text-blue-400" />
-                <span className="font-mono">Trik Manipulasi</span>
-              </div>
-              <div className="text-lg sm:text-xl font-bold text-white font-mono">
-                6 Indikator
-              </div>
-              <p className="text-[10px] text-slate-400">
-                Urgensi waktu, tugas VIP &amp; deposit bertahap
-              </p>
-            </div>
-
-            {/* Tile 2 */}
-            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                <BrainCircuit className="h-3.5 w-3.5 text-blue-400" />
-                <span className="font-mono">Cognitive Bias</span>
-              </div>
-              <div className="text-lg sm:text-xl font-bold text-white font-mono">
-                3 Vektor Emosi
-              </div>
-              <p className="text-[10px] text-slate-400">
-                Greed baiting, false scarcity &amp; FOMO
-              </p>
-            </div>
-
-            {/* Tile 3 */}
-            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                <Globe className="h-3.5 w-3.5 text-blue-400" />
-                <span className="font-mono">Forensik Domain</span>
-              </div>
-              <div className="text-lg sm:text-xl font-bold text-white font-mono">
-                .SITE / Typosquat
-              </div>
-              <p className="text-[10px] text-slate-400">
-                Mencatut e-commerce tanpa sertifikat resmi
-              </p>
-            </div>
-
-            {/* Tile 4 */}
-            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
-                <span className="font-mono">Mitigasi Cepat</span>
-              </div>
-              <div className="text-lg sm:text-xl font-bold text-white font-mono">
-                Laporan Instan
-              </div>
-              <p className="text-[10px] text-slate-400">
-                Draf aduan resmi Komdigi, OJK &amp; Polri
-              </p>
-            </div>
-          </div>
+          <LiveTerminalFeed />
         </div>
       </section>
 
