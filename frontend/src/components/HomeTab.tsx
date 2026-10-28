@@ -93,11 +93,11 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 3. Tiga Modul Utama (Clean Cards, No Badges) */}
+      {/* 3. Alat Forensik & Respons Insiden */}
       <section className="space-y-5">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 text-left">
-            Tiga Modul Utama
+            Alat Forensik &amp; Respons Insiden
           </h3>
         </div>
 
@@ -116,12 +116,12 @@ export default function HomeTab() {
                   Deception X-Ray
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Bedah pesan teks dan tautan mencurigakan berbasis aturan heuristik transparan. Memetakan indikator manipulasi dan forensik domain tanpa menyimpan data pribadi.
+                  Periksa pesan WhatsApp, SMS, dan tautan mencurigakan untuk mendeteksi indikasi penipuan serta domain palsu secara instan.
                 </p>
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buka X-Ray</span>
+              <span>Mulai Pindai</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
@@ -140,12 +140,12 @@ export default function HomeTab() {
                   The Deception Arena
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Simulator percakapan interaktif untuk melatih ketahanan menghadapi skenario penipuan lokal seperti loker freelance, kurir paket .APK, dan impersonasi kerabat.
+                  Latihan mengenali modus rekayasa sosial lewat simulasi chat interaktif, mulai dari loker bodong hingga kiriman file APK kurir.
                 </p>
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buka Simulasi</span>
+              <span>Masuk Simulasi</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
@@ -164,13 +164,13 @@ export default function HomeTab() {
                   First-Aid Dossier
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Panduan darurat pertolongan pertama dan generator draf laporan resmi siap kirim ke Komdigi, CekRekening.id, dan Bareskrim Polri dalam satu klik.
+                  Panduan darurat saat terlanjur tertipu dan pembuatan draf laporan resmi ke Komdigi, OJK, serta kepolisian dalam hitungan detik.
                 </p>
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buka Pusat Aksi</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span>Buat Laporan</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
         </div>
