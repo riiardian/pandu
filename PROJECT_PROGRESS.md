@@ -15,25 +15,25 @@
   - Backend: Go 1.24+ (Fiber v2) beroperasi mandiri pada port `8082` dikelola via Supervisor (`pandu-backend`).
   - Frontend: Next.js 16 (App Router, TypeScript, Tailwind CSS v4, Lucide React) beroperasi pada port `3002` dikelola via PM2 (`pandu-frontend`).
   - Reverse Proxy & SSL: Nginx melayani `pandu.web.id` dengan HTTP/2, HSTS preload, dan sertifikat SSL aktif hingga 7 Januari 2027.
+- **Halaman Beranda / Index (Landing Page)**:
+  - Hero section penjelas produk: *Ketika Rekayasa Sosial Mengaburkan Fakta, PANDU Menjadi Navigasi Anda.*
+  - Breakdown arsitektur solusi 3 pilar (*Recognize, Learn, Act*) lengkap dengan kartu interaktif dan tombol aksi langsung.
+  - Edukasi anatomi rekayasa sosial di Indonesia (Kepanikan Waktu/Urgency, Umpan Keuntungan/Greed, Pencatutan Otoritas/Impersonation).
+  - Deklarasi standar integritas & privasi (Nol pengumpulan data sensitif, simulasi aman, transparansi heuristik).
+  - Navigasi 4 tab responsif: `Beranda`, `X-Ray`, `Simulasi`, dan `Aksi`.
 - **Pilar 1 (Recognize) — Deception X-Ray Scanner**:
   - Engine Heuristik Transparan (`internal/scanner/text_scanner.go` & `url_scanner.go`).
   - Pemetaan Cognitive Bias (Kepanikan Waktu, Iming-Iming Keuntungan, Pencatutan Otoritas, Kelangkaan Semu).
-  - Deteksi Typosquatting untuk 13 brand perbankan/fintech besar Indonesia (BCA, BRI, Mandiri, BNI, DANA, GoPay, Shopee, PLN, Telkomsel).
+  - Deteksi Typosquatting untuk 13 brand perbankan/fintech besar Indonesia.
   - Safe Redirect Unmasker untuk membongkar shortlink (`bit.ly`, `s.id`, dll) tanpa celah SSRF.
 - **Pilar 2 (Learn) — Arena Simulasi & Pengambilan Keputusan**:
   - Engine Dialog Interaktif (`internal/sandbox/scenarios.go` & `simulator.go`).
-  - 3 Skenario Percakapan Realistis Lokal:
-    1. Loker Freelance Like Video YouTube (Task Scam).
-    2. Kurir Paket / Surat Tilang File .APK (Malware Sniffer).
-    3. Impersonasi Kerabat Ganti Nomor Pinjam Uang Darurat.
-  - Mockup chat realistis (avatar, role penipu, banner taktik terdeteksi, tactical feedback instan, dan Skor Imunitas Kognitif Digital 0-100%).
+  - 3 Skenario Percakapan Realistis Lokal (Loker Freelance Like Video, Kurir Paket .APK, Impersonasi Teman Pinjam Uang).
+  - Mockup chat realistis (banner taktik terdeteksi, tactical feedback instan, dan Skor Imunitas Kognitif Digital 0-100%).
 - **Pilar 3 (Act) — Pusat Aksi & Draf Laporan Forensik**:
   - Engine Berkas Insiden (`internal/dossier/generator.go`).
   - Checklist Tindakan Darurat Mandiri (5 Menit Pertama, Hari Ini, Lanjutan).
-  - Draf Laporan Resmi 1-Click Copy untuk:
-    - AduanKonten.id (Komdigi)
-    - CekRekening.id & AduanNomor.id (OJK / Kemenkominfo)
-    - Patroli Siber Polri (Dittipidsiber Bareskrim)
+  - Draf Laporan Resmi 1-Click Copy untuk AduanKonten Komdigi, CekRekening OJK, dan Patroli Siber Polri.
   - Kartu Peringatan Grup WhatsApp Keluarga siap sebar.
 - **Status Pengujian & Keamanan**:
   - Seluruh unit tests backend Go (`scanner`, `sandbox`, `dossier`) lulus 100% (PASS).
