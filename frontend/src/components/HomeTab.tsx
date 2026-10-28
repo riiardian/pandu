@@ -63,9 +63,9 @@ export default function HomeTab() {
           <TypewriterAcronymHeadline />
         </h1>
 
-        {/* Project Purpose & Community Call to Action */}
+        {/* Project Purpose & Mission Statement */}
         <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
-          Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi. Bersama memperkuat ketahanan nalar dan menjaga integritas ekosistem siber yang aman dari manipulasi digital.
+          Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi. Saatnya memperkuat pertahanan siber dan menghentikan manipulasi di ruang digital.
         </p>
 
         {/* Left-Aligned Action Controls */}
