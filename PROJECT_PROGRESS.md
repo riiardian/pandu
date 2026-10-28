@@ -2,17 +2,40 @@
 
 **Sistem:** PANDU — Navigation & Incident Defense Against Digital Deception
 **Kompetisi:** Web Development Competition MIT-WEEK 2026 (Universitas Mulawarman)
-**Tim:** 404Forbidden (Kode Tim: MIT-002)
-**Domain:** `pandu.web.id`
-**Tech Stack:** Go Fiber v2 (Backend Port 8082) + Next.js App Router (Frontend Port 3002) + Nginx SSL
+**Tim:** 404Forbidden (Kode Tim: `MIT-002`)
+**Domain:** `https://pandu.web.id`
+**Tech Stack:** Go Fiber v2 (Backend Port 8082) + Next.js App Router (Frontend Port 3002) + Nginx SSL (HTTP/2)
 
 ---
 
 ## 📋 DAFTAR FITUR & RIWAYAT PROGRES
 
 ### 1. Inisialisasi Fondasi & Arsitektur Sistem [28 Oktober 2026]
-- **Perancangan Arsitektur**: Menetapkan arsitektur decoupled (Go Fiber + Next.js) dengan efisiensi memori tinggi di VPS.
-- **Pilar 1 (Recognize)**: Engine X-Ray Scanner berbasis heuristik deterministik + analitik kognitif.
-- **Pilar 2 (Learn)**: Arena simulasi chat interaktif (WhatsApp-like sandbox) melawan bot scammer Indonesia.
-- **Pilar 3 (Act)**: Generator draf laporan aduan resmi (Komdigi/OJK/PatroliSiber) & kartu peringatan keluarga.
-- Status: Inisialisasi struktur repositori dan modul backend/frontend.
+- **Arsitektur Decoupled**:
+  - Backend: Go 1.24+ (Fiber v2) beroperasi mandiri pada port `8082` dikelola via Supervisor (`pandu-backend`).
+  - Frontend: Next.js 16 (App Router, TypeScript, Tailwind CSS v4, Lucide React) beroperasi pada port `3002` dikelola via PM2 (`pandu-frontend`).
+  - Reverse Proxy & SSL: Nginx melayani `pandu.web.id` dengan HTTP/2, HSTS preload, dan sertifikat SSL aktif hingga 7 Januari 2027.
+- **Pilar 1 (Recognize) — Deception X-Ray Scanner**:
+  - Engine Heuristik Transparan (`internal/scanner/text_scanner.go` & `url_scanner.go`).
+  - Pemetaan Cognitive Bias (Kepanikan Waktu, Iming-Iming Keuntungan, Pencatutan Otoritas, Kelangkaan Semu).
+  - Deteksi Typosquatting untuk 13 brand perbankan/fintech besar Indonesia (BCA, BRI, Mandiri, BNI, DANA, GoPay, Shopee, PLN, Telkomsel).
+  - Safe Redirect Unmasker untuk membongkar shortlink (`bit.ly`, `s.id`, dll) tanpa celah SSRF.
+- **Pilar 2 (Learn) — Arena Simulasi & Pengambilan Keputusan**:
+  - Engine Dialog Interaktif (`internal/sandbox/scenarios.go` & `simulator.go`).
+  - 3 Skenario Percakapan Realistis Lokal:
+    1. Loker Freelance Like Video YouTube (Task Scam).
+    2. Kurir Paket / Surat Tilang File .APK (Malware Sniffer).
+    3. Impersonasi Kerabat Ganti Nomor Pinjam Uang Darurat.
+  - Mockup chat realistis (avatar, role penipu, banner taktik terdeteksi, tactical feedback instan, dan Skor Imunitas Kognitif Digital 0-100%).
+- **Pilar 3 (Act) — Pusat Aksi & Draf Laporan Forensik**:
+  - Engine Berkas Insiden (`internal/dossier/generator.go`).
+  - Checklist Tindakan Darurat Mandiri (5 Menit Pertama, Hari Ini, Lanjutan).
+  - Draf Laporan Resmi 1-Click Copy untuk:
+    - AduanKonten.id (Komdigi)
+    - CekRekening.id & AduanNomor.id (OJK / Kemenkominfo)
+    - Patroli Siber Polri (Dittipidsiber Bareskrim)
+  - Kartu Peringatan Grup WhatsApp Keluarga siap sebar.
+- **Status Pengujian & Keamanan**:
+  - Seluruh unit tests backend Go (`scanner`, `sandbox`, `dossier`) lulus 100% (PASS).
+  - Next.js Turbopack build sukses 0 error.
+  - Status working tree bersih (`working tree clean`).
