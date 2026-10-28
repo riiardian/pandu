@@ -10,9 +10,40 @@ import {
   BookOpen,
   FileCheck2,
   Workflow,
-  AlertTriangle,
+  Fingerprint,
   HelpCircle,
 } from "lucide-react";
+
+// Silky-smooth slow animated scroll for quick navigation jumps
+function smoothScrollToY(targetY: number, duration: number = 1100) {
+  if (typeof window === "undefined") return;
+  const startY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+  const diff = targetY - startY;
+  if (Math.abs(diff) < 5) return;
+  let startTime: number | null = null;
+
+  function easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(currentTime: number) {
+    if (!startTime) startTime = currentTime;
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = easeInOutCubic(progress);
+
+    window.scrollTo({
+      top: startY + diff * ease,
+      behavior: "instant" as ScrollBehavior,
+    });
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,9 +80,41 @@ export default function Header() {
     { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
     { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
     { href: "/#alur-kerja", label: "Alur Kerja Sistem", icon: Workflow, active: false },
-    { href: "/#manipulasi-digital", label: "Bentuk Manipulasi Digital", icon: AlertTriangle, active: false },
+    { href: "/#manipulasi-digital", label: "Bentuk Manipulasi Digital", icon: Fingerprint, active: false },
     { href: "/#faq", label: "Pertanyaan Umum (FAQ)", icon: HelpCircle, active: false },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#")) {
+      const targetId = href.replace("/#", "");
+      if (pathname === "/") {
+        e.preventDefault();
+        setIsOpen(false);
+        document.body.style.overflow = "";
+        window.history.pushState(null, "", href);
+        setTimeout(() => {
+          const el = document.getElementById(targetId);
+          if (el) {
+            const navOffset = 60;
+            const targetY = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navOffset);
+            smoothScrollToY(targetY, 1100);
+          }
+        }, 150);
+        return;
+      }
+    } else if (href === "/" && pathname === "/") {
+      e.preventDefault();
+      setIsOpen(false);
+      document.body.style.overflow = "";
+      window.history.pushState(null, "", "/");
+      setTimeout(() => {
+        smoothScrollToY(0, 900);
+      }, 150);
+      return;
+    }
+
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -152,7 +215,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => handleNavClick(e, item.href)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                       item.active
                         ? "bg-white/10 text-white font-medium"
