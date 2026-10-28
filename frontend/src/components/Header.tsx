@@ -10,7 +10,9 @@ import {
   BookOpen,
   FileCheck2,
   ChevronRight,
-  Search,
+  Shield,
+  Activity,
+  ArrowUpRight,
 } from "lucide-react";
 
 export default function Header() {
@@ -51,7 +53,7 @@ export default function Header() {
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg shadow-sm">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-lg shadow-lg shadow-blue-600/30">
               <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <span className="text-lg sm:text-xl font-black tracking-tight text-white block leading-tight">
@@ -59,7 +61,7 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Sleek Cloudflare-style Naked Hamburger Menu Button */}
+          {/* Minimalist Hamburger Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Navigation Menu"
@@ -89,7 +91,7 @@ export default function Header() {
                 strokeLinejoin="round"
               >
                 <line x1="3.5" y1="7" x2="20.5" y2="7" />
-                <line x1="3.5" y1="12" x2="15.5" y2="12" />
+                <line x1="3.5" y1="12" x2="16.5" y2="12" />
                 <line x1="3.5" y1="17" x2="20.5" y2="17" />
               </svg>
             )}
@@ -97,29 +99,37 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Cloudflare-Style Compact Slide-out Drawer in Gemini Dark Theme */}
+      {/* Modern High-End Slide-out Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop (Leaves ~30% viewport visible on the side) */}
+          {/* Backdrop with Soft Blur */}
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
           />
 
-          {/* Sleek Narrow Drawer (Width 68vw, max 265px) */}
-          <div className="relative ml-auto flex h-full w-[68vw] max-w-[265px] flex-col bg-[#121316] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
+          {/* Premium Narrow Glassmorphism Drawer */}
+          <div className="relative ml-auto flex h-full w-[78vw] max-w-[310px] flex-col bg-[#0b0c10]/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-3.5 py-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-white font-bold shrink-0 shadow-sm">
-                  <Compass className="h-3.5 w-3.5" />
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5 bg-[#0f1117]/80">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white font-bold shrink-0 shadow-md shadow-blue-600/30">
+                  <Compass className="h-4 w-4" />
                 </div>
-                <span className="font-bold text-sm text-white truncate">PANDU Nav</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-sm text-white tracking-tight leading-none">
+                    PANDU
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400 leading-tight mt-0.5">
+                    Platform Navigasi
+                  </span>
+                </div>
               </div>
+
               <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Tutup Menu"
-                className="flex h-7 w-7 items-center justify-center text-slate-400 hover:text-white focus:outline-none transition-colors active:scale-90"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none transition-colors active:scale-90"
               >
                 <svg
                   className="h-4 w-4"
@@ -136,94 +146,158 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Quick Search Bar */}
-            <div className="px-3 pt-3 pb-2 border-b border-white/10">
-              <div className="flex items-center gap-2 rounded-md border border-white/10 bg-[#1a1b20] px-2.5 py-1.5 text-xs text-slate-400">
-                <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                <span className="truncate">Navigasi cepat...</span>
-              </div>
-            </div>
-
             {/* Navigation Body */}
-            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-4">
-              {/* Section 1: Overview */}
-              <div>
+            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5 text-left">
+              {/* Category: Navigasi Utama */}
+              <div className="space-y-1">
+                <div className="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  // Menu Utama
+                </div>
+
                 <Link
                   href="/"
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
+                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
                     isHome
-                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
-                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
+                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <Home className="h-4 w-4 text-blue-400" />
-                    <span>Beranda Utama</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
+                        isHome
+                          ? "bg-blue-600 text-white"
+                          : "bg-white/5 text-slate-400"
+                      }`}
+                    >
+                      <Home className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold truncate leading-tight">
+                        Beranda
+                      </span>
+                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
+                        Ringkasan sistem &amp; live feed
+                      </span>
+                    </div>
                   </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 </Link>
               </div>
 
-              {/* Section 2: Modul Utama */}
+              {/* Category: Modul Investigasi */}
               <div className="space-y-1">
-                <div className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Modul Deteksi &amp; Latihan
+                <div className="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  // Modul Forensik &amp; Latihan
                 </div>
 
+                {/* X-Ray Scanner */}
                 <Link
                   href="/xray"
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
+                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
                     isXray
-                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
-                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
+                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <ShieldAlert className="h-4 w-4 text-blue-400 shrink-0" />
-                    <span className="truncate">X-Ray Scanner</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
+                        isXray
+                          ? "bg-blue-600 text-white"
+                          : "bg-white/5 text-blue-400"
+                      }`}
+                    >
+                      <ShieldAlert className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold truncate leading-tight">
+                        X-Ray Scanner
+                      </span>
+                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
+                        Bedah pesan, link, &amp; APK
+                      </span>
+                    </div>
                   </div>
                   <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 </Link>
 
+                {/* Arena Simulasi */}
                 <Link
                   href="/simulasi"
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
+                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
                     isSimulasi
-                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
-                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
+                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <BookOpen className="h-4 w-4 text-blue-400 shrink-0" />
-                    <span className="truncate">Arena Simulasi</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
+                        isSimulasi
+                          ? "bg-blue-600 text-white"
+                          : "bg-white/5 text-blue-400"
+                      }`}
+                    >
+                      <BookOpen className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold truncate leading-tight">
+                        The Deception Arena
+                      </span>
+                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
+                        Latihan chat WhatsApp interaktif
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                </Link>
+
+                {/* Pusat Aksi & Laporan */}
+                <Link
+                  href="/aksi"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
+                    isAksi
+                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
+                        isAksi
+                          ? "bg-blue-600 text-white"
+                          : "bg-white/5 text-blue-400"
+                      }`}
+                    >
+                      <FileCheck2 className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold truncate leading-tight">
+                        First-Aid Dossier
+                      </span>
+                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
+                        Draf aduan resmi Komdigi &amp; Polri
+                      </span>
+                    </div>
                   </div>
                   <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 </Link>
               </div>
+            </div>
 
-              {/* Section 3: Respons Darurat */}
-              <div className="space-y-1">
-                <div className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Respons &amp; Pemulihan
+            {/* Bottom Status Card */}
+            <div className="p-3 border-t border-white/10 bg-[#0f1117]/80">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2.5 flex items-center justify-between text-[11px]">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="font-mono text-slate-300">Engine Online</span>
                 </div>
-
-                <Link
-                  href="/aksi"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
-                    isAksi
-                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
-                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <FileCheck2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                    <span className="truncate">Pusat Aksi &amp; Laporan</span>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                </Link>
+                <span className="font-mono text-[10px] text-slate-400">Zero-Storage</span>
               </div>
             </div>
           </div>
