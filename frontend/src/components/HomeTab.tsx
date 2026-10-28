@@ -72,7 +72,7 @@ export default function HomeTab() {
             className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
           >
             <Search className="h-4 w-4" />
-            <span>Mulai Bedah Pesan</span>
+            <span>Mulai Analisis Forensik</span>
           </Link>
         </div>
       </section>
