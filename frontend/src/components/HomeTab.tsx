@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import LiveTerminalFeed from "@/components/LiveTerminalFeed";
+import AnimatedPipeline from "@/components/AnimatedPipeline";
 import {
   ShieldAlert,
   BookOpen,
@@ -179,51 +180,15 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 4. Alur Kerja Investigasi (4-Step Pipeline) */}
-      <section className="space-y-5 text-left">
+      {/* 4. Alur Kerja Investigasi (Animated Cable Conduit Pipeline) */}
+      <section className="space-y-4 text-left">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
             Alur Kerja Sistem (Pipeline Investigasi)
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
-          {/* Step 1 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
-            <span className="text-xs font-mono font-bold text-blue-400">01 // INGEST</span>
-            <h5 className="text-sm font-bold text-white">Input Muatan Pesan</h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Pengguna menempelkan tangkapan teks pesan WhatsApp, Telegram, SMS, atau tautan web yang dicurigai.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
-            <span className="text-xs font-mono font-bold text-blue-400">02 // DECOMPOSE</span>
-            <h5 className="text-sm font-bold text-white">Pembedahan Heuristik</h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Mesin backend memetakan pola manipulasi psikologis (urgensi palsu, iming-iming komisi) dan menghitung skor entropi teks.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
-            <span className="text-xs font-mono font-bold text-blue-400">03 // FORENSIC</span>
-            <h5 className="text-sm font-bold text-white">Pemeriksaan Domain</h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Melacak tujuan akhir shortlink, memeriksa umur pendaftaran domain, dan mendeteksi pencatutan nama bank/instansi.
-            </p>
-          </div>
-
-          {/* Step 4 */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
-            <span className="text-xs font-mono font-bold text-blue-400">04 // REGISTRY &amp; MITIGATE</span>
-            <h5 className="text-sm font-bold text-white">Pencatatan Daftar Hitam &amp; Aksi</h5>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Entitas terverifikasi dicatat langsung ke basis data daftar hitam PANDU untuk melindungi pengguna lain, disertai panduan darurat isolasi akun.
-            </p>
-          </div>
-        </div>
+        <AnimatedPipeline />
       </section>
 
       {/* 5. Vektor Ancaman Rekayasa Sosial di Indonesia */}
