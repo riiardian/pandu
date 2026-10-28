@@ -184,7 +184,7 @@ export default function HomeTab() {
       <section className="space-y-4 text-left">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-            Alur Kerja Sistem (Pipeline Investigasi)
+            Alur Kerja Sistem
           </h3>
         </div>
 
