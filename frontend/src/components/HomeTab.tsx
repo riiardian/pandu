@@ -191,20 +191,17 @@ export default function HomeTab() {
         <AnimatedPipeline />
       </section>
 
-      {/* 5. Bentuk Manipulasi Digital (Riset Empiris IASC & OJK) */}
+      {/* 5. Bentuk Manipulasi Digital */}
       <section className="space-y-4 text-left">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-white/10 pb-3">
+        <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
             Bentuk Manipulasi Digital
           </h3>
-          <span className="text-[10px] font-mono text-blue-400">
-            RISET IASC &amp; OJK · 299.237+ KASUS (KERUGIAN RP 7T)
-          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left">
           {/* Case 1: Panggilan Palsu & Penyamaran Otoritas */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-white font-bold text-sm">
               <Users className="h-4 w-4 text-blue-400" />
               <span>Panggilan Palsu &amp; Penyamaran Otoritas</span>
@@ -212,13 +209,10 @@ export default function HomeTab() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Memanipulasi kepanikan korban dengan mengaku petugas bank, kepolisian, atau kerabat dalam kondisi darurat untuk memeras transfer dana kilat tanpa verifikasi.
             </p>
-            <div className="pt-0.5 text-[10px] font-mono text-slate-400 border-t border-white/5">
-              Modus #1 Paling Merugikan · Total Rp 1,7T (Rata-rata Rp 42 Juta/Kasus)
-            </div>
           </div>
 
           {/* Case 2: Loker Bodong & Tugas Komisi Bertahap */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-white font-bold text-sm">
               <AlertTriangle className="h-4 w-4 text-blue-400" />
               <span>Loker Bodong &amp; Tugas Komisi Bertahap</span>
@@ -226,13 +220,10 @@ export default function HomeTab() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Umpan pekerjaan sampingan like video dengan komisi pancingan di awal, lalu menjebak deposit modal bertingkat di grup Telegram hingga tabungan habis.
             </p>
-            <div className="pt-0.5 text-[10px] font-mono text-slate-400 border-t border-white/5">
-              24.000+ Laporan Korban · Total Rp 1,5T (Rata-rata Rp 57 Juta/Kasus)
-            </div>
           </div>
 
           {/* Case 3: Situs Tiruan & Phishing Perbankan */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-white font-bold text-sm">
               <Globe className="h-4 w-4 text-blue-400" />
               <span>Situs Tiruan &amp; Phishing Perbankan</span>
@@ -240,13 +231,10 @@ export default function HomeTab() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Membuat domain tiruan murah (.SITE / .XYZ) atau toko online fiktif untuk menjebak korban memasukkan nomor kartu debit, PIN, dan data kredensial login.
             </p>
-            <div className="pt-0.5 text-[10px] font-mono text-slate-400 border-t border-white/5">
-              77.000+ Laporan · Kasus Penipuan Terbanyak di Indonesia (Rp 1,3T)
-            </div>
           </div>
 
           {/* Case 4: Trojan APK Kurir & Surat Tilang */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
+          <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-white font-bold text-sm">
               <Smartphone className="h-4 w-4 text-blue-400" />
               <span>Trojan APK Kurir &amp; Surat Tilang</span>
@@ -254,9 +242,6 @@ export default function HomeTab() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Penyebaran file .APK berbahaya berkedok foto paket ekspedisi atau dokumen konfirmasi ETLE untuk menyadap izin akses SMS dan mencuri kode OTP perbankan secara diam-diam.
             </p>
-            <div className="pt-0.5 text-[10px] font-mono text-slate-400 border-t border-white/5">
-              Vektor Malware Penyadapan OTP Terbesar di WhatsApp Indonesia
-            </div>
           </div>
         </div>
       </section>
