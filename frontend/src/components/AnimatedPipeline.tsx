@@ -6,25 +6,25 @@ const PIPELINE_STEPS = [
   {
     idx: 0,
     step: "1",
-    title: "Input Kredensial & Berkas",
+    title: "Identifikasi Target",
     desc: "Sistem menerima pesan, nomor telepon, rekening, email, tautan, atau berkas yang dicurigai, lalu membedah parameter data secara aman tanpa menyimpan identitas pengguna.",
   },
   {
     idx: 1,
     step: "2",
-    title: "Pembedahan Pola & Heuristik",
+    title: "Analisis Pola Manipulasi",
     desc: "Engine keamanan PANDU mengevaluasi pola manipulasi psikologis, entropi teks, validasi struktur rekening bank, hingga audit izin bahaya berkas.",
   },
   {
     idx: 2,
     step: "3",
-    title: "Penelusuran Jejak Intelijen",
+    title: "Verifikasi Jejak Digital",
     desc: "Sistem menelusuri kecocokan data ke basis data PANDU dan jaringan intelijen terbuka untuk menemukan indikasi rekam jejak kejahatan digital.",
   },
   {
     idx: 3,
     step: "4",
-    title: "Sintesis Laporan & Mitigasi",
+    title: "Laporan & Mitigasi",
     desc: "Menerbitkan skor risiko transparan, checklist tindakan darurat isolasi akun 5 menit, dan secara otomatis mencatat entitas ke basis data daftar hitam PANDU.",
   },
 ];
