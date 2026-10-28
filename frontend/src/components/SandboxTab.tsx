@@ -216,7 +216,7 @@ export default function SandboxTab() {
                 <button
                   onClick={() => startScenario(sc.id)}
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-orange-700 transition-colors"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
                 >
                   <span>Mulai Simulasi</span>
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -353,7 +353,7 @@ export default function SandboxTab() {
                         key={c.id}
                         disabled={loading}
                         onClick={() => handleMakeChoice(c)}
-                        className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#0d162d] p-2.5 text-left text-xs font-medium text-white hover:border-orange-500 hover:bg-orange-50/50 transition-all disabled:opacity-50"
+                        className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#0d162d] p-2.5 text-left text-xs font-medium text-white hover:border-blue-500 hover:bg-blue-950/40 transition-all disabled:opacity-50"
                       >
                         <span className="pr-2">{c.text}</span>
                         <Send className="h-3.5 w-3.5 text-slate-500 shrink-0" />
@@ -408,7 +408,7 @@ export default function SandboxTab() {
             {/* Final Result Card when finished */}
             {isCompleted && finalResult && (
               <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-3 animate-in fade-in duration-300">
-                <div className="flex items-center gap-2 text-orange-600">
+                <div className="flex items-center gap-2 text-blue-500">
                   <Trophy className="h-5 w-5" />
                   <h4 className="text-sm font-bold uppercase tracking-wider">Evaluasi Akhir</h4>
                 </div>

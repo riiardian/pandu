@@ -59,7 +59,7 @@ export default function Header() {
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-white font-bold text-lg shadow-sm">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg shadow-sm">
               <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <span className="text-lg sm:text-xl font-black tracking-tight text-white block leading-tight">
@@ -71,7 +71,7 @@ export default function Header() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Navigation Menu"
-            className="flex h-9 w-9 items-center justify-center text-slate-200 hover:text-white focus:outline-none transition-all active:scale-90"
+            className="flex h-9 w-9 items-center justify-center text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-90"
           >
             {isOpen ? (
               <svg
@@ -119,7 +119,7 @@ export default function Header() {
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-white/10 px-3.5 py-3">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-600 text-white font-bold shrink-0 shadow-sm">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-white font-bold shrink-0 shadow-sm">
                   <Compass className="h-3.5 w-3.5" />
                 </div>
                 <span className="font-bold text-sm text-white truncate">PANDU Nav</span>
@@ -166,7 +166,7 @@ export default function Header() {
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Home className="h-4 w-4 text-slate-400" />
+                    <Home className="h-4 w-4 text-blue-400" />
                     <span>Beranda Utama</span>
                   </div>
                 </Link>
@@ -188,7 +188,7 @@ export default function Header() {
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <ShieldAlert className="h-4 w-4 text-orange-500 shrink-0" />
+                    <ShieldAlert className="h-4 w-4 text-blue-400 shrink-0" />
                     <span className="truncate">X-Ray Scanner</span>
                   </div>
                   <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />

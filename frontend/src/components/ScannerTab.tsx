@@ -188,7 +188,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Contoh: Halo kak, kami dari Shopee/YouTube membuka pekerjaan sampingan like video komisi 300rb per hari. Hubungi telegram kami..."
-              className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-3 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none"
+              className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-3 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
             />
           </div>
         ) : (
@@ -196,7 +196,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
               Masukkan Alamat Web atau Link yang Diterima:
             </label>
-            <div className="flex rounded-lg border border-slate-700 bg-[#060a14] focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+            <div className="flex rounded-lg border border-slate-700 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
               <span className="inline-flex items-center px-3 text-xs text-slate-400 bg-[#0d162d] border-r border-slate-700 rounded-l-lg font-mono">
                 https://
               </span>
@@ -223,7 +223,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           <button
             onClick={handleRunScan}
             disabled={loading}
-            className="flex w-full sm:w-auto justify-center items-center gap-2 rounded-lg bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 focus:outline-none transition-colors disabled:opacity-50"
+            className="flex w-full sm:w-auto justify-center items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none transition-colors disabled:opacity-50"
           >
             <Search className="h-4 w-4" />
             <span>{loading ? "Membedah Anatomi Pesan..." : "Bedah Indikator Bahaya"}</span>
@@ -401,7 +401,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     router.push("/aksi");
                   }
                 }}
-                className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-500 shadow-sm transition-colors w-full sm:w-auto justify-center"
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-sm transition-colors w-full sm:w-auto justify-center"
               >
                 <span>Bawa ke Pusat Aksi & Draf Laporan</span>
                 <ArrowRight className="h-3.5 w-3.5" />

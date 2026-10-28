@@ -106,7 +106,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
         {/* Left Column: Input Form (5 cols) */}
         <div className="lg:col-span-5 rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
-            <AlertOctagon className="h-5 w-5 text-orange-600" />
+            <AlertOctagon className="h-5 w-5 text-blue-500" />
             <h3 className="text-base font-bold text-white">Formulir Rekam Insiden</h3>
           </div>
 
@@ -116,7 +116,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
               >
                 <option value="LOKER_FREELANCE">Loker Freelance Palsu (Misi Like Video)</option>
                 <option value="APK_SNIFFER">Penyebaran Malware .APK (Resi/Surat Tilang)</option>
@@ -132,7 +132,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 <select
                   value={victimPlatform}
                   onChange={(e) => setVictimPlatform(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
                 >
                   <option value="WhatsApp">WhatsApp</option>
                   <option value="Telegram">Telegram</option>
@@ -148,7 +148,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   placeholder="08xxxxxxxxxx"
                   value={suspectPhone}
                   onChange={(e) => setSuspectPhone(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -162,7 +162,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="Contoh: BCA 1234567890 a.n Budi"
                 value={suspectAccount}
                 onChange={(e) => setSuspectAccount(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -175,7 +175,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="https://..."
                 value={suspectURL}
                 onChange={(e) => setSuspectURL(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -188,7 +188,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="0 jika berhasil digagalkan"
                 value={lossAmount || ""}
                 onChange={(e) => setLossAmount(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -199,14 +199,14 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="Ceritakan kronologi singkat kejadian..."
                 value={chronology}
                 onChange={(e) => setChronology(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-blue-500 focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-orange-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-orange-700 transition-colors disabled:opacity-50"
+              className="w-full rounded-lg bg-blue-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-50"
             >
               {loading ? "Menyusun Berkas Forensik..." : "Kompilasi Draf Laporan & Checklist"}
             </button>

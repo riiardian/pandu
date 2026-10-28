@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ShieldAlert,
@@ -12,17 +12,62 @@ import {
   Search,
 } from "lucide-react";
 
+const ACRONYM_TEXT = "Protective Analysis & Navigation for Digital Users";
+
+function TypewriterAcronym() {
+  const [text, setText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(60);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting && text === ACRONYM_TEXT) {
+      // Pause 4.5 seconds at full string
+      timer = setTimeout(() => setIsDeleting(true), 4500);
+    } else if (isDeleting && text === "") {
+      setIsDeleting(false);
+      setTypingSpeed(60);
+    } else {
+      timer = setTimeout(() => {
+        const next = isDeleting
+          ? ACRONYM_TEXT.substring(0, text.length - 1)
+          : ACRONYM_TEXT.substring(0, text.length + 1);
+        setText(next);
+        setTypingSpeed(isDeleting ? 25 : 60);
+      }, typingSpeed);
+    }
+
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, typingSpeed]);
+
+  return (
+    <div className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm font-bold tracking-wider uppercase text-blue-400">
+      <span>{text}</span>
+      <span className="inline-block w-[2px] h-[1.1em] bg-blue-500 animate-pulse ml-0.5" />
+    </div>
+  );
+}
+
 export default function HomeTab() {
   return (
     <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 py-4 sm:py-8">
       {/* Hero Section */}
       <section className="text-center space-y-4 sm:space-y-6 pt-2">
-        <p className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-400">
-          Protective Analysis &amp; Navigation for Digital Users
-        </p>
+        {/* Typewriter Acronym Header */}
+        <div className="space-y-2">
+          <div className="min-h-[26px] flex items-center justify-center">
+            <TypewriterAcronym />
+          </div>
 
-        <h1 className="text-xl sm:text-3xl font-black tracking-tight text-slate-100 leading-snug max-w-2xl mx-auto">
-          Ketika Rekayasa Sosial Mengaburkan Fakta, <span className="text-orange-500">PANDU</span> Menjadi Navigasi Anda.
+          {/* Indonesian Translation Subtitle */}
+          <p className="text-xs sm:text-sm font-medium text-slate-300">
+            Arti: <span className="text-white font-semibold">Analisis Protektif &amp; Navigasi bagi Pengguna Ruang Digital</span>
+          </p>
+        </div>
+
+        <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white leading-snug max-w-2xl mx-auto">
+          Ketika Rekayasa Sosial Mengaburkan Fakta, <span className="text-blue-500">PANDU</span> Menjadi Navigasi Anda.
         </h1>
 
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
@@ -31,11 +76,11 @@ export default function HomeTab() {
           dan generator langkah pemulihan hukum saat menjadi target penipuan online.
         </p>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons in Pure Biru, Hitam, Putih */}
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/xray"
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-500 transition-colors shadow-lg shadow-orange-950/30"
+            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/50"
           >
             <ShieldAlert className="h-4 w-4" />
             <span>Mulai Bedah Pesan (X-Ray)</span>
@@ -138,7 +183,7 @@ export default function HomeTab() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-white">
-              <ShieldCheck className="h-4 w-4 text-slate-400 shrink-0" />
+              <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
               <span>Nol Pengumpulan Data</span>
             </div>
             <p className="text-slate-400 leading-relaxed">
@@ -148,7 +193,7 @@ export default function HomeTab() {
 
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-white">
-              <Lock className="h-4 w-4 text-slate-400 shrink-0" />
+              <Lock className="h-4 w-4 text-blue-400 shrink-0" />
               <span>Simulasi Terkendali</span>
             </div>
             <p className="text-slate-400 leading-relaxed">
@@ -158,7 +203,7 @@ export default function HomeTab() {
 
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-white">
-              <ShieldAlert className="h-4 w-4 text-slate-400 shrink-0" />
+              <ShieldAlert className="h-4 w-4 text-blue-400 shrink-0" />
               <span>Deteksi Objektif</span>
             </div>
             <p className="text-slate-400 leading-relaxed">
