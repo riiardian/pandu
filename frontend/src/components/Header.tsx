@@ -44,7 +44,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#030712]/90 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           {/* Brand & Identity */}
           <Link
@@ -63,7 +63,7 @@ export default function Header() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Navigation Menu"
-            className="flex h-9 w-9 items-center justify-center text-slate-300 hover:text-orange-500 focus:outline-none transition-all active:scale-90"
+            className="flex h-9 w-9 items-center justify-center text-slate-200 hover:text-white focus:outline-none transition-all active:scale-90"
           >
             {isOpen ? (
               <svg
@@ -103,13 +103,13 @@ export default function Header() {
           {/* Backdrop (Leaves ~30% viewport visible on the side) */}
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
           />
 
           {/* Sleek Narrow Drawer (Width 68vw, max 265px) */}
-          <div className="relative ml-auto flex h-full w-[68vw] max-w-[265px] flex-col bg-[#0a0f1d] border-l border-slate-800 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
+          <div className="relative ml-auto flex h-full w-[68vw] max-w-[265px] flex-col bg-[#121316] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-slate-800/80 px-3.5 py-3">
+            <div className="flex items-center justify-between border-b border-white/10 px-3.5 py-3">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-600 text-white font-bold shrink-0 shadow-sm">
                   <Compass className="h-3.5 w-3.5" />
@@ -137,8 +137,8 @@ export default function Header() {
             </div>
 
             {/* Quick Search Bar */}
-            <div className="px-3 pt-3 pb-2 border-b border-slate-800/60">
-              <div className="flex items-center gap-2 rounded-md border border-slate-800 bg-[#0d1527] px-2.5 py-1.5 text-xs text-slate-400">
+            <div className="px-3 pt-3 pb-2 border-b border-white/10">
+              <div className="flex items-center gap-2 rounded-md border border-white/10 bg-[#1a1b20] px-2.5 py-1.5 text-xs text-slate-400">
                 <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 <span className="truncate">Navigasi cepat...</span>
               </div>
@@ -153,8 +153,8 @@ export default function Header() {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
                     isHome
-                      ? "bg-[#131c31] font-semibold text-white border border-blue-900/40"
-                      : "text-slate-300 hover:bg-[#131c31]/60 hover:text-white"
+                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
+                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -175,8 +175,8 @@ export default function Header() {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
                     isXray
-                      ? "bg-[#131c31] font-semibold text-white border border-blue-900/40"
-                      : "text-slate-300 hover:bg-[#131c31]/60 hover:text-white"
+                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
+                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -191,8 +191,8 @@ export default function Header() {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
                     isSimulasi
-                      ? "bg-[#131c31] font-semibold text-white border border-blue-900/40"
-                      : "text-slate-300 hover:bg-[#131c31]/60 hover:text-white"
+                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
+                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -214,8 +214,8 @@ export default function Header() {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center justify-between rounded-md px-2.5 py-2 text-xs transition-colors ${
                     isAksi
-                      ? "bg-[#131c31] font-semibold text-white border border-blue-900/40"
-                      : "text-slate-300 hover:bg-[#131c31]/60 hover:text-white"
+                      ? "bg-[#22242b] font-semibold text-white border border-white/10"
+                      : "text-slate-300 hover:bg-[#1a1b20] hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">

@@ -18,7 +18,7 @@ export default function HomeTab() {
       {/* Hero Section */}
       <section className="text-center space-y-4 sm:space-y-6">
         <div className="space-y-1.5">
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white">
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white drop-shadow-sm">
             <span className="text-orange-500">PANDU</span>
           </h1>
           <p className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-400">
@@ -40,7 +40,7 @@ export default function HomeTab() {
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/xray"
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-500 transition-colors shadow-sm"
+            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-500 transition-colors shadow-lg shadow-orange-950/30"
           >
             <ShieldAlert className="h-4 w-4" />
             <span>Mulai Bedah Pesan (X-Ray)</span>
@@ -49,7 +49,7 @@ export default function HomeTab() {
 
           <Link
             href="/simulasi"
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-slate-700/80 bg-[#0d162d]/90 px-6 py-2.5 text-sm font-semibold text-slate-200 hover:bg-[#121f3f] hover:border-slate-600 transition-colors shadow-sm"
+            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-white/15 bg-[#16171b]/95 backdrop-blur-md px-6 py-2.5 text-sm font-semibold text-slate-200 hover:bg-[#202127] hover:border-white/25 transition-colors shadow-sm"
           >
             <BookOpen className="h-4 w-4 text-slate-400" />
             <span>Uji di Arena Simulasi</span>
@@ -57,9 +57,9 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 3 Core Modules (Gemini Dark Navy Minimalist Grid) */}
+      {/* 3 Core Modules (Matte Charcoal Cards over Gemini Blue Aura) */}
       <section className="space-y-4">
-        <div className="border-b border-slate-800/80 pb-3">
+        <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
             Tiga Modul Utama
           </h3>
@@ -69,10 +69,10 @@ export default function HomeTab() {
           {/* Module 1: X-Ray */}
           <Link
             href="/xray"
-            className="group rounded-xl border border-slate-800/80 bg-[#0b1329]/80 p-5 hover:border-slate-700 hover:bg-[#0e1936] transition-all flex flex-col justify-between"
+            className="group rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#14203f] text-slate-300 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#202228] text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 <Search className="h-4 w-4" />
               </div>
               <h4 className="text-base font-bold text-white">
@@ -82,7 +82,7 @@ export default function HomeTab() {
                 Bedah pesan teks dan tautan mencurigakan berbasis aturan heuristik transparan. Memetakan indikator manipulasi dan forensik domain tanpa menyimpan data pribadi.
               </p>
             </div>
-            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-orange-400 transition-colors">
+            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
               <span>Buka X-Ray</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </div>
@@ -91,10 +91,10 @@ export default function HomeTab() {
           {/* Module 2: Simulasi */}
           <Link
             href="/simulasi"
-            className="group rounded-xl border border-slate-800/80 bg-[#0b1329]/80 p-5 hover:border-slate-700 hover:bg-[#0e1936] transition-all flex flex-col justify-between"
+            className="group rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#14203f] text-slate-300 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#202228] text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 <BookOpen className="h-4 w-4" />
               </div>
               <h4 className="text-base font-bold text-white">
@@ -104,7 +104,7 @@ export default function HomeTab() {
                 Simulator percakapan interaktif untuk melatih ketahanan menghadapi skenario penipuan lokal seperti loker freelance, kurir paket .APK, dan impersonasi kerabat.
               </p>
             </div>
-            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-orange-400 transition-colors">
+            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
               <span>Buka Simulasi</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </div>
@@ -113,10 +113,10 @@ export default function HomeTab() {
           {/* Module 3: Dossier */}
           <Link
             href="/aksi"
-            className="group rounded-xl border border-slate-800/80 bg-[#0b1329]/80 p-5 hover:border-slate-700 hover:bg-[#0e1936] transition-all flex flex-col justify-between"
+            className="group rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#14203f] text-slate-300 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#202228] text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 <FileCheck2 className="h-4 w-4" />
               </div>
               <h4 className="text-base font-bold text-white">
@@ -126,7 +126,7 @@ export default function HomeTab() {
                 Panduan darurat pertolongan pertama dan generator draf laporan resmi siap kirim ke Komdigi, CekRekening.id, dan Bareskrim Polri dalam satu klik.
               </p>
             </div>
-            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-orange-400 transition-colors">
+            <div className="pt-4 mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
               <span>Buka Pusat Aksi</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </div>
@@ -134,8 +134,8 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* Safety & Integrity Standards (Clean, Dark Slate Card) */}
-      <section className="rounded-xl border border-slate-800/80 bg-[#0b1329]/80 p-5 sm:p-6 space-y-4">
+      {/* Safety & Integrity Standards (Clean Matte Charcoal Card) */}
+      <section className="rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
           Standar Privasi &amp; Keamanan
         </h3>
