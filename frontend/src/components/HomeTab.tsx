@@ -16,7 +16,7 @@ import {
   Smartphone,
   Globe,
   Users,
-  Briefcase,
+  Wallet,
   AlertTriangle,
 } from "lucide-react";
 
@@ -215,7 +215,7 @@ export default function HomeTab() {
           {/* Case 2: Loker Bodong & Tugas Komisi Bertahap */}
           <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1.5">
             <div className="flex items-center gap-2 text-white font-bold text-sm">
-              <Briefcase className="h-4 w-4 text-blue-400" />
+              <Wallet className="h-4 w-4 text-blue-400" />
               <span>Loker Bodong &amp; Tugas Komisi Bertahap</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
