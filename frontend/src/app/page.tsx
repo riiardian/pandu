@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen bg-black text-slate-100 flex flex-col font-sans relative overflow-hidden">
       <GeminiBackground />
       <Header />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-6xl px-4 pt-4 pb-0 sm:px-6">
         <HomeTab />
       </main>
     </div>

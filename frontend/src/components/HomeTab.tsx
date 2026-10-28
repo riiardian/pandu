@@ -80,7 +80,7 @@ export default function HomeTab() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-14 sm:space-y-20 pt-8 pb-12 sm:py-12">
+    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 pt-6 pb-0">
       {/* 1. Hero Section */}
       <section className="text-left space-y-4 max-w-xl">
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.14] font-sans">
@@ -315,8 +315,8 @@ export default function HomeTab() {
       </section>
 
       {/* Clean Bottom Footer */}
-      <footer className="pt-6 pb-6 border-t border-white/10 text-center text-xs font-mono text-slate-500">
-        © 2026 PANDU. All rights reserved
+      <footer className="pt-6 pb-3 sm:pb-4 border-t border-white/10 text-left text-xs font-mono text-slate-500">
+        © 2026 PANDU. All rights reserved.
       </footer>
     </div>
   );
