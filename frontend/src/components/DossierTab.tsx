@@ -91,11 +91,11 @@ export default function DossierTab({ initialData }: DossierTabProps) {
   return (
     <div className="space-y-6">
       {/* Intro Banner */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">
+      <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
+        <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
           Pusat Aksi & Draf Laporan Forensik
         </h2>
-        <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
+        <p className="mt-1.5 text-sm text-slate-400 leading-relaxed">
           Jangan biarkan rasa panik menguasai saat menjadi target atau korban penipuan. Susun berkas
           laporan terstandarisasi, dapatkan panduan pertolongan pertama (first-aid checklist), dan
           salin draf aduan resmi untuk Komdigi, CekRekening.id, dan Kepolisian dalam satu klik.
@@ -104,19 +104,19 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left Column: Input Form (5 cols) */}
-        <div className="lg:col-span-5 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-zinc-200 pb-3">
+        <div className="lg:col-span-5 rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
             <AlertOctagon className="h-5 w-5 text-orange-600" />
-            <h3 className="text-base font-bold text-zinc-900">Formulir Rekam Insiden</h3>
+            <h3 className="text-base font-bold text-white">Formulir Rekam Insiden</h3>
           </div>
 
           <form onSubmit={handleGenerateDossier} className="space-y-3.5 text-xs">
             <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Jenis Modus:</label>
+              <label className="block font-semibold text-slate-300 mb-1">Jenis Modus:</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
               >
                 <option value="LOKER_FREELANCE">Loker Freelance Palsu (Misi Like Video)</option>
                 <option value="APK_SNIFFER">Penyebaran Malware .APK (Resi/Surat Tilang)</option>
@@ -128,11 +128,11 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-zinc-700 mb-1">Saluran Kontak:</label>
+                <label className="block font-semibold text-slate-300 mb-1">Saluran Kontak:</label>
                 <select
                   value={victimPlatform}
                   onChange={(e) => setVictimPlatform(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
                 >
                   <option value="WhatsApp">WhatsApp</option>
                   <option value="Telegram">Telegram</option>
@@ -142,19 +142,19 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-700 mb-1">Nomor Kontak Pelaku:</label>
+                <label className="block font-semibold text-slate-300 mb-1">Nomor Kontak Pelaku:</label>
                 <input
                   type="text"
                   placeholder="08xxxxxxxxxx"
                   value={suspectPhone}
                   onChange={(e) => setSuspectPhone(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 mb-1">
+              <label className="block font-semibold text-slate-300 mb-1">
                 Rekening / E-Wallet Penampung (Jika Ada):
               </label>
               <input
@@ -162,12 +162,12 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="Contoh: BCA 1234567890 a.n Budi"
                 value={suspectAccount}
                 onChange={(e) => setSuspectAccount(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 mb-1">
+              <label className="block font-semibold text-slate-300 mb-1">
                 Tautan / Domain Palsu (Jika Ada):
               </label>
               <input
@@ -175,12 +175,12 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="https://..."
                 value={suspectURL}
                 onChange={(e) => setSuspectURL(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 mb-1">
+              <label className="block font-semibold text-slate-300 mb-1">
                 Total Kerugian Finansial (Rp):
               </label>
               <input
@@ -188,18 +188,18 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 placeholder="0 jika berhasil digagalkan"
                 value={lossAmount || ""}
                 onChange={(e) => setLossAmount(Number(e.target.value))}
-                className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Ringkasan Kejadian:</label>
+              <label className="block font-semibold text-slate-300 mb-1">Ringkasan Kejadian:</label>
               <textarea
                 rows={3}
                 placeholder="Ceritakan kronologi singkat kejadian..."
                 value={chronology}
                 onChange={(e) => setChronology(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 p-2 text-zinc-900 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-2 text-white focus:border-orange-500 focus:outline-none"
               />
             </div>
 
@@ -218,18 +218,18 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           {dossierResult ? (
             <div className="space-y-5 animate-in fade-in duration-300">
               {/* Dossier Header */}
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-2">
+              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-zinc-900 px-2.5 py-1 text-xs font-mono font-bold text-white">
+                  <span className="rounded bg-slate-800 border border-slate-700 px-2.5 py-1 text-xs font-mono font-bold text-white">
                     {dossierResult.dossier_id}
                   </span>
-                  <span className="text-xs text-zinc-400 font-medium">{dossierResult.created_at}</span>
+                  <span className="text-xs text-slate-500 font-medium">{dossierResult.created_at}</span>
                 </div>
-                <h3 className="text-sm font-bold text-zinc-800">{dossierResult.incident_summary}</h3>
+                <h3 className="text-sm font-bold text-slate-100">{dossierResult.incident_summary}</h3>
               </div>
 
               {/* First-Aid Emergency Checklist */}
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-3">
+              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-3">
                 <div className="flex items-center gap-2 text-rose-600">
                   <ShieldCheck className="h-5 w-5" />
                   <h4 className="text-sm font-bold uppercase tracking-wider">
@@ -241,23 +241,23 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   {dossierResult.first_aid_checklist.map((item: any, idx: number) => (
                     <div
                       key={idx}
-                      className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs space-y-1"
+                      className="rounded-lg border border-slate-800 bg-[#0d162d]/90 p-3 text-xs space-y-1"
                     >
                       <div className="flex items-center gap-2">
                         <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-800">
                           {item.priority}
                         </span>
-                        <span className="font-bold text-zinc-900">{item.action_title}</span>
+                        <span className="font-bold text-white">{item.action_title}</span>
                       </div>
-                      <p className="text-zinc-600 leading-relaxed">{item.description}</p>
+                      <p className="text-slate-400 leading-relaxed">{item.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Official Reporting Drafts */}
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4">
-                <div className="flex items-center gap-2 text-zinc-900">
+              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 text-white">
                   <Building2 className="h-5 w-5 text-blue-600" />
                   <h4 className="text-sm font-bold uppercase tracking-wider">
                     Draf Laporan Resmi Siap Kirim (1-Click Copy)
@@ -266,13 +266,13 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
                 <div className="space-y-3">
                   {dossierResult.official_drafts.map((draft: any, idx: number) => (
-                    <div key={idx} className="rounded-lg border border-zinc-200 bg-zinc-50 p-3.5 space-y-2">
+                    <div key={idx} className="rounded-lg border border-slate-800 bg-[#0d162d]/90 p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-zinc-800">{draft.channel_name}</span>
+                        <span className="font-bold text-xs text-slate-100">{draft.channel_name}</span>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => copyToClipboard(draft.draft_text, `draft_${idx}`)}
-                            className="flex items-center gap-1 rounded bg-white border border-zinc-300 px-2 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-100 transition-colors"
+                            className="flex items-center gap-1 rounded bg-white border border-zinc-300 px-2 py-1 text-[11px] font-semibold text-slate-300 hover:bg-zinc-100 transition-colors"
                           >
                             {copiedKey === `draft_${idx}` ? (
                               <>
@@ -297,7 +297,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                           </a>
                         </div>
                       </div>
-                      <pre className="rounded bg-white p-2.5 border border-zinc-200 font-mono text-[11px] text-zinc-700 whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
+                      <pre className="rounded bg-white p-2.5 border border-zinc-200 font-mono text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
                         {draft.draft_text}
                       </pre>
                     </div>
@@ -306,9 +306,9 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               </div>
 
               {/* Family Alert Warning Card */}
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-3">
+              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-zinc-900">
+                  <div className="flex items-center gap-2 text-white">
                     <Users className="h-5 w-5 text-emerald-600" />
                     <h4 className="text-sm font-bold uppercase tracking-wider">
                       Pesan Peringatan Grup WhatsApp Keluarga
@@ -316,7 +316,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   </div>
                   <button
                     onClick={() => copyToClipboard(dossierResult.family_alert_card_text, "family_alert")}
-                    className="flex items-center gap-1 rounded bg-white border border-zinc-300 px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 transition-colors"
+                    className="flex items-center gap-1 rounded bg-white border border-zinc-300 px-2.5 py-1 text-xs font-semibold text-slate-300 hover:bg-zinc-100 transition-colors"
                   >
                     {copiedKey === "family_alert" ? (
                       <>
@@ -331,7 +331,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     )}
                   </button>
                 </div>
-                <pre className="rounded-lg bg-zinc-50 p-3 border border-zinc-200 font-mono text-xs text-zinc-700 whitespace-pre-wrap leading-relaxed">
+                <pre className="rounded-lg bg-zinc-50 p-3 border border-zinc-200 font-mono text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
                   {dossierResult.family_alert_card_text}
                 </pre>
               </div>
@@ -339,8 +339,8 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           ) : (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center h-full min-h-[380px]">
               <FileCheck2 className="h-12 w-12 text-zinc-300 mb-3" />
-              <h4 className="text-sm font-bold text-zinc-700">Belum Ada Berkas yang Disusun</h4>
-              <p className="text-xs text-zinc-400 max-w-sm mt-1">
+              <h4 className="text-sm font-bold text-slate-300">Belum Ada Berkas yang Disusun</h4>
+              <p className="text-xs text-slate-500 max-w-sm mt-1">
                 Isi formulir di sebelah kiri atau lakukan scan di menu X-Ray untuk menyusun berkas
                 tindakan resmi secara otomatis.
               </p>

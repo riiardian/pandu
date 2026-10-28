@@ -171,11 +171,11 @@ export default function SandboxTab() {
   return (
     <div className="space-y-6">
       {/* Intro Banner */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">
+      <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
+        <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
           Arena Simulasi & Pengambilan Keputusan
         </h2>
-        <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
+        <p className="mt-1.5 text-sm text-slate-400 leading-relaxed">
           Ruang latihan interaktif menghadapi persona penipu digital dalam format chat simulasi. Latih
           keberanian menolak intimidasi waktu, memverifikasi identitas, dan membangun imunitas
           kognitif di ruang digital.
@@ -188,11 +188,11 @@ export default function SandboxTab() {
           {scenarios.map((sc) => (
             <div
               key={sc.id}
-              className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-400 transition-all"
+              className="flex flex-col justify-between rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm hover:border-slate-700 transition-all"
             >
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-700">
+                  <span className="rounded bg-[#131f3d] px-2 py-0.5 text-[11px] font-semibold text-slate-300">
                     {sc.platform}
                   </span>
                   <span
@@ -208,11 +208,11 @@ export default function SandboxTab() {
                   </span>
                 </div>
 
-                <h3 className="text-base font-bold text-zinc-900 leading-snug">{sc.title}</h3>
-                <p className="text-xs text-zinc-500 leading-relaxed">{sc.description}</p>
+                <h3 className="text-base font-bold text-white leading-snug">{sc.title}</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">{sc.description}</p>
               </div>
 
-              <div className="pt-5 border-t border-zinc-100 mt-4">
+              <div className="pt-5 border-t border-slate-800/80 mt-4">
                 <button
                   onClick={() => startScenario(sc.id)}
                   disabled={loading}
@@ -229,11 +229,11 @@ export default function SandboxTab() {
         /* Active Simulation Sandbox */
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Left Column: Chat Container Mockup */}
-          <div className="lg:col-span-2 flex flex-col rounded-xl border border-zinc-300 bg-zinc-100 shadow-sm overflow-hidden min-h-[580px]">
+          <div className="lg:col-span-2 flex flex-col rounded-xl border border-slate-700 bg-[#131f3d] shadow-sm overflow-hidden min-h-[580px]">
             {/* Chat App Header */}
-            <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 py-3">
+            <div className="flex items-center justify-between border-b border-slate-800/80 bg-[#0b1329]/90 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-zinc-200 overflow-hidden border border-zinc-300">
+                <div className="h-9 w-9 rounded-full bg-zinc-200 overflow-hidden border border-slate-700">
                   <img
                     src={currentStep?.SenderAvatar || "https://api.dicebear.com/7.x/personas/svg?seed=Bot"}
                     alt="avatar"
@@ -241,10 +241,10 @@ export default function SandboxTab() {
                   />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-zinc-900 leading-tight">
+                  <h4 className="text-sm font-bold text-white leading-tight">
                     {currentStep?.SenderName || activeScenario.title}
                   </h4>
-                  <p className="text-[11px] text-zinc-500">
+                  <p className="text-[11px] text-slate-400">
                     {currentStep?.SenderRole || "Kontak Asing"} · <span className="text-emerald-600 font-semibold">Online</span>
                   </p>
                 </div>
@@ -252,7 +252,7 @@ export default function SandboxTab() {
 
               <button
                 onClick={() => setActiveScenarioID(null)}
-                className="flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+                className="flex items-center gap-1 rounded-md border border-slate-800/80 bg-[#0d162d] px-2.5 py-1 text-xs font-medium text-slate-300 hover:bg-[#131f3d] transition-colors"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>Pilih Modus Lain</span>
@@ -277,14 +277,14 @@ export default function SandboxTab() {
                     className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm shadow-sm leading-relaxed ${
                       msg.sender === "user"
                         ? "bg-emerald-600 text-white rounded-tr-none"
-                        : "bg-white text-zinc-900 rounded-tl-none border border-zinc-200"
+                        : "bg-[#0b1329]/90 text-white rounded-tl-none border border-slate-800/80"
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
 
                     {/* Dangerous Attachment Rendering */}
                     {msg.attachment && (
-                      <div className="mt-2.5 rounded-lg border border-zinc-300 bg-zinc-50 p-2.5">
+                      <div className="mt-2.5 rounded-lg border border-slate-700 bg-[#0d162d] p-2.5">
                         {msg.attachment.type === "FILE_APK" && (
                           <div className="flex items-center gap-2.5 text-rose-800">
                             <FileBox className="h-6 w-6 text-rose-600 shrink-0" />
@@ -303,7 +303,7 @@ export default function SandboxTab() {
                           </div>
                         )}
                         {msg.attachment.type === "IMAGE" && (
-                          <div className="text-xs text-zinc-600 italic">
+                          <div className="text-xs text-slate-400 italic">
                             [Lampiran Gambar: {msg.attachment.data}]
                           </div>
                         )}
@@ -341,10 +341,10 @@ export default function SandboxTab() {
             )}
 
             {/* Input Action Panel */}
-            <div className="border-t border-zinc-200 bg-white p-3.5">
+            <div className="border-t border-slate-800/80 bg-[#0b1329]/90 p-3.5">
               {!isCompleted && currentStep && currentStep.choices && currentStep.choices.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                     Pilih Tindakan atau Jawaban Anda:
                   </p>
                   <div className="grid gap-2">
@@ -353,17 +353,17 @@ export default function SandboxTab() {
                         key={c.id}
                         disabled={loading}
                         onClick={() => handleMakeChoice(c)}
-                        className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-2.5 text-left text-xs font-medium text-zinc-900 hover:border-orange-500 hover:bg-orange-50/50 transition-all disabled:opacity-50"
+                        className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#0d162d] p-2.5 text-left text-xs font-medium text-white hover:border-orange-500 hover:bg-orange-50/50 transition-all disabled:opacity-50"
                       >
                         <span className="pr-2">{c.text}</span>
-                        <Send className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                        <Send className="h-3.5 w-3.5 text-slate-500 shrink-0" />
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-zinc-600">Skenario Latihan Telah Selesai.</span>
+                  <span className="text-xs font-semibold text-slate-400">Skenario Latihan Telah Selesai.</span>
                   <button
                     onClick={() => startScenario(activeScenarioID)}
                     className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
@@ -379,13 +379,13 @@ export default function SandboxTab() {
           {/* Right Column: Live Diagnostic Scorecard */}
           <div className="space-y-4">
             {/* Immunity Score Card */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Imunitas Kognitif Digital
               </span>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-4xl font-black text-zinc-900">{currentScore}</span>
-                <span className="text-sm font-semibold text-zinc-500">/ 100</span>
+                <span className="text-4xl font-black text-white">{currentScore}</span>
+                <span className="text-sm font-semibold text-slate-400">/ 100</span>
               </div>
               <div className="mt-3 w-full rounded-full bg-zinc-200 h-2.5 overflow-hidden">
                 <div
@@ -399,7 +399,7 @@ export default function SandboxTab() {
                   style={{ width: `${currentScore}%` }}
                 />
               </div>
-              <p className="mt-3 text-xs text-zinc-500 leading-relaxed">
+              <p className="mt-3 text-xs text-slate-400 leading-relaxed">
                 Skor meningkat ketika Anda menuntut verifikasi resmi, dan anjlok drastis jika Anda
                 terbujuk menyetor uang atau menginstal file asing.
               </p>
@@ -407,18 +407,18 @@ export default function SandboxTab() {
 
             {/* Final Result Card when finished */}
             {isCompleted && finalResult && (
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-3 animate-in fade-in duration-300">
+              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center gap-2 text-orange-600">
                   <Trophy className="h-5 w-5" />
                   <h4 className="text-sm font-bold uppercase tracking-wider">Evaluasi Akhir</h4>
                 </div>
-                <div className="rounded-lg bg-zinc-50 p-3 border border-zinc-200">
-                  <span className="text-xs font-bold text-zinc-800">{finalResult.verdict}</span>
+                <div className="rounded-lg bg-[#0d162d] p-3 border border-slate-800/80">
+                  <span className="text-xs font-bold text-slate-100">{finalResult.verdict}</span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-xs font-bold text-zinc-700">Pelajaran Penting:</span>
-                  <ul className="list-disc pl-4 text-xs text-zinc-600 space-y-1">
+                  <span className="text-xs font-bold text-slate-300">Pelajaran Penting:</span>
+                  <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1">
                     {finalResult.lessons &&
                       finalResult.lessons.map((ls: string, lidx: number) => (
                         <li key={lidx}>{ls}</li>

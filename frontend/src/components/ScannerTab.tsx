@@ -97,44 +97,44 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   return (
     <div className="space-y-6">
       {/* Intro Banner */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
         <div className="max-w-3xl">
-          <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">
+          <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
             Deception X-Ray Scanner
           </h2>
-          <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
+          <p className="mt-1.5 text-sm text-slate-400 leading-relaxed">
             Pembedah pesan mencurigakan dan tautan digital berbasis aturan heuristik transparan.
             Sistem menganalisis tanda bahaya teknis (*red flags*) dan memetakan manipulasi psikologis
             (*cognitive bias*) tanpa mengumpulkan data pribadi Anda.
           </p>
 
           {/* Quick Samples for Evaluators */}
-          <div className="mt-4 pt-3.5 border-t border-zinc-100">
-            <span className="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">
+          <div className="mt-4 pt-3.5 border-t border-slate-800/80">
+            <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
               Uji Coba Cepat (Pilih Sampel Modus):
             </span>
             <div className="flex flex-wrap gap-1.5">
               <button
                 onClick={() => loadSample(samples.loker, "text")}
-                className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 transition-colors"
+                className="rounded-lg border border-slate-800 bg-[#0d162d] px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-[#131f3d] hover:border-slate-700 transition-colors"
               >
                 Loker Like Video
               </button>
               <button
                 onClick={() => loadSample(samples.apk, "text")}
-                className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 transition-colors"
+                className="rounded-lg border border-slate-800 bg-[#0d162d] px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-[#131f3d] hover:border-slate-700 transition-colors"
               >
                 Resi Kurir .APK
               </button>
               <button
                 onClick={() => loadSample(samples.bcaFake, "url")}
-                className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 transition-colors"
+                className="rounded-lg border border-slate-800 bg-[#0d162d] px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-[#131f3d] hover:border-slate-700 transition-colors"
               >
                 Phishing BCA (.site)
               </button>
               <button
                 onClick={() => loadSample(samples.bcaReal, "url")}
-                className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 transition-colors"
+                className="rounded-lg border border-slate-800 bg-[#0d162d] px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:bg-[#131f3d] hover:border-slate-700 transition-colors"
               >
                 Resmi KlikBCA
               </button>
@@ -144,10 +144,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       </div>
 
       {/* Input Card */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
         {/* Type Toggle - 50/50 full width */}
-        <div className="border-b border-zinc-200 pb-3.5 mb-4">
-          <div className="w-full grid grid-cols-2 rounded-lg bg-zinc-100 p-1">
+        <div className="border-b border-slate-800/80 pb-3.5 mb-4">
+          <div className="w-full grid grid-cols-2 rounded-lg bg-[#0d162d] p-1 border border-slate-800">
             <button
               onClick={() => {
                 setScanType("text");
@@ -155,8 +155,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               }}
               className={`rounded-md py-1.5 text-xs sm:text-sm font-bold transition-all text-center ${
                 scanType === "text"
-                  ? "bg-white text-zinc-900 shadow-sm"
-                  : "text-zinc-600 hover:text-zinc-900"
+                  ? "bg-[#131f3d] text-white shadow-sm border border-slate-700"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               Pesan / Chat Teks
@@ -168,8 +168,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               }}
               className={`rounded-md py-1.5 text-xs sm:text-sm font-bold transition-all text-center ${
                 scanType === "url"
-                  ? "bg-white text-zinc-900 shadow-sm"
-                  : "text-zinc-600 hover:text-zinc-900"
+                  ? "bg-[#131f3d] text-white shadow-sm border border-slate-700"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               Tautan / Web (URL)
@@ -180,7 +180,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         {/* Form Inputs */}
         {scanType === "text" ? (
           <div>
-            <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
               Tempelkan Pesan WhatsApp / SMS / Telegram yang Mencurigakan:
             </label>
             <textarea
@@ -188,16 +188,16 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Contoh: Halo kak, kami dari Shopee/YouTube membuka pekerjaan sampingan like video komisi 300rb per hari. Hubungi telegram kami..."
-              className="w-full rounded-lg border border-zinc-300 p-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none"
+              className="w-full rounded-lg border border-slate-700 bg-[#060a14] p-3 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none"
             />
           </div>
         ) : (
           <div>
-            <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
               Masukkan Alamat Web atau Link yang Diterima:
             </label>
-            <div className="flex rounded-lg border border-zinc-300 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
-              <span className="inline-flex items-center px-3 text-xs text-zinc-500 bg-zinc-50 border-r border-zinc-300 rounded-l-lg font-mono">
+            <div className="flex rounded-lg border border-slate-700 bg-[#060a14] focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+              <span className="inline-flex items-center px-3 text-xs text-slate-400 bg-[#0d162d] border-r border-slate-700 rounded-l-lg font-mono">
                 https://
               </span>
               <input
@@ -205,7 +205,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 value={inputURL}
                 onChange={(e) => setInputURL(e.target.value)}
                 placeholder="contoh: bca-promo-gebyar.xyz/login"
-                className="w-full rounded-r-lg p-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none"
+                className="w-full rounded-r-lg p-2.5 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none"
               />
             </div>
           </div>
@@ -235,13 +235,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {result && (
         <div className="space-y-5 animate-in fade-in duration-300">
           {/* Header Score Card */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
                   Hasil Diagnosis X-Ray
                 </span>
-                <h3 className="text-xl font-bold text-zinc-900 mt-1">
+                <h3 className="text-xl font-bold text-white mt-1">
                   {result.detected_category || (result.impersonated_brand ? `Pencatutan ${result.impersonated_brand}` : "Analisis Keamanan Domain")}
                 </h3>
                 {result.hostname && (
@@ -267,14 +267,14 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
           {/* Cognitive Bias Profiler (Psychological Anatomy) */}
           {result.cognitive_biases && result.cognitive_biases.length > 0 && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-3">
                 <BrainCircuit className="h-5 w-5 text-purple-600" />
-                <h4 className="text-base font-bold text-zinc-900">
+                <h4 className="text-base font-bold text-white">
                   Cognitive Bias Profiler (Manipulasi Psikologis)
                 </h4>
               </div>
-              <p className="text-xs text-zinc-600 mb-4">
+              <p className="text-xs text-slate-400 mb-4">
                 Penipu memanipulasi cara berpikir Anda dengan mengeksploitasi bias emosi berikut:
               </p>
 
@@ -282,21 +282,21 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 {result.cognitive_biases.map((bias: any, idx: number) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-purple-100 bg-purple-50/50 p-3.5 space-y-1.5"
+                    className="rounded-lg border border-slate-800 bg-[#0d162d]/90 p-3.5 space-y-1.5"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-purple-900">{bias.label}</span>
-                      <span className="rounded bg-purple-200 px-1.5 py-0.5 text-[10px] font-bold text-purple-800">
+                      <span className="text-xs font-bold text-purple-300">{bias.label}</span>
+                      <span className="rounded bg-purple-950/80 border border-purple-800/60 px-1.5 py-0.5 text-[10px] font-bold text-purple-300">
                         Bobot +{bias.weight}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-600 leading-relaxed">{bias.description}</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{bias.description}</p>
                     {bias.trigger_words && bias.trigger_words.length > 0 && (
                       <div className="pt-1 flex flex-wrap gap-1">
                         {bias.trigger_words.map((tw: string, tidx: number) => (
                           <span
                             key={tidx}
-                            className="rounded bg-white border border-purple-200 px-1.5 py-0.5 text-[10px] font-mono text-purple-700"
+                            className="rounded bg-[#060a14] border border-purple-900/50 px-1.5 py-0.5 text-[10px] font-mono text-purple-300"
                           >
                             "{tw}"
                           </span>
@@ -311,10 +311,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
           {/* Red Flags Breakdown (Technical Explainable Indicators) */}
           {result.red_flags && result.red_flags.length > 0 && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+            <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Flame className="h-5 w-5 text-rose-600" />
-                <h4 className="text-base font-bold text-zinc-900">
+                <h4 className="text-base font-bold text-white">
                   Tanda Bahaya Terverifikasi (Explainable Red Flags)
                 </h4>
               </div>
@@ -323,7 +323,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 {result.red_flags.map((rf: any, idx: number) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-zinc-200 bg-zinc-50 p-3.5 space-y-1"
+                    className="rounded-lg border border-slate-800 bg-[#0d162d]/90 p-3.5 space-y-1"
                   >
                     <div className="flex items-center gap-2">
                       <span
@@ -339,11 +339,11 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       </span>
                       <h5 className="text-sm font-bold text-zinc-900">{rf.title}</h5>
                     </div>
-                    <p className="text-xs text-zinc-600 leading-relaxed pt-1">
+                    <p className="text-xs text-slate-400 leading-relaxed pt-1">
                       {rf.explanation}
                     </p>
                     {rf.snippet && (
-                      <div className="mt-2 rounded bg-white p-2 border border-zinc-200 font-mono text-xs text-zinc-700 break-all">
+                      <div className="mt-2 rounded bg-white p-2 border border-zinc-200 font-mono text-xs text-slate-300 break-all">
                         Cuplikan: {rf.snippet}
                       </div>
                     )}
@@ -354,16 +354,16 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           )}
 
           {/* Action Recommendations & Bridge to Dossier */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck className="h-5 w-5 text-emerald-600" />
-              <h4 className="text-base font-bold text-zinc-900">Langkah Pengamanan yang Wajib Dilakukan</h4>
+              <h4 className="text-base font-bold text-white">Langkah Pengamanan yang Wajib Dilakukan</h4>
             </div>
 
             <ul className="space-y-2 mb-5">
               {result.recommendations &&
                 result.recommendations.map((rec: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-zinc-700">
+                  <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{rec}</span>
                   </li>
@@ -371,8 +371,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </ul>
 
             {/* CTA Button to Dossier */}
-            <div className="border-t border-zinc-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p className="text-xs text-zinc-500">
+            <div className="border-t border-slate-800/80 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <p className="text-xs text-slate-400">
                 Apakah Anda atau kerabat Anda terlanjur menjadi target atau mengirim uang?
               </p>
               <button
@@ -401,7 +401,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     router.push("/aksi");
                   }
                 }}
-                className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors w-full sm:w-auto justify-center"
+                className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-500 shadow-sm transition-colors w-full sm:w-auto justify-center"
               >
                 <span>Bawa ke Pusat Aksi & Draf Laporan</span>
                 <ArrowRight className="h-3.5 w-3.5" />

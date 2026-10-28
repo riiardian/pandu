@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #09090b;
+  --background: #030712;
+  --foreground: #f8fafc;
 }
 
 html, body {
-  background-color: #f8fafc;
-  color: #09090b;
+  background-color: #030712;
+  color: #f8fafc;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
