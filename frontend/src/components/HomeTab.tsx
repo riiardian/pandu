@@ -74,8 +74,8 @@ export default function HomeTab() {
       a: "Segera aktifkan Mode Pesawat di HP agar file berbahaya tidak bisa mengirim SMS OTP Anda ke penipu. Setelah itu, langsung hubungi bank Anda untuk memblokir rekening, dan laporkan nomor rekening pelaku di PANDU agar orang lain waspada.",
     },
     {
-      q: "Apakah saya harus membayar untuk menggunakan layanan PANDU?",
-      a: "Tidak, semua layanan di PANDU 100% gratis. Siapa pun bisa langsung memeriksa pesan mencurigakan, mencoba latihan simulasi, atau mengecek daftar rekening penipu tanpa dipungut biaya.",
+      q: "Apakah PANDU bisa memeriksa file kiriman mencurigakan selain pesan teks?",
+      a: "Bisa. PANDU mampu membedah berkas aplikasi (.APK) untuk memeriksa izin tersembunyi yang bisa menyadap SMS OTP, serta memeriksa keaslian gambar tangkapan layar untuk mendeteksi apakah bukti transfer tersebut asli atau hasil editan.",
     },
   ];
 
