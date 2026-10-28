@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   ShieldAlert,
   BookOpen,
@@ -10,14 +11,9 @@ import {
   AlertOctagon,
   Lock,
   Layers,
-  Sparkles,
 } from "lucide-react";
 
-interface HomeTabProps {
-  onNavigate: (tab: "scanner" | "sandbox" | "dossier") => void;
-}
-
-export default function HomeTab({ onNavigate }: HomeTabProps) {
+export default function HomeTab() {
   return (
     <div className="space-y-10 sm:space-y-14 py-2 sm:py-4">
       {/* Hero Section */}
@@ -39,22 +35,22 @@ export default function HomeTab({ onNavigate }: HomeTabProps) {
 
         {/* CTA Buttons */}
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            onClick={() => onNavigate("scanner")}
+          <Link
+            href="/xray"
             className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-orange-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-orange-700 transition-colors"
           >
             <ShieldAlert className="h-4 w-4" />
             <span>Mulai Bedah Pesan (X-Ray)</span>
             <ArrowRight className="h-4 w-4" />
-          </button>
+          </Link>
 
-          <button
-            onClick={() => onNavigate("sandbox")}
+          <Link
+            href="/simulasi"
             className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-6 py-3 text-sm font-bold text-zinc-800 hover:bg-zinc-50 transition-colors shadow-sm"
           >
             <BookOpen className="h-4 w-4" />
             <span>Uji di Arena Simulasi</span>
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -91,13 +87,13 @@ export default function HomeTab({ onNavigate }: HomeTabProps) {
               </p>
             </div>
             <div className="pt-4 mt-2 border-t border-zinc-100">
-              <button
-                onClick={() => onNavigate("scanner")}
+              <Link
+                href="/xray"
                 className="flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:text-orange-700"
               >
                 <span>Buka X-Ray Scanner</span>
                 <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -122,13 +118,13 @@ export default function HomeTab({ onNavigate }: HomeTabProps) {
               </p>
             </div>
             <div className="pt-4 mt-2 border-t border-zinc-100">
-              <button
-                onClick={() => onNavigate("sandbox")}
+              <Link
+                href="/simulasi"
                 className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700"
               >
                 <span>Masuk Arena Simulasi</span>
                 <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -153,13 +149,13 @@ export default function HomeTab({ onNavigate }: HomeTabProps) {
               </p>
             </div>
             <div className="pt-4 mt-2 border-t border-zinc-100">
-              <button
-                onClick={() => onNavigate("dossier")}
+              <Link
+                href="/aksi"
                 className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700"
               >
                 <span>Buka Pusat Aksi</span>
                 <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              </Link>
             </div>
           </div>
         </div>

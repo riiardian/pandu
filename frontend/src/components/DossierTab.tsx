@@ -38,6 +38,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
       if (initialData.category) setCategory(initialData.category);
       if (initialData.suspect_url) setSuspectURL(initialData.suspect_url);
       if (initialData.chronology) setChronology(initialData.chronology);
+    } else if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem("pandu_forward_dossier");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.category) setCategory(parsed.category);
+          if (parsed.suspect_url) setSuspectURL(parsed.suspect_url);
+          if (parsed.chronology) setChronology(parsed.chronology);
+          sessionStorage.removeItem("pandu_forward_dossier");
+        }
+      } catch (e) {}
     }
   }, [initialData]);
 

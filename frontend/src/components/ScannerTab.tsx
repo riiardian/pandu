@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search,
   AlertTriangle,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 
 interface ScannerTabProps {
-  onForwardToDossier: (data: {
+  onForwardToDossier?: (data: {
     category: string;
     suspect_url?: string;
     chronology: string;
@@ -22,6 +23,7 @@ interface ScannerTabProps {
 }
 
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
+  const router = useRouter();
   const [scanType, setScanType] = useState<"text" | "url">("text");
   const [inputText, setInputText] = useState("");
   const [inputURL, setInputURL] = useState("");
@@ -374,17 +376,31 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 Apakah Anda atau kerabat Anda terlanjur menjadi target atau mengirim uang?
               </p>
               <button
-                onClick={() =>
-                  onForwardToDossier({
+                onClick={() => {
+                  const payload = {
                     category: result.detected_category?.includes("APK")
                       ? "APK_SNIFFER"
                       : result.detected_category?.includes("Loker")
                       ? "LOKER_FREELANCE"
                       : "PHISHING_URL",
-                    suspect_url: result.normalized_url || (result.extracted_urls ? result.extracted_urls[0] : ""),
-                    chronology: `Terdeteksi indikasi ${result.detected_category || "penipuan"} dengan skor risiko ${result.risk_score}%.`,
-                  })
-                }
+                    suspect_url:
+                      result.normalized_url ||
+                      (result.extracted_urls ? result.extracted_urls[0] : ""),
+                    chronology: `Terdeteksi indikasi ${
+                      result.detected_category || "penipuan"
+                    } dengan skor risiko ${result.risk_score}%.`,
+                  };
+                  if (typeof window !== "undefined") {
+                    try {
+                      sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
+                    } catch (e) {}
+                  }
+                  if (onForwardToDossier) {
+                    onForwardToDossier(payload);
+                  } else {
+                    router.push("/aksi");
+                  }
+                }}
                 className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors w-full sm:w-auto justify-center"
               >
                 <span>Bawa ke Pusat Aksi & Draf Laporan</span>
