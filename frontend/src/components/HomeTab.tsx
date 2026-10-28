@@ -22,12 +22,21 @@ export default function HomeTab() {
           <span>Studi Kasus: The Trust Trap · MIT-WEEK 2026</span>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 leading-tight">
-          Ketika Rekayasa Sosial Mengaburkan Fakta,{" "}
-          <span className="text-orange-600">PANDU</span> Menjadi Navigasi Anda.
-        </h1>
+        {/* Brand Title & Official Acronym */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-zinc-900">
+            <span className="text-orange-600">PANDU</span>
+          </h1>
+          <p className="text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider text-zinc-600">
+            Protective Analysis &amp; Navigation for Digital Users
+          </p>
+        </div>
 
-        <p className="text-sm sm:text-base text-zinc-600 leading-relaxed max-w-2xl mx-auto">
+        <h2 className="text-xl sm:text-3xl font-black tracking-tight text-zinc-900 leading-snug max-w-2xl mx-auto">
+          Ketika Rekayasa Sosial Mengaburkan Fakta, PANDU Menjadi Navigasi Anda.
+        </h2>
+
+        <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl mx-auto">
           Platform navigasi pertahanan digital untuk generasi muda Indonesia. 
           Pembedah pesan manipulatif secara transparan, simulator pengambilan keputusan siber, 
           dan generator langkah pemulihan hukum saat menjadi target penipuan online.

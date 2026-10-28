@@ -54,14 +54,9 @@ export default function Header() {
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-white font-bold text-lg shadow-sm">
               <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
-            <div className="min-w-0">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-zinc-900 block leading-tight">
-                PANDU
-              </span>
-              <p className="text-[11px] sm:text-xs text-zinc-500 truncate">
-                Navigating Digital Deception
-              </p>
-            </div>
+            <span className="text-lg sm:text-xl font-black tracking-tight text-zinc-900 block leading-tight">
+              PANDU
+            </span>
           </Link>
 
           {/* Sleek Cloudflare-style Naked Hamburger Menu Button */}
