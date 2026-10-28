@@ -117,7 +117,7 @@ export default function HomeTab() {
                   Radar Forensik
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Periksa pesan WhatsApp, SMS, dan tautan mencurigakan untuk mendeteksi indikasi penipuan serta domain palsu secara instan.
+                  Investigasi otomatis pesan chat, nomor telepon, rekening bank, email, tautan web, hingga berkas APK dan gambar untuk menelusuri rekam jejak digital kejahatan siber secara menyeluruh.
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function HomeTab() {
               Bagaimana cara kerja deteksi tanpa menggunakan model AI pihak ketiga?
             </h5>
             <p className="text-xs text-slate-400 leading-relaxed">
-              PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal di backend Go. Hal ini menjamin kecepatan analisa &lt; 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.
+              PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal oleh engine keamanan PANDU. Hal ini menjamin kecepatan analisa &lt; 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.
             </p>
           </div>
 

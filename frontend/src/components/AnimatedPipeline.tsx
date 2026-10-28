@@ -6,25 +6,25 @@ const PIPELINE_STEPS = [
   {
     idx: 0,
     step: "1",
-    title: "Input Muatan Pesan & Tautan",
-    desc: "Sistem menerima pesan teks dari WhatsApp, Telegram, SMS, atau tautan mencurigakan, kemudian memecah muatan menjadi token analitik tanpa menyimpan identitas pengguna.",
+    title: "Input Kredensial & Berkas",
+    desc: "Sistem menerima pesan, nomor telepon, rekening, email, tautan, atau berkas yang dicurigai, lalu membedah parameter data secara aman tanpa menyimpan identitas pengguna.",
   },
   {
     idx: 1,
     step: "2",
-    title: "Pembedahan Pola Manipulasi",
-    desc: "Mesin backend Go mengevaluasi indikator bias kognitif (kepanikan waktu, iming-iming komisi, otoritas palsu) dan menghitung nilai anomali entropi Shannon.",
+    title: "Pembedahan Pola & Heuristik",
+    desc: "Engine keamanan PANDU mengevaluasi pola manipulasi psikologis, entropi teks, validasi struktur rekening bank, hingga audit izin bahaya berkas.",
   },
   {
     idx: 2,
     step: "3",
-    title: "Forensik Domain & Izin File APK",
-    desc: "Melacak rantai redirect shortlink, memeriksa umur pendaftaran domain tiruan (.SITE / .XYZ), serta mengurai izin bahaya penyadap SMS OTP.",
+    title: "Penelusuran Jejak Intelijen",
+    desc: "Sistem menelusuri kecocokan data ke basis data PANDU dan jaringan intelijen terbuka untuk menemukan indikasi rekam jejak kejahatan digital.",
   },
   {
     idx: 3,
     step: "4",
-    title: "Pencatatan Database & Tindakan Cepat",
+    title: "Sintesis Laporan & Mitigasi",
     desc: "Menerbitkan skor risiko transparan, checklist tindakan darurat isolasi akun 5 menit, dan secara otomatis mencatat entitas ke basis data daftar hitam PANDU.",
   },
 ];
