@@ -6,35 +6,35 @@ export default function GeminiBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 bg-black">
       {/* 
-        Authentic Google Gemini Luminous Moving Aurora:
-        High-luminance electric cobalt & cyan highlights blooming over pitch black void (#000000)
-        Actively gliding up/down and sideways in real time.
+        Authentic Google Gemini Chromatic Aurora:
+        Multi-point fluid mesh: Electric Cobalt (#2563eb), Celestial Violet (#7c3aed), and Luminous Cyan (#06b6d4)
+        Gliding smoothly up, down, and across a pure pitch-black void (#000000).
       */}
 
-      {/* Primary Electric Cobalt Light Source (Intense, Vivid, Radiant) */}
+      {/* Layer 1: Electric Cobalt Blue (Drifting through center-left) */}
       <div
-        className="absolute top-[80px] left-1/2 w-[360px] sm:w-[620px] h-[360px] sm:h-[540px] rounded-full blur-[70px] sm:blur-[100px] opacity-90 animate-gemini-float"
+        className="absolute top-[8vh] left-[15%] w-[380px] sm:w-[620px] h-[380px] sm:h-[620px] rounded-full blur-[85px] sm:blur-[130px] opacity-75 animate-aurora-sweep"
         style={{
           background:
-            "radial-gradient(circle, #0077ff 0%, #0055dd 30%, #002b99 65%, transparent 100%)",
+            "radial-gradient(circle, #2563eb 0%, #1d4ed8 50%, transparent 80%)",
         }}
       />
 
-      {/* Secondary Vibrant Electric Cyan-Blue Core (Adds luminous aura contrast) */}
+      {/* Layer 2: Celestial Violet (Drifting through top-right) */}
       <div
-        className="absolute top-[160px] left-1/2 w-[260px] sm:w-[440px] h-[260px] sm:h-[400px] rounded-full blur-[60px] sm:blur-[90px] opacity-80 animate-gemini-drift"
+        className="absolute top-[5vh] right-[10%] w-[350px] sm:w-[560px] h-[350px] sm:h-[560px] rounded-full blur-[85px] sm:blur-[130px] opacity-70 animate-aurora-counter"
         style={{
           background:
-            "radial-gradient(circle, #00c3ff 0%, #0066ff 40%, #002288 75%, transparent 100%)",
+            "radial-gradient(circle, #7c3aed 0%, #6366f1 45%, transparent 80%)",
         }}
       />
 
-      {/* Tertiary Ambient Blue Bloom */}
+      {/* Layer 3: Luminous Cyan Highlight (Drifting vertically through mid-center) */}
       <div
-        className="absolute top-[420px] left-1/2 w-[320px] sm:w-[500px] h-[260px] sm:h-[380px] rounded-full blur-[80px] sm:blur-[120px] opacity-70 animate-gemini-pulse"
+        className="absolute top-[32vh] left-[30%] w-[320px] sm:w-[500px] h-[320px] sm:h-[500px] rounded-full blur-[80px] sm:blur-[120px] opacity-60 animate-aurora-sweep"
         style={{
           background:
-            "radial-gradient(circle, #0055ff 0%, #0033aa 45%, transparent 80%)",
+            "radial-gradient(circle, #06b6d4 0%, #0284c7 45%, transparent 80%)",
         }}
       />
     </div>
