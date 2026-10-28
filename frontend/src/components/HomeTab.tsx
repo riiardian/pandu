@@ -58,24 +58,24 @@ export default function HomeTab() {
 
   const FAQS = [
     {
-      q: "Apakah sistem PANDU menyimpan data pesan atau nomor yang saya periksa?",
-      a: "Tidak sama sekali. PANDU beroperasi secara stateless dengan arsitektur Zero-Knowledge. Seluruh token teks dan URL diproses langsung di memori server dan segera dibuang tanpa pernah dicatat ke dalam database riwayat pengguna.",
+      q: "Apakah pesan atau nomor yang saya periksa di sini aman dan tidak disebarkan?",
+      a: "Sangat aman. Sistem kami hanya membaca pesan atau nomor yang Anda masukkan untuk diperiksa saat itu juga. Kami tidak pernah meminta nomor KTP, kata sandi, ataupun menyimpan riwayat obrolan pribadi Anda.",
     },
     {
-      q: "Bagaimana cara kerja deteksi tanpa menggunakan model AI pihak ketiga?",
-      a: "PANDU mengandalkan mesin heuristik deterministik (pattern matching, analisis entropi Shannon, deteksi typosquatting, dan pelacakan redirect DNS) yang dieksekusi secara lokal oleh engine keamanan PANDU. Hal ini menjamin kecepatan analisa < 50ms, tanpa halusinasi, dan tanpa kebocoran data ke API pihak ketiga.",
+      q: "Bagaimana cara PANDU mengetahui suatu pesan atau tautan itu penipuan?",
+      a: "PANDU mengenali ciri-ciri yang biasa dipakai pelaku, seperti iming-iming komisi tak wajar, desakan waktu agar korban panik, alamat website palsu yang meniru bank resmi, hingga file mencurigakan yang bisa menyadap SMS HP Anda.",
     },
     {
-      q: "Bagaimana sistem Basis Data Daftar Hitam (Threat Registry) PANDU bekerja?",
-      a: "Setiap laporan nomor WhatsApp, rekening bank, atau tautan penipuan yang masuk diverifikasi dan dicatat ke dalam database ancaman PANDU. Pengguna lain dapat memeriksa keabsahan suatu nomor atau rekening secara real-time sebelum bertransaksi.",
+      q: "Bagaimana cara kerja daftar hitam penipu di PANDU?",
+      a: "Setiap ada nomor WhatsApp, nomor rekening, atau website penipu yang dilaporkan oleh masyarakat, sistem akan menyimpannya ke dalam daftar hitam. Anda bisa mengecek nomor tersebut sebelum bertransaksi agar tidak menjadi korban berikutnya.",
     },
     {
-      q: "Apa langkah darurat jika saya sudah terlanjur menginstal file APK kurir atau mentransfer uang?",
-      a: "Segera putus koneksi internet ponsel (aktifkan Mode Pesawat) untuk mematikan komunikasi trojan SMS, hubungi call center resmi bank atau e-wallet untuk membekukan rekening, dan gunakan modul Pusat Laporan di PANDU untuk mendaftarkan nomor rekening pelaku ke daftar hitam.",
+      q: "Apa yang harus saya lakukan jika sudah terlanjur mengirim uang atau mengklik file penipu?",
+      a: "Segera aktifkan Mode Pesawat di HP agar file berbahaya tidak bisa mengirim SMS OTP Anda ke penipu. Setelah itu, langsung hubungi bank Anda untuk memblokir rekening, dan laporkan nomor rekening pelaku di PANDU agar orang lain waspada.",
     },
     {
-      q: "Apakah seluruh fitur deteksi dan pelaporan di PANDU dapat diakses gratis?",
-      a: "Ya, 100% gratis. Seluruh instrumen Radar Forensik, Arena Simulasi, dan pencarian basis data daftar hitam PANDU dapat dimanfaatkan secara bebas oleh seluruh masyarakat Indonesia untuk memperkuat ketahanan di ruang digital.",
+      q: "Apakah saya harus membayar untuk menggunakan layanan PANDU?",
+      a: "Tidak, semua layanan di PANDU 100% gratis. Siapa pun bisa langsung memeriksa pesan mencurigakan, mencoba latihan simulasi, atau mengecek daftar rekening penipu tanpa dipungut biaya.",
     },
   ];
 
@@ -287,11 +287,7 @@ export default function HomeTab() {
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
                   className="flex w-full items-center justify-between text-left gap-3 focus:outline-none group cursor-pointer"
                 >
-                  <span
-                    className={`text-sm sm:text-base font-semibold transition-colors leading-snug ${
-                      isOpen ? "text-blue-400" : "text-white group-hover:text-blue-300"
-                    }`}
-                  >
+                  <span className="text-sm sm:text-base font-semibold text-white leading-snug">
                     {item.q}
                   </span>
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
@@ -315,7 +311,7 @@ export default function HomeTab() {
       </section>
 
       {/* Clean Bottom Footer */}
-      <footer className="pt-6 pb-3 sm:pb-4 border-t border-white/10 text-left text-xs font-mono text-slate-500">
+      <footer className="pt-6 pb-3 sm:pb-4 border-t border-white/10 text-center text-xs font-mono text-slate-500">
         © 2026 PANDU. All rights reserved.
       </footer>
     </div>
