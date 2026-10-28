@@ -63,9 +63,9 @@ export default function HomeTab() {
           <TypewriterAcronymHeadline />
         </h1>
 
-        {/* Project Technical Workflow & Purpose */}
+        {/* Project Technical Workflow & Purpose (CSIRT Formal Style) */}
         <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
-          Bekerja dengan membedah anatomi rekayasa sosial, mengekspos eksploitasi bias kognitif, mendeteksi muatan malware kurir .APK, serta menguji legitimasi domain secara real-time tanpa menyimpan data sensitif. Bersama memperkuat ketahanan nalar dan menjaga integritas ekosistem siber yang aman dari manipulasi digital.
+          Sistem analisis berbasis aturan heuristik untuk mengidentifikasi indikasi rekayasa sosial, deteksi paket aplikasi berbahaya (.APK), dan verifikasi domain phishing secara real-time. Memfasilitasi triase insiden, panduan isolasi mandiri, serta penyusunan laporan teknis resmi ke Komdigi, OJK, dan kepolisian.
         </p>
 
         {/* Left-Aligned Action Controls */}
