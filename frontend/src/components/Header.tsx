@@ -1,19 +1,22 @@
 "use client";
 
 import React from "react";
-import { ShieldAlert, Compass, BookOpen, FileCheck2 } from "lucide-react";
+import { Home, ShieldAlert, Compass, BookOpen, FileCheck2 } from "lucide-react";
 
 interface HeaderProps {
-  activeTab: "scanner" | "sandbox" | "dossier";
-  setActiveTab: (tab: "scanner" | "sandbox" | "dossier") => void;
+  activeTab: "home" | "scanner" | "sandbox" | "dossier";
+  setActiveTab: (tab: "home" | "scanner" | "sandbox" | "dossier") => void;
 }
 
 export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-2.5 sm:px-6 sm:py-3">
-        {/* Brand & Identity */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        {/* Brand & Identity (Clickable to Home) */}
+        <button
+          onClick={() => setActiveTab("home")}
+          className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0"
+        >
           <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-white font-bold text-lg shadow-sm">
             <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
@@ -22,13 +25,25 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               PANDU
             </span>
             <p className="text-[11px] sm:text-xs text-zinc-500 truncate">
-              Navigating Digital Deception · <span className="hidden sm:inline">Tim 404Forbidden</span>
+              Navigating Digital Deception
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Desktop Tab Navigation (Hidden on Mobile) */}
         <nav className="hidden md:flex items-center gap-1.5">
+          <button
+            onClick={() => setActiveTab("home")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+              activeTab === "home"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+            }`}
+          >
+            <Home className="h-4 w-4" />
+            <span>Beranda</span>
+          </button>
+
           <button
             onClick={() => setActiveTab("scanner")}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
@@ -62,17 +77,29 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             }`}
           >
             <FileCheck2 className="h-4 w-4" />
-            <span>Pusat Aksi & Laporan</span>
+            <span>Pusat Aksi</span>
           </button>
         </nav>
       </div>
 
       {/* Mobile Tab Segmented Control (Visible only on Mobile screens) */}
       <div className="border-t border-zinc-200 bg-zinc-50/90 px-2 py-1.5 md:hidden">
-        <div className="grid grid-cols-3 gap-1 rounded-lg bg-zinc-200/70 p-1">
+        <div className="grid grid-cols-4 gap-1 rounded-lg bg-zinc-200/70 p-1">
+          <button
+            onClick={() => setActiveTab("home")}
+            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-bold transition-all ${
+              activeTab === "home"
+                ? "bg-white text-zinc-900 shadow-sm"
+                : "text-zinc-600 hover:text-zinc-900"
+            }`}
+          >
+            <Home className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">Beranda</span>
+          </button>
+
           <button
             onClick={() => setActiveTab("scanner")}
-            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-bold transition-all ${
               activeTab === "scanner"
                 ? "bg-white text-zinc-900 shadow-sm"
                 : "text-zinc-600 hover:text-zinc-900"
@@ -84,7 +111,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
 
           <button
             onClick={() => setActiveTab("sandbox")}
-            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-bold transition-all ${
               activeTab === "sandbox"
                 ? "bg-white text-zinc-900 shadow-sm"
                 : "text-zinc-600 hover:text-zinc-900"
@@ -96,14 +123,14 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
 
           <button
             onClick={() => setActiveTab("dossier")}
-            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-bold transition-all ${
               activeTab === "dossier"
                 ? "bg-white text-zinc-900 shadow-sm"
                 : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
             <FileCheck2 className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">Pusat Aksi</span>
+            <span className="truncate">Aksi</span>
           </button>
         </div>
       </div>
