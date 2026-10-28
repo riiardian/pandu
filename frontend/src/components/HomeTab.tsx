@@ -46,9 +46,9 @@ function TypewriterAcronymHeadline() {
   }, [text, isDeleting, typingSpeed]);
 
   return (
-    <span className="text-white inline-flex items-center">
-      <span>{text}</span>
-      <span className="inline-block w-[3px] h-[0.9em] bg-white ml-1.5 animate-pulse" />
+    <span className="text-white">
+      {text}
+      <span className="inline-block w-[3px] h-[0.85em] bg-white ml-1 align-baseline animate-pulse" />
     </span>
   );
 }
@@ -63,15 +63,10 @@ export default function HomeTab() {
           <TypewriterAcronymHeadline />
         </h1>
 
-        {/* Project Description & Purpose in Indonesian */}
-        <div className="space-y-1.5 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl font-sans">
-          <p className="text-white font-medium">
-            Platform navigasi dan pertahanan digital untuk generasi muda Indonesia.
-          </p>
-          <p className="text-slate-400">
-            PANDU dibangun untuk mendeteksi dan membedah rekayasa sosial, manipulasi kognitif, file APK kurir penyadap SMS OTP, dan tautan phishing secara transparan tanpa mengumpulkan data pribadi, serta memandu langkah mitigasi dan pemulihan hukum saat menjadi target kejahatan siber.
-          </p>
-        </div>
+        {/* Project Technical Workflow & Purpose */}
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
+          Bekerja dengan membedah anatomi rekayasa sosial, mengekspos eksploitasi bias kognitif, mendeteksi muatan malware kurir .APK, serta menguji legitimasi domain secara real-time tanpa menyimpan data sensitif. Bersama memperkuat ketahanan nalar dan menjaga integritas ekosistem siber yang aman dari manipulasi digital.
+        </p>
 
         {/* Left-Aligned Action Controls */}
         <div className="pt-1 flex items-center gap-3">
