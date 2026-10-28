@@ -44,25 +44,18 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-transparent border-none">
-        {/* Header Ambient Luminous Aura (Ensures the top bar and status bar are bathed in light) */}
-        <div
-          className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-[340px] sm:w-[620px] h-[160px] rounded-full blur-[55px] sm:blur-[85px] opacity-85 z-[-1]"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(37, 99, 235, 0.75) 0%, rgba(124, 58, 237, 0.50) 45%, transparent 80%)",
-          }}
-        />
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      <header className="sticky top-0 z-40 w-full pt-2.5 px-3 sm:px-6 pointer-events-auto">
+        {/* Floating Capsule Bar (OSINT Industries Pattern) */}
+        <div className="mx-auto flex max-w-4xl items-center justify-between rounded-2xl border border-white/10 bg-[#121316]/85 backdrop-blur-md px-4 py-2 shadow-lg">
           {/* Brand & Identity */}
           <Link
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg shadow-sm">
-              <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-base shadow-sm">
+              <Compass className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <span className="text-lg sm:text-xl font-black tracking-tight text-white block leading-tight">
+            <span className="text-base sm:text-lg font-black tracking-tight text-white block leading-tight">
               PANDU
             </span>
           </Link>
@@ -71,7 +64,7 @@ export default function Header() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Navigation Menu"
-            className="flex h-9 w-9 items-center justify-center text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-90"
+            className="flex h-8 w-8 items-center justify-center text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-90"
           >
             {isOpen ? (
               <svg

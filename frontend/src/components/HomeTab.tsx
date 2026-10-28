@@ -16,101 +16,77 @@ import {
   Terminal,
 } from "lucide-react";
 
-const TYPEWRITER_PHRASES = [
-  "Pesan Penipuan",
-  "File Kurir .APK",
-  "Tautan Phishing",
-  "Loker Freelance",
-  "Akun Rekening Bodong",
-];
+const ACRONYM_PHRASE = "Protective Analysis & Navigation for Digital Users";
 
-function TypewriterHeadline() {
+function TypewriterAcronymHeadline() {
   const [text, setText] = useState("");
-  const [phraseIdx, setPhraseIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(65);
+  const [typingSpeed, setTypingSpeed] = useState(55);
 
   useEffect(() => {
-    const currentPhrase = TYPEWRITER_PHRASES[phraseIdx % TYPEWRITER_PHRASES.length];
     let timer: NodeJS.Timeout;
 
-    if (!isDeleting && text === currentPhrase) {
-      // Pause 2.8 seconds on full phrase
-      timer = setTimeout(() => setIsDeleting(true), 2800);
+    if (!isDeleting && text === ACRONYM_PHRASE) {
+      // Pause 4.5 seconds at full string
+      timer = setTimeout(() => setIsDeleting(true), 4500);
     } else if (isDeleting && text === "") {
       setIsDeleting(false);
-      setPhraseIdx((prev) => prev + 1);
-      setTypingSpeed(65);
+      setTypingSpeed(55);
     } else {
       timer = setTimeout(() => {
         const next = isDeleting
-          ? currentPhrase.substring(0, text.length - 1)
-          : currentPhrase.substring(0, text.length + 1);
+          ? ACRONYM_PHRASE.substring(0, text.length - 1)
+          : ACRONYM_PHRASE.substring(0, text.length + 1);
         setText(next);
-        setTypingSpeed(isDeleting ? 30 : 65);
+        setTypingSpeed(isDeleting ? 25 : 55);
       }, typingSpeed);
     }
 
     return () => clearTimeout(timer);
-  }, [text, isDeleting, phraseIdx, typingSpeed]);
+  }, [text, isDeleting, typingSpeed]);
 
   return (
-    <span className="text-blue-500 inline-flex items-center">
+    <span className="text-white inline-flex items-center">
       <span>{text}</span>
-      <span className="inline-block w-[3px] h-[0.9em] bg-blue-500 ml-1 animate-pulse" />
+      <span className="inline-block w-[3px] h-[0.9em] bg-white ml-1.5 animate-pulse" />
     </span>
   );
 }
 
 export default function HomeTab() {
   return (
-    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 py-3 sm:py-6">
+    <div className="max-w-4xl mx-auto space-y-10 sm:space-y-14 py-2 sm:py-5">
       {/* OSINT-Style Left-Aligned Hero Section */}
-      <section className="text-left space-y-4 sm:space-y-5 max-w-2xl">
-        {/* Acronym Badge & Tagline */}
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-950/40 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wider text-blue-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
-            <span>PANDU · OSINT DEFENSE PLATFORM</span>
-          </div>
-
-          <p className="text-[11px] sm:text-xs font-mono font-semibold tracking-wide uppercase text-slate-400">
-            Protective Analysis &amp; Navigation for Digital Users
-          </p>
-        </div>
-
-        {/* Dynamic Typewriter Headline (OSINT Industries Pattern) */}
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-[1.15]">
-          Deteksi &amp; Bedah <br />
-          <TypewriterHeadline />
+      <section className="text-left space-y-4 max-w-xl">
+        {/* Main Headline - Typewriter strictly on Protective Analysis & Navigation for Digital Users */}
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.18] font-sans">
+          <TypewriterAcronymHeadline />
         </h1>
 
-        {/* Indonesian Translation Description */}
-        <div className="space-y-1 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl">
+        {/* Project Description & Purpose in Indonesian */}
+        <div className="space-y-1.5 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl font-sans">
           <p className="text-white font-medium">
-            Analisis Protektif &amp; Navigasi bagi Pengguna Ruang Digital.
+            Platform navigasi dan pertahanan digital untuk generasi muda Indonesia.
           </p>
           <p className="text-slate-400">
-            Akurasi heuristik real-time. Membedah rekayasa sosial, manipulasi kognitif, dan forensik tautan digital tanpa menyimpan data pribadi Anda.
+            PANDU dibangun untuk mendeteksi dan membedah rekayasa sosial, manipulasi kognitif, file APK kurir penyadap SMS OTP, dan tautan phishing secara transparan tanpa mengumpulkan data pribadi, serta memandu langkah mitigasi dan pemulihan hukum saat menjadi target kejahatan siber.
           </p>
         </div>
 
-        {/* Left-Aligned Action Buttons */}
-        <div className="pt-2 flex flex-wrap items-center gap-3">
+        {/* Left-Aligned Action Controls */}
+        <div className="pt-1 flex items-center gap-3">
           <Link
             href="/xray"
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/50"
+            className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
           >
-            <ShieldAlert className="h-4 w-4" />
+            <Search className="h-4 w-4" />
             <span>Mulai Bedah Pesan</span>
-            <ArrowRight className="h-4 w-4" />
           </Link>
 
           <Link
             href="/simulasi"
-            className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-2"
           >
-            <BookOpen className="h-4 w-4 text-blue-400" />
             <span>Arena Simulasi &gt;</span>
           </Link>
         </div>
