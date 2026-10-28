@@ -55,11 +55,11 @@ function TypewriterAcronymHeadline() {
 
 export default function HomeTab() {
   return (
-    <div className="max-w-4xl mx-auto space-y-10 sm:space-y-14 py-2 sm:py-5">
+    <div className="max-w-4xl mx-auto space-y-10 sm:space-y-14 pt-8 pb-6 sm:py-10">
       {/* OSINT-Style Left-Aligned Hero Section */}
       <section className="text-left space-y-4 max-w-xl">
         {/* Main Headline - Typewriter strictly on Protective Analysis & Navigation for Digital Users */}
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.18] font-sans">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.14] font-sans">
           <TypewriterAcronymHeadline />
         </h1>
 
