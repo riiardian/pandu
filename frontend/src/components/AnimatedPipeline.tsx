@@ -83,24 +83,24 @@ export default function AnimatedPipeline() {
               }`}
             />
 
-            {/* 3. Card Container (Clean, compact, no extra bottom whitespace) */}
+            {/* 3. Card Container: Single true boundary border, no extra lip or dark overhang underneath */}
             <div
-              className={`relative flex-1 rounded-2xl p-4 sm:p-4.5 space-y-1.5 border transition-all duration-500 overflow-hidden ${
+              className={`relative flex-1 rounded-2xl p-4 sm:p-5 transition-all duration-500 overflow-hidden ${
                 isActive
-                  ? "border-cyan-500/80 bg-[#070e1b] shadow-[0_0_30px_rgba(34,211,238,0.2)] opacity-100"
-                  : "border-white/10 bg-[#0c0d12]/70 backdrop-blur-md opacity-45 hover:opacity-75 hover:border-white/20"
+                  ? "border-2 border-cyan-400 bg-[#070e1b] shadow-[0_0_30px_rgba(34,211,238,0.25)] opacity-100"
+                  : "border border-white/10 bg-[#0c0d12]/70 opacity-45 hover:opacity-75 hover:border-white/20"
               }`}
             >
-              {/* Progressive Electrical Wave Overlay */}
+              {/* Progressive Electrical Light Sweep (Internal sheen ONLY, no border to prevent double-outline lip) */}
               {isActive && (
                 <div
                   key={`pulse-${activeStep}`}
-                  className="absolute inset-0 rounded-2xl pointer-events-none animate-circuit-wave bg-gradient-to-r from-cyan-500/20 via-blue-500/10 to-transparent border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.35)]"
+                  className="absolute inset-0 pointer-events-none animate-circuit-wave bg-gradient-to-r from-cyan-400/20 via-blue-500/10 to-transparent"
                 />
               )}
 
-              {/* Clean Minimalist Header: Tahap 1, Tahap 2, etc. (No slashes, no English tags) */}
-              <div className="relative z-10">
+              {/* Clean Minimalist Header: Tahap 1, Tahap 2, etc. */}
+              <div className="relative z-10 mb-1.5">
                 <span
                   className={`text-xs font-mono font-bold uppercase tracking-wider transition-colors ${
                     isActive ? "text-cyan-400" : "text-slate-400"
@@ -111,7 +111,7 @@ export default function AnimatedPipeline() {
               </div>
 
               {/* Title & Description */}
-              <div className="space-y-1 relative z-10">
+              <div className="relative z-10 space-y-1">
                 <h4
                   className={`text-sm sm:text-base font-bold transition-colors leading-snug ${
                     isActive ? "text-white" : "text-slate-300"
