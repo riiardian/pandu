@@ -46,9 +46,18 @@ function TypewriterAcronymHeadline() {
   }, [text, isDeleting, typingSpeed]);
 
   return (
-    <span className="text-white">
-      {text}
-      <span className="inline-block w-[3px] h-[0.85em] bg-white ml-1 align-baseline animate-pulse" />
+    <span className="relative grid grid-cols-1">
+      {/* 1. Invisible Anchor: Locks height to full 100% capacity to eliminate layout shift (layar netep) */}
+      <span className="invisible pointer-events-none select-none col-start-1 row-start-1" aria-hidden="true">
+        {ACRONYM_PHRASE}
+        <span className="inline-block w-[3px] h-[0.85em] ml-1" />
+      </span>
+
+      {/* 2. Active Typewriter: Sits on the exact same grid footprint without pushing content down */}
+      <span className="text-white col-start-1 row-start-1">
+        {text}
+        <span className="inline-block w-[3px] h-[0.85em] bg-white ml-1 align-baseline animate-pulse" />
+      </span>
     </span>
   );
 }
