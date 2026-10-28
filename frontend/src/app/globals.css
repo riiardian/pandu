@@ -93,3 +93,33 @@ html, body {
   will-change: transform, opacity;
 }
 
+/* Progressive Circuit Light Sweep (Depan menjalar ke belakang, lalu kanan menipis kembali ke kabel) */
+@keyframes circuit-wave-flow {
+  0% {
+    opacity: 0;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  20% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  75% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  92% {
+    opacity: 0.4;
+    clip-path: polygon(0 0, 15% 0, 15% 100%, 0 100%);
+  }
+  100% {
+    opacity: 0;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+}
+
+.animate-circuit-wave {
+  animation: circuit-wave-flow 4.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: clip-path, opacity;
+}
+
+

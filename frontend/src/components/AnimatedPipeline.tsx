@@ -1,177 +1,122 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Terminal, Shield, Cpu, Database, Zap } from "lucide-react";
 
 const PIPELINE_STEPS = [
   {
     idx: 0,
     step: "01",
-    phase: "INGESTION",
+    phase: "Ingestion",
     title: "Input Muatan Pesan & Tautan",
-    desc: "Sistem menerima pesan teks dari WhatsApp, Telegram, SMS, atau link mencurigakan, kemudian memecah muatan menjadi token analitik tanpa menyimpan identitas pengguna.",
-    telemetry: "> ingest: payload_tokenized [100% anonymized]",
-    icon: Terminal,
+    desc: "Sistem menerima pesan teks dari WhatsApp, Telegram, SMS, atau tautan mencurigakan, kemudian memecah muatan menjadi token analitik tanpa menyimpan identitas pengguna.",
   },
   {
     idx: 1,
     step: "02",
-    phase: "DECOMPOSITION",
+    phase: "Decomposition",
     title: "Pembedahan Pola Manipulasi",
     desc: "Mesin backend Go mengevaluasi indikator bias kognitif (kepanikan waktu, iming-iming komisi, otoritas palsu) dan menghitung nilai anomali entropi Shannon.",
-    telemetry: "> heuristic: 6_manipulation_vectors_evaluated",
-    icon: Cpu,
   },
   {
     idx: 2,
     step: "03",
-    phase: "FORENSIC TRACE",
+    phase: "Forensic Trace",
     title: "Forensik Domain & Izin File APK",
     desc: "Melacak rantai redirect shortlink, memeriksa umur pendaftaran domain tiruan (.SITE / .XYZ), serta mengurai izin bahaya penyadap SMS OTP.",
-    telemetry: "> trace: dns_hops_resolved | domain_age: 2_days",
-    icon: Shield,
   },
   {
     idx: 3,
     step: "04",
-    phase: "REGISTRY & MITIGATE",
+    phase: "Registry & Mitigate",
     title: "Pencatatan Database & Tindakan Cepat",
     desc: "Menerbitkan skor risiko transparan, checklist tindakan darurat isolasi akun 5 menit, dan secara otomatis mencatat entitas ke basis data daftar hitam PANDU.",
-    telemetry: "> registry: blacklisted_in_pandu_db [stored]",
-    icon: Database,
   },
 ];
 
 export default function AnimatedPipeline() {
   const [activeStep, setActiveStep] = useState(0);
 
-  // Sequential cycling: step 0 -> step 1 -> step 2 -> step 3 -> step 0
-  // Each step lights up for 2.4 seconds, then current turns off and next turns on!
+  // Slow, majestic cycle: 4.2 seconds per step
+  // Allows the light wave to enter from the left, illuminate the full card,
+  // then recede from the right edge back into the cable before advancing!
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % PIPELINE_STEPS.length);
-    }, 2400);
+    }, 4200);
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="relative pl-10 sm:pl-14 space-y-6 text-left my-4 select-none">
-      {/* Continuous Vertical Backbone Bus Wire */}
-      <div className="absolute left-[18px] sm:left-[23px] top-6 bottom-6 w-[2px] bg-slate-800 rounded-full overflow-hidden">
-        {/* Dynamic moving electric current indicating data movement */}
+    <div className="relative pl-9 sm:pl-12 space-y-5 text-left my-4 select-none">
+      {/* Continuous Vertical Cable Conduit */}
+      <div className="absolute left-[15px] sm:left-[19px] top-5 bottom-5 w-[2px] bg-slate-800 rounded-full overflow-hidden">
+        {/* Slow moving electric pulse that travels down the cable */}
         <div
-          className="absolute left-0 w-full h-24 bg-gradient-to-b from-transparent via-cyan-400 to-transparent blur-[1px] transition-all duration-700 ease-in-out"
+          className="absolute left-0 w-full h-24 bg-gradient-to-b from-transparent via-cyan-400 to-transparent blur-[1px] transition-all duration-1000 ease-in-out"
           style={{
-            top: `${activeStep * 28}%`,
+            top: `${activeStep * 26}%`,
           }}
         />
       </div>
 
       {PIPELINE_STEPS.map((item) => {
-        const IconComp = item.icon;
         const isActive = activeStep === item.idx;
 
         return (
           <div
             key={item.step}
             onClick={() => setActiveStep(item.idx)}
-            className="relative cursor-pointer group"
+            className="relative cursor-pointer"
           >
-            {/* MICROCHIP JUNCTION NODE (Hardware IC Socket with Metal Pins) */}
+            {/* Clean & Simple Number Node (No AI-slop metal pins) */}
             <div
-              className={`absolute -left-[37px] sm:-left-[44px] top-4 z-10 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg font-mono transition-all duration-300 ${
+              className={`absolute -left-[32px] sm:-left-[36px] top-4 z-10 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full font-mono text-xs font-bold transition-all duration-500 ${
                 isActive
-                  ? "bg-[#06101e] border-2 border-cyan-400 text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.8)] scale-110"
+                  ? "bg-[#06101e] border-2 border-cyan-400 text-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.7)] scale-105"
                   : "bg-[#0a0c10] border border-slate-700 text-slate-500 hover:border-slate-500"
               }`}
             >
-              {/* Left IC Metal Pins */}
-              <span
-                className={`absolute -left-1.5 top-2 w-1.5 h-1 rounded-l-sm transition-colors duration-300 ${
-                  isActive ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]" : "bg-slate-700"
-                }`}
-              />
-              <span
-                className={`absolute -left-1.5 bottom-2 w-1.5 h-1 rounded-l-sm transition-colors duration-300 ${
-                  isActive ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]" : "bg-slate-700"
-                }`}
-              />
-
-              {/* Right IC Metal Pins */}
-              <span
-                className={`absolute -right-1.5 top-2 w-1.5 h-1 rounded-r-sm transition-colors duration-300 ${
-                  isActive ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]" : "bg-slate-700"
-                }`}
-              />
-              <span
-                className={`absolute -right-1.5 bottom-2 w-1.5 h-1 rounded-r-sm transition-colors duration-300 ${
-                  isActive ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]" : "bg-slate-700"
-                }`}
-              />
-
-              {/* Top Notch Indicator */}
-              <span
-                className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-1 rounded-b-sm transition-colors duration-300 ${
-                  isActive ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]" : "bg-slate-700"
-                }`}
-              />
-
-              {/* Chip Core Display */}
-              <span className="font-mono text-xs sm:text-sm font-black tracking-tight z-10">
-                {item.step}
-              </span>
+              {item.step}
             </div>
 
-            {/* Horizontal Circuit Bus Trace (Connecting Chip to Card) */}
+            {/* Horizontal Wire Connecting Node to Card */}
             <div
-              className={`absolute -left-[2px] top-8 h-[2px] transition-all duration-300 ${
+              className={`absolute -left-[2px] top-7 h-[2px] transition-all duration-500 ${
                 isActive
-                  ? "w-4 sm:w-6 bg-cyan-400 shadow-[0_0_12px_#22d3ee]"
-                  : "w-3 sm:w-5 bg-slate-800"
+                  ? "w-4 sm:w-5 bg-cyan-400 shadow-[0_0_8px_#22d3ee]"
+                  : "w-3 sm:w-4 bg-slate-800"
               }`}
             />
 
-            {/* STEP CARD: Active lights up blue, inactive turns off (dormant) */}
+            {/* Card Container */}
             <div
-              className={`rounded-2xl transition-all duration-300 p-4 sm:p-5 space-y-2.5 ${
+              className={`relative rounded-2xl p-4 sm:p-5 space-y-2 border transition-all duration-500 overflow-hidden ${
                 isActive
-                  ? "border-2 border-cyan-400 bg-[#070e1b] shadow-[0_0_35px_rgba(34,211,238,0.3)] opacity-100 scale-[1.01]"
-                  : "border border-white/10 bg-[#0c0d12]/70 backdrop-blur-md opacity-45 hover:opacity-75 hover:border-white/20"
+                  ? "border-cyan-500/80 bg-[#070e1b] shadow-[0_0_30px_rgba(34,211,238,0.2)] opacity-100"
+                  : "border-white/10 bg-[#0c0d12]/70 backdrop-blur-md opacity-45 hover:opacity-75 hover:border-white/20"
               }`}
             >
-              {/* Header Meta Row */}
-              <div
-                className={`flex items-center justify-between font-mono text-[10px] border-b pb-2 transition-colors ${
-                  isActive ? "border-blue-500/30" : "border-white/5"
-                }`}
-              >
+              {/* Progressive Electrical Wave Overlay (Lights from left to right, then recedes from right to left) */}
+              {isActive && (
                 <div
-                  className={`flex items-center gap-1.5 font-bold transition-colors ${
-                    isActive ? "text-cyan-400" : "text-slate-400"
-                  }`}
-                >
-                  <IconComp className="h-3.5 w-3.5" />
-                  <span>// TAHAPAN {item.step}</span>
-                </div>
+                  key={`pulse-${activeStep}`}
+                  className="absolute inset-0 rounded-2xl pointer-events-none animate-circuit-wave bg-gradient-to-r from-cyan-500/20 via-blue-500/10 to-transparent border-2 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.35)]"
+                />
+              )}
 
-                {/* Status Indicator */}
-                <div className="flex items-center gap-1.5">
-                  {isActive ? (
-                    <span className="flex items-center gap-1 text-[10px] font-mono text-cyan-300 bg-cyan-950/80 border border-cyan-500/50 px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.3)]">
-                      <Zap className="h-2.5 w-2.5 text-cyan-400 animate-pulse fill-cyan-400" />
-                      <span>AKTIF BERJALAN</span>
-                    </span>
-                  ) : (
-                    <span className="text-slate-400 uppercase tracking-wider text-[10px]">
-                      {item.phase}
-                    </span>
-                  )}
-                </div>
+              {/* Clean Top Meta (No slashes, no icons, no AI badges) */}
+              <div className="flex items-center justify-between text-xs font-mono relative z-10 border-b border-white/5 pb-2">
+                <span className={`font-semibold ${isActive ? "text-cyan-400" : "text-slate-400"}`}>
+                  Tahap {item.step}
+                </span>
+                <span className="text-slate-400 text-[11px]">
+                  {item.phase}
+                </span>
               </div>
 
-              {/* Title & Body */}
-              <div className="space-y-1">
+              {/* Title & Description */}
+              <div className="space-y-1 relative z-10">
                 <h4
                   className={`text-sm sm:text-base font-bold transition-colors ${
                     isActive ? "text-white" : "text-slate-300"
@@ -186,19 +131,6 @@ export default function AnimatedPipeline() {
                 >
                   {item.desc}
                 </p>
-              </div>
-
-              {/* Technical Telemetry Output */}
-              <div className="pt-1">
-                <div
-                  className={`font-mono text-[10px] px-3 py-1.5 rounded-lg border truncate transition-all ${
-                    isActive
-                      ? "text-cyan-200 bg-[#070b14] border-cyan-500/40 shadow-inner"
-                      : "text-slate-400 bg-[#090a0d] border-white/5"
-                  }`}
-                >
-                  {item.telemetry}
-                </div>
               </div>
             </div>
           </div>
