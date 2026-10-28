@@ -15,12 +15,14 @@
   - Backend: Go 1.24+ (Fiber v2) beroperasi mandiri pada port `8082` dikelola via Supervisor (`pandu-backend`).
   - Frontend: Next.js 16 (App Router, TypeScript, Tailwind CSS v4, Lucide React) beroperasi pada port `3002` dikelola via PM2 (`pandu-frontend`).
   - Reverse Proxy & SSL: Nginx melayani `pandu.web.id` dengan HTTP/2, HSTS preload, dan sertifikat SSL aktif hingga 7 Januari 2027.
-- **Halaman Beranda / Index (Landing Page)**:
-  - Hero section penjelas produk: *Ketika Rekayasa Sosial Mengaburkan Fakta, PANDU Menjadi Navigasi Anda.*
-  - Breakdown arsitektur solusi 3 pilar (*Recognize, Learn, Act*) lengkap dengan kartu interaktif dan tombol aksi langsung.
-  - Edukasi anatomi rekayasa sosial di Indonesia (Kepanikan Waktu/Urgency, Umpan Keuntungan/Greed, Pencatutan Otoritas/Impersonation).
-  - Deklarasi standar integritas & privasi (Nol pengumpulan data sensitif, simulasi aman, transparansi heuristik).
-  - Navigasi 4 tab responsif: `Beranda`, `X-Ray`, `Simulasi`, dan `Aksi`.
+- **Halaman Beranda & Sistem Multi-Page Routing Dedicated**:
+  - Halaman Index Beranda terisolasi pada root domain `https://pandu.web.id` sebagai pintu masuk produk.
+  - Halaman terpisah (dedicated URL routing):
+    - `https://pandu.web.id/xray`: Deception X-Ray Scanner.
+    - `https://pandu.web.id/simulasi`: The Deception Arena Sandbox.
+    - `https://pandu.web.id/aksi` (dan alias `/laporan`): Incident First-Aid Dossier Generator.
+  - Integrasi state via browser `sessionStorage`: Hasil deteksi di `/xray` dapat langsung diteruskan ke form aduan di `/aksi` tanpa refresh/kehilangan data.
+  - Header navigasi otomatis sinkron dengan `usePathname()` sehingga tab aktif langsung menyala sesuai URL.
 - **Pilar 1 (Recognize) — Deception X-Ray Scanner**:
   - Engine Heuristik Transparan (`internal/scanner/text_scanner.go` & `url_scanner.go`).
   - Pemetaan Cognitive Bias (Kepanikan Waktu, Iming-Iming Keuntungan, Pencatutan Otoritas, Kelangkaan Semu).
