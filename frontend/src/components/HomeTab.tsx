@@ -108,8 +108,8 @@ export default function HomeTab() {
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <Search className="h-5 w-5" />
+              <div className="text-blue-400">
+                <Search className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
@@ -133,8 +133,8 @@ export default function HomeTab() {
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <BookOpen className="h-5 w-5" />
+              <div className="text-blue-400">
+                <BookOpen className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
@@ -158,8 +158,8 @@ export default function HomeTab() {
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#202228] text-blue-400 border border-white/5 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <FileCheck2 className="h-5 w-5" />
+              <div className="text-blue-400">
+                <FileCheck2 className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
