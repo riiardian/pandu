@@ -29,17 +29,15 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="border-t border-zinc-200 bg-white py-6">
-        <div className="mx-auto flex max-w-6xl flex-col sm:flex-row items-center justify-between gap-3 px-4 text-xs text-zinc-500 sm:px-6">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-zinc-700">PANDU</span>
+      <footer className="border-t border-zinc-200 bg-white py-5 w-full">
+        <div className="mx-auto flex max-w-6xl flex-col sm:flex-row items-center justify-between gap-2 px-4 text-xs text-zinc-500 sm:px-6 text-center sm:text-left">
+          <div className="flex items-center gap-1.5 font-medium">
+            <span className="font-bold text-zinc-800">PANDU</span>
             <span>—</span>
             <span>Guardians of the Digital Space</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span>Kompetisi MIT-WEEK 2026</span>
-            <span>·</span>
-            <span>Tim 404Forbidden (Telkom University)</span>
+          <div className="text-[11px] text-zinc-400">
+            Kompetisi MIT-WEEK 2026 · Tim 404Forbidden (Telkom University)
           </div>
         </div>
       </footer>

@@ -80,7 +80,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
   return (
     <div className="space-y-6">
       {/* Intro Banner */}
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm">
         <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">
           Pusat Aksi & Draf Laporan Forensik
         </h2>
