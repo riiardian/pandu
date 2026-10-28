@@ -9,10 +9,6 @@ import {
   ShieldAlert,
   BookOpen,
   FileCheck2,
-  ChevronRight,
-  Shield,
-  Activity,
-  ArrowUpRight,
 } from "lucide-react";
 
 export default function Header() {
@@ -43,6 +39,13 @@ export default function Header() {
     pathname.startsWith("/aksi") ||
     pathname.startsWith("/dossier") ||
     pathname.startsWith("/laporan");
+
+  const NAV_ITEMS = [
+    { href: "/", label: "Beranda", icon: Home, active: isHome },
+    { href: "/xray", label: "Deception X-Ray", icon: ShieldAlert, active: isXray },
+    { href: "/simulasi", label: "The Deception Arena", icon: BookOpen, active: isSimulasi },
+    { href: "/aksi", label: "First-Aid Dossier", icon: FileCheck2, active: isAksi },
+  ];
 
   return (
     <>
@@ -99,44 +102,33 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Modern High-End Slide-out Drawer */}
+      {/* Clean & Simple Slide-out Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop with Soft Blur */}
+          {/* Backdrop */}
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
           />
 
-          {/* Premium Narrow Glassmorphism Drawer */}
-          <div className="relative ml-auto flex h-full w-[78vw] max-w-[310px] flex-col bg-[#0b0c10]/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5 bg-[#0f1117]/80">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white font-bold shrink-0 shadow-md shadow-blue-600/30">
-                  <Compass className="h-4 w-4" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-sm text-white tracking-tight leading-none">
-                    PANDU
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400 leading-tight mt-0.5">
-                    Platform Navigasi
-                  </span>
-                </div>
-              </div>
-
+          {/* Minimalist Drawer Panel */}
+          <div className="relative ml-auto flex h-full w-[70vw] max-w-[260px] flex-col bg-[#101114] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5">
+              <span className="font-bold text-sm text-white tracking-wide">
+                Menu
+              </span>
               <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Tutup Menu"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none transition-colors active:scale-90"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white transition-colors"
               >
                 <svg
                   className="h-4 w-4"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.2"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -146,160 +138,31 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Navigation Body */}
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5 text-left">
-              {/* Category: Navigasi Utama */}
-              <div className="space-y-1">
-                <div className="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                  // Menu Utama
-                </div>
-
-                <Link
-                  href="/"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
-                    isHome
-                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                        isHome
-                          ? "bg-blue-600 text-white"
-                          : "bg-white/5 text-slate-400"
+            {/* Clean Navigation Links */}
+            <nav className="flex-1 px-2.5 py-3 space-y-1 text-left">
+              {NAV_ITEMS.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      item.active
+                        ? "bg-white/10 text-white font-medium"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    <IconComponent
+                      className={`h-4 w-4 shrink-0 ${
+                        item.active ? "text-blue-400" : "text-slate-400"
                       }`}
-                    >
-                      <Home className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold truncate leading-tight">
-                        Beranda
-                      </span>
-                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
-                        Ringkasan sistem &amp; live feed
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                </Link>
-              </div>
-
-              {/* Category: Modul Investigasi */}
-              <div className="space-y-1">
-                <div className="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                  // Modul Forensik &amp; Latihan
-                </div>
-
-                {/* X-Ray Scanner */}
-                <Link
-                  href="/xray"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
-                    isXray
-                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                        isXray
-                          ? "bg-blue-600 text-white"
-                          : "bg-white/5 text-blue-400"
-                      }`}
-                    >
-                      <ShieldAlert className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold truncate leading-tight">
-                        X-Ray Scanner
-                      </span>
-                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
-                        Bedah pesan, link, &amp; APK
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                </Link>
-
-                {/* Arena Simulasi */}
-                <Link
-                  href="/simulasi"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
-                    isSimulasi
-                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                        isSimulasi
-                          ? "bg-blue-600 text-white"
-                          : "bg-white/5 text-blue-400"
-                      }`}
-                    >
-                      <BookOpen className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold truncate leading-tight">
-                        The Deception Arena
-                      </span>
-                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
-                        Latihan chat WhatsApp interaktif
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                </Link>
-
-                {/* Pusat Aksi & Laporan */}
-                <Link
-                  href="/aksi"
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between rounded-xl p-2.5 transition-all ${
-                    isAksi
-                      ? "bg-blue-600/15 border border-blue-500/40 text-white font-semibold"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                        isAksi
-                          ? "bg-blue-600 text-white"
-                          : "bg-white/5 text-blue-400"
-                      }`}
-                    >
-                      <FileCheck2 className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold truncate leading-tight">
-                        First-Aid Dossier
-                      </span>
-                      <span className="text-[10px] text-slate-400 truncate mt-0.5">
-                        Draf aduan resmi Komdigi &amp; Polri
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Bottom Status Card */}
-            <div className="p-3 border-t border-white/10 bg-[#0f1117]/80">
-              <div className="rounded-xl border border-white/5 bg-white/5 p-2.5 flex items-center justify-between text-[11px]">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-                  <span className="font-mono text-slate-300">Engine Online</span>
-                </div>
-                <span className="font-mono text-[10px] text-slate-400">Zero-Storage</span>
-              </div>
-            </div>
+                    />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
       )}
