@@ -44,7 +44,7 @@ export default function Header() {
     { href: "/", label: "Beranda", icon: Home, active: isHome },
     { href: "/xray", label: "Deception X-Ray", icon: ShieldAlert, active: isXray },
     { href: "/simulasi", label: "The Deception Arena", icon: BookOpen, active: isSimulasi },
-    { href: "/aksi", label: "First-Aid Dossier", icon: FileCheck2, active: isAksi },
+    { href: "/aksi", label: "Daftar Hitam & Laporan", icon: FileCheck2, active: isAksi },
   ];
 
   return (

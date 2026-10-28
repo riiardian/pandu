@@ -150,7 +150,7 @@ export default function HomeTab() {
             </div>
           </Link>
 
-          {/* Module 3: Dossier */}
+          {/* Module 3: Dossier / Blacklist */}
           <Link
             href="/aksi"
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
@@ -161,15 +161,15 @@ export default function HomeTab() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  First-Aid Dossier
+                  Pusat Laporan &amp; Daftar Hitam
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Panduan darurat saat terlanjur tertipu dan pembuatan draf laporan resmi ke Komdigi, OJK, serta kepolisian dalam hitungan detik.
+                  Laporkan nomor penipu, rekening bank, dan tautan mencurigakan langsung ke basis data PANDU. Periksa apakah target sudah masuk daftar hitam sebelum Anda bertransaksi.
                 </p>
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-slate-300 group-hover:text-blue-400 transition-colors">
-              <span>Buat Laporan</span>
+              <span>Cek Daftar Hitam</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
@@ -214,10 +214,10 @@ export default function HomeTab() {
 
           {/* Step 4 */}
           <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-2">
-            <span className="text-xs font-mono font-bold text-blue-400">04 // MITIGATE</span>
-            <h5 className="text-sm font-bold text-white">Panduan Aksi Cepat</h5>
+            <span className="text-xs font-mono font-bold text-blue-400">04 // REGISTRY &amp; MITIGATE</span>
+            <h5 className="text-sm font-bold text-white">Pencatatan Daftar Hitam &amp; Aksi</h5>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Menghasilkan skor risiko transparan, checklist tindakan darurat isolasi akun, dan draf berkas aduan resmi siap kirim.
+              Entitas terverifikasi dicatat langsung ke basis data daftar hitam PANDU untuk melindungi pengguna lain, disertai panduan darurat isolasi akun.
             </p>
           </div>
         </div>
@@ -310,10 +310,10 @@ export default function HomeTab() {
           {/* FAQ 3 */}
           <div className="rounded-2xl border border-white/10 bg-[#121316]/80 p-4 space-y-1">
             <h5 className="text-sm font-bold text-white">
-              Ke mana saja draf laporan dari modul First-Aid Dossier dapat dikirimkan?
+              Bagaimana sistem Basis Data Daftar Hitam (Threat Registry) PANDU bekerja?
             </h5>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Draf laporan yang dihasilkan diformat sesuai standar pelaporan resmi instansi terkait di Indonesia: portal AduanKonten.id (Komdigi), CekRekening.id &amp; AduanNomor.id (OJK / Kemenkominfo), dan Patroli Siber Dittipidsiber Bareskrim Polri.
+              Setiap laporan nomor WhatsApp, rekening bank, atau tautan penipuan yang masuk diverifikasi dan dicatat ke dalam database ancaman PANDU. Pengguna lain dapat memeriksa keabsahan suatu nomor atau rekening secara real-time sebelum bertransaksi.
             </p>
           </div>
         </div>

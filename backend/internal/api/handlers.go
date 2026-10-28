@@ -1,8 +1,10 @@
 package api
 
 import (
+	"strings"
 	"time"
 
+	"pandu/backend/internal/blacklist"
 	"pandu/backend/internal/dossier"
 	"pandu/backend/internal/sandbox"
 	"pandu/backend/internal/scanner"
@@ -44,7 +46,11 @@ func RegisterRoutes(app *fiber.App) {
 	v1.Get("/sandbox/scenarios/:id", handleGetScenarioDetail)
 	v1.Post("/sandbox/respond", handleSandboxTurn)
 
-	// Pillar 3: Act (First-Aid & Dossier Generator)
+	// Pillar 3: Act (PANDU Blacklist Registry & Incident Dossier)
+	v1.Get("/blacklist/check", handleCheckBlacklist)
+	v1.Post("/blacklist/report", handleReportBlacklist)
+	v1.Get("/blacklist/recent", handleGetRecentBlacklist)
+	v1.Get("/blacklist/stats", handleGetBlacklistStats)
 	v1.Post("/dossier/generate", handleGenerateDossier)
 
 	// General Stats
@@ -61,6 +67,22 @@ func handleScanText(c *fiber.Ctx) error {
 	}
 
 	result := scanner.AnalyzeText(req.Text)
+
+	// Cross-check text against Blacklist Registry
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklist(req.Text); found {
+		result.RiskScore = 98
+		result.ThreatLevel = "KRITIS / PENIPUAN"
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Terdaftar dalam Blacklist PANDU",
+				Explanation: "Entitas (" + matchedEntry.Identifier + ") telah dilaporkan " + string(rune(matchedEntry.ReportCount+'0')) + " kali oleh komunitas PANDU: " + matchedEntry.Description,
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data":    result,
@@ -77,16 +99,104 @@ func handleScanURL(c *fiber.Ctx) error {
 	}
 
 	result := scanner.AnalyzeURL(req.URL, req.FollowRedirects)
+
+	// Cross-check URL against Blacklist Registry
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklist(req.URL); found {
+		result.RiskScore = 99
+		result.ThreatLevel = "BAHAYA / PHISHING"
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Domain Masuk Daftar Hitam PANDU",
+				Explanation: "Domain/URL ini telah diverifikasi sebagai phishing: " + matchedEntry.Description,
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data":    result,
 	})
 }
 
+func handleCheckBlacklist(c *fiber.Ctx) error {
+	q := strings.TrimSpace(c.Query("q"))
+	if q == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Parameter pencarian 'q' wajib diisi",
+		})
+	}
+
+	entry, found := blacklist.GetRegistry().CheckBlacklist(q)
+	if !found {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"found":   false,
+			"query":   q,
+			"message": "Entitas belum terdaftar dalam basis data daftar hitam PANDU",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"found":   true,
+		"query":   q,
+		"data":    entry,
+	})
+}
+
+func handleReportBlacklist(c *fiber.Ctx) error {
+	var req blacklist.ReportRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Data laporan tidak valid",
+		})
+	}
+
+	if strings.TrimSpace(req.Identifier) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Nomor telepon, rekening, atau URL target wajib diisi",
+		})
+	}
+
+	entry, isNew := blacklist.GetRegistry().ReportThreat(req)
+	msg := "Entitas berhasil ditambahkan ke Daftar Hitam PANDU"
+	if !isNew {
+		msg = "Laporan berhasil dicatat. Frekuensi laporan untuk entitas ini telah ditingkatkan."
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": msg,
+		"is_new":  isNew,
+		"data":    entry,
+	})
+}
+
+func handleGetRecentBlacklist(c *fiber.Ctx) error {
+	list := blacklist.GetRegistry().GetRecentThreats(15)
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    list,
+	})
+}
+
+func handleGetBlacklistStats(c *fiber.Ctx) error {
+	stats := blacklist.GetRegistry().GetStats()
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    stats,
+	})
+}
+
 func handleGetScenarios(c *fiber.Ctx) error {
 	scenarios := sandbox.GetCatalog()
 
-	// Return summary catalog without heavy step maps
 	type ScenarioSummary struct {
 		ID          string `json:"id"`
 		Title       string `json:"title"`
@@ -170,12 +280,15 @@ func handleGenerateDossier(c *fiber.Ctx) error {
 }
 
 func handleGetStats(c *fiber.Ctx) error {
+	blackStats := blacklist.GetRegistry().GetStats()
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data": fiber.Map{
 			"total_scenarios":       3,
 			"threat_intelligence":   "Aktif (Heuristik Lokal Indonesia 2026)",
 			"verified_brands_count": 13,
+			"blacklist_entities":    blackStats.TotalEntities,
+			"total_threat_reports":  blackStats.TotalReports,
 			"supported_channels":    []string{"WhatsApp", "Telegram", "SMS", "Web Browser"},
 			"mission":               "Empowering Today's Generation Toward a Safer Cyber Ecosystem",
 		},
