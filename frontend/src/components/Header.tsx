@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldAlert, Compass, BookOpen, FileCheck2, Cpu } from "lucide-react";
+import { ShieldAlert, Compass, BookOpen, FileCheck2 } from "lucide-react";
 
 interface HeaderProps {
   activeTab: "scanner" | "sandbox" | "dossier";
@@ -18,12 +18,9 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-zinc-900">PANDU</span>
-              <span className="rounded bg-zinc-100 px-1.5 py-0.2 text-[10px] sm:text-[11px] font-bold text-zinc-600 border border-zinc-200">
-                v1.0
-              </span>
-            </div>
+            <span className="text-lg sm:text-xl font-black tracking-tight text-zinc-900 block leading-tight">
+              PANDU
+            </span>
             <p className="text-[11px] sm:text-xs text-zinc-500 truncate">
               Navigating Digital Deception · <span className="hidden sm:inline">Tim 404Forbidden</span>
             </p>
@@ -68,13 +65,6 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             <span>Pusat Aksi & Laporan</span>
           </button>
         </nav>
-
-        {/* Engine Status Badge */}
-        <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs text-emerald-800 font-semibold shrink-0">
-          <Cpu className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600" />
-          <span className="hidden sm:inline">Go Engine</span>
-          <span>Online</span>
-        </div>
       </div>
 
       {/* Mobile Tab Segmented Control (Visible only on Mobile screens) */}
