@@ -5,14 +5,10 @@ import Link from "next/link";
 import LiveTerminalFeed from "@/components/LiveTerminalFeed";
 import AnimatedPipeline from "@/components/AnimatedPipeline";
 import {
-  ShieldAlert,
   BookOpen,
   FileCheck2,
   ArrowRight,
-  ShieldCheck,
-  Lock,
   Search,
-  CheckCircle2,
   Smartphone,
   Globe,
   Users,
@@ -72,6 +68,14 @@ export default function HomeTab() {
     {
       q: "Bagaimana sistem Basis Data Daftar Hitam (Threat Registry) PANDU bekerja?",
       a: "Setiap laporan nomor WhatsApp, rekening bank, atau tautan penipuan yang masuk diverifikasi dan dicatat ke dalam database ancaman PANDU. Pengguna lain dapat memeriksa keabsahan suatu nomor atau rekening secara real-time sebelum bertransaksi.",
+    },
+    {
+      q: "Apa langkah darurat jika saya sudah terlanjur menginstal file APK kurir atau mentransfer uang?",
+      a: "Segera putus koneksi internet ponsel (aktifkan Mode Pesawat) untuk mematikan komunikasi trojan SMS, hubungi call center resmi bank atau e-wallet untuk membekukan rekening, dan gunakan modul Pusat Laporan di PANDU untuk mendaftarkan nomor rekening pelaku ke daftar hitam.",
+    },
+    {
+      q: "Apakah seluruh fitur deteksi dan pelaporan di PANDU dapat diakses gratis?",
+      a: "Ya, 100% gratis. Seluruh instrumen Radar Forensik, Arena Simulasi, dan pencarian basis data daftar hitam PANDU dapat dimanfaatkan secara bebas oleh seluruh masyarakat Indonesia untuk memperkuat ketahanan di ruang digital.",
     },
   ];
 
@@ -310,55 +314,9 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* 7. Standar Privasi & Keamanan (Clean Invariants Grid) */}
-      <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl text-left">
-        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-          Standar Privasi &amp; Kepatuhan
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-white">
-              <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Nol Pengumpulan Data</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed">
-              Tidak pernah meminta atau menyimpan KTP, PIN, kata sandi, atau nomor rekening asli pengguna.
-            </p>
-          </div>
-
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-white">
-              <Lock className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Simulasi Terkendali</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed">
-              Arena simulasi percakapan beroperasi aman tanpa mendistribusikan malware nyata atau tautan berbahaya.
-            </p>
-          </div>
-
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-white">
-              <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
-              <span>Deteksi Transparan</span>
-            </div>
-            <p className="text-slate-400 leading-relaxed">
-              Menyajikan indikator peringatan teknis berbasis bukti terukur tanpa klaim hitam-putih 100% mutlak.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Minimal Bottom Anchor Footer */}
-      <footer className="pt-2 pb-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-slate-400 text-left">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white">PANDU</span>
-          <span>—</span>
-          <span>Protective Analysis &amp; Navigation for Digital Users</span>
-        </div>
-        <div className="text-slate-400">
-          Tim 404Forbidden · Web Development Competition MIT-WEEK 2026
-        </div>
+      {/* Clean Bottom Footer */}
+      <footer className="pt-6 pb-6 border-t border-white/10 text-center text-xs font-mono text-slate-500">
+        © 2026 PANDU. All rights reserved
       </footer>
     </div>
   );
