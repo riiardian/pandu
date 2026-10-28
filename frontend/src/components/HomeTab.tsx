@@ -10,102 +10,218 @@ import {
   ShieldCheck,
   Lock,
   Search,
+  AlertTriangle,
+  BrainCircuit,
+  Globe,
+  Terminal,
 } from "lucide-react";
 
-const ACRONYM_TEXT = "Protective Analysis & Navigation for Digital Users";
+const TYPEWRITER_PHRASES = [
+  "Pesan Penipuan",
+  "File Kurir .APK",
+  "Tautan Phishing",
+  "Loker Freelance",
+  "Akun Rekening Bodong",
+];
 
-function TypewriterAcronym() {
+function TypewriterHeadline() {
   const [text, setText] = useState("");
+  const [phraseIdx, setPhraseIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(60);
+  const [typingSpeed, setTypingSpeed] = useState(65);
 
   useEffect(() => {
+    const currentPhrase = TYPEWRITER_PHRASES[phraseIdx % TYPEWRITER_PHRASES.length];
     let timer: NodeJS.Timeout;
 
-    if (!isDeleting && text === ACRONYM_TEXT) {
-      // Pause 4.5 seconds at full string
-      timer = setTimeout(() => setIsDeleting(true), 4500);
+    if (!isDeleting && text === currentPhrase) {
+      // Pause 2.8 seconds on full phrase
+      timer = setTimeout(() => setIsDeleting(true), 2800);
     } else if (isDeleting && text === "") {
       setIsDeleting(false);
-      setTypingSpeed(60);
+      setPhraseIdx((prev) => prev + 1);
+      setTypingSpeed(65);
     } else {
       timer = setTimeout(() => {
         const next = isDeleting
-          ? ACRONYM_TEXT.substring(0, text.length - 1)
-          : ACRONYM_TEXT.substring(0, text.length + 1);
+          ? currentPhrase.substring(0, text.length - 1)
+          : currentPhrase.substring(0, text.length + 1);
         setText(next);
-        setTypingSpeed(isDeleting ? 25 : 60);
+        setTypingSpeed(isDeleting ? 30 : 65);
       }, typingSpeed);
     }
 
     return () => clearTimeout(timer);
-  }, [text, isDeleting, typingSpeed]);
+  }, [text, isDeleting, phraseIdx, typingSpeed]);
 
   return (
-    <div className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm font-bold tracking-wider uppercase text-blue-400">
+    <span className="text-blue-500 inline-flex items-center">
       <span>{text}</span>
-      <span className="inline-block w-[2px] h-[1.1em] bg-blue-500 animate-pulse ml-0.5" />
-    </div>
+      <span className="inline-block w-[3px] h-[0.9em] bg-blue-500 ml-1 animate-pulse" />
+    </span>
   );
 }
 
 export default function HomeTab() {
   return (
-    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 py-4 sm:py-8">
-      {/* Hero Section */}
-      <section className="text-center space-y-4 sm:space-y-6 pt-2">
-        {/* Typewriter Acronym Header */}
-        <div className="space-y-2">
-          <div className="min-h-[26px] flex items-center justify-center">
-            <TypewriterAcronym />
+    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 py-3 sm:py-6">
+      {/* OSINT-Style Left-Aligned Hero Section */}
+      <section className="text-left space-y-4 sm:space-y-5 max-w-2xl">
+        {/* Acronym Badge & Tagline */}
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-950/40 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wider text-blue-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
+            <span>PANDU · OSINT DEFENSE PLATFORM</span>
           </div>
 
-          {/* Indonesian Translation Subtitle */}
-          <p className="text-xs sm:text-sm font-medium text-slate-300">
-            Arti: <span className="text-white font-semibold">Analisis Protektif &amp; Navigasi bagi Pengguna Ruang Digital</span>
+          <p className="text-[11px] sm:text-xs font-mono font-semibold tracking-wide uppercase text-slate-400">
+            Protective Analysis &amp; Navigation for Digital Users
           </p>
         </div>
 
-        <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white leading-snug max-w-2xl mx-auto">
-          Ketika Rekayasa Sosial Mengaburkan Fakta, <span className="text-blue-500">PANDU</span> Menjadi Navigasi Anda.
+        {/* Dynamic Typewriter Headline (OSINT Industries Pattern) */}
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-[1.15]">
+          Deteksi &amp; Bedah <br />
+          <TypewriterHeadline />
         </h1>
 
-        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
-          Platform navigasi pertahanan digital untuk generasi muda Indonesia. 
-          Pembedah pesan manipulatif secara transparan, simulator pengambilan keputusan siber, 
-          dan generator langkah pemulihan hukum saat menjadi target penipuan online.
-        </p>
+        {/* Indonesian Translation Description */}
+        <div className="space-y-1 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl">
+          <p className="text-white font-medium">
+            Analisis Protektif &amp; Navigasi bagi Pengguna Ruang Digital.
+          </p>
+          <p className="text-slate-400">
+            Akurasi heuristik real-time. Membedah rekayasa sosial, manipulasi kognitif, dan forensik tautan digital tanpa menyimpan data pribadi Anda.
+          </p>
+        </div>
 
-        {/* CTA Buttons in Pure Biru, Hitam, Putih */}
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+        {/* Left-Aligned Action Buttons */}
+        <div className="pt-2 flex flex-wrap items-center gap-3">
           <Link
             href="/xray"
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/50"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/50"
           >
             <ShieldAlert className="h-4 w-4" />
-            <span>Mulai Bedah Pesan (X-Ray)</span>
+            <span>Mulai Bedah Pesan</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
 
           <Link
             href="/simulasi"
-            className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-white/15 bg-[#16171b]/95 backdrop-blur-md px-6 py-2.5 text-sm font-semibold text-slate-200 hover:bg-[#202127] hover:border-white/25 transition-colors shadow-sm"
+            className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"
           >
-            <BookOpen className="h-4 w-4 text-slate-400" />
-            <span>Uji di Arena Simulasi</span>
+            <BookOpen className="h-4 w-4 text-blue-400" />
+            <span>Arena Simulasi &gt;</span>
           </Link>
         </div>
       </section>
 
-      {/* 3 Core Modules (Matte Charcoal Cards over Gemini Blue Aura) */}
+      {/* OSINT Live Forensic Preview Card (Visibly Tilted 3D Isometric Perspective & Compact Width) */}
+      <section className="relative pt-2 pb-4">
+        <div
+          className="rounded-2xl border border-white/20 bg-[#121316]/95 backdrop-blur-xl p-4 sm:p-6 shadow-2xl transition-all duration-300 hover:rotate-0"
+          style={{
+            transform: "perspective(900px) rotateX(6deg) rotateY(-8deg) rotateZ(1.5deg)",
+            transformOrigin: "center left",
+          }}
+        >
+          {/* Card Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-blue-400" />
+              <span className="text-xs font-mono font-bold text-slate-300">
+                Live Forensic Intelligence Feed
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-blue-300 bg-blue-950/60 border border-blue-700/40 px-2 py-0.5 rounded">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
+              <span>STATUS: ARMED &amp; ANALYZING</span>
+            </div>
+          </div>
+
+          {/* Simulated Query Box (Strict Biru, Hitam, Putih) */}
+          <div className="rounded-lg border border-white/10 bg-[#090a0d] p-2.5 sm:p-3 mb-4 flex items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center gap-2 min-w-0">
+              <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <span className="text-slate-300 truncate">
+                "Halo kak, loker sampingan tugas like video komisi 300rb/hari..."
+              </span>
+            </div>
+            <span className="rounded bg-blue-600/30 border border-blue-500/50 px-2 py-0.5 text-[10px] font-bold text-blue-200 shrink-0">
+              88% RISIKO TINGGI
+            </span>
+          </div>
+
+          {/* 2x2 Metric Grid (Just like OSINT Industries) */}
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 text-left">
+            {/* Tile 1 */}
+            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                <AlertTriangle className="h-3.5 w-3.5 text-blue-400" />
+                <span className="font-mono">Trik Manipulasi</span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-white font-mono">
+                6 Indikator
+              </div>
+              <p className="text-[10px] text-slate-400">
+                Urgensi waktu, tugas VIP &amp; deposit bertahap
+              </p>
+            </div>
+
+            {/* Tile 2 */}
+            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                <BrainCircuit className="h-3.5 w-3.5 text-blue-400" />
+                <span className="font-mono">Cognitive Bias</span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-white font-mono">
+                3 Vektor Emosi
+              </div>
+              <p className="text-[10px] text-slate-400">
+                Greed baiting, false scarcity &amp; FOMO
+              </p>
+            </div>
+
+            {/* Tile 3 */}
+            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                <span className="font-mono">Forensik Domain</span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-white font-mono">
+                .SITE / Typosquat
+              </div>
+              <p className="text-[10px] text-slate-400">
+                Mencatut e-commerce tanpa sertifikat resmi
+              </p>
+            </div>
+
+            {/* Tile 4 */}
+            <div className="rounded-xl border border-white/10 bg-[#16181e] p-3 sm:p-3.5 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
+                <span className="font-mono">Mitigasi Cepat</span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-white font-mono">
+                Laporan Instan
+              </div>
+              <p className="text-[10px] text-slate-400">
+                Draf aduan resmi Komdigi, OJK &amp; Polri
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3 Core Modules */}
       <section className="space-y-4">
         <div className="border-b border-white/10 pb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 text-left">
             Tiga Modul Utama
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
           {/* Module 1: X-Ray */}
           <Link
             href="/xray"
@@ -174,8 +290,8 @@ export default function HomeTab() {
         </div>
       </section>
 
-      {/* Safety & Integrity Standards (Clean Matte Charcoal Card) */}
-      <section className="rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl">
+      {/* Safety & Integrity Standards */}
+      <section className="rounded-xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl text-left">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
           Standar Privasi &amp; Keamanan
         </h3>
