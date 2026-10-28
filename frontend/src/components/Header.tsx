@@ -91,13 +91,40 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Hamburger Menu Toggle Button */}
+          {/* Sleek Cloudflare-style Naked Hamburger Menu Toggle Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Navigation Menu"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none transition-colors"
+            className="flex h-10 w-10 items-center justify-center text-zinc-900 hover:text-orange-600 focus:outline-none transition-all active:scale-90"
           >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isOpen ? (
+              <svg
+                className="h-6 w-6 transition-transform duration-200"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg
+                className="h-6 w-6 transition-transform duration-200"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3.5" y1="7" x2="20.5" y2="7" />
+                <line x1="3.5" y1="12" x2="15" y2="12" />
+                <line x1="3.5" y1="17" x2="20.5" y2="17" />
+              </svg>
+            )}
           </button>
         </div>
       </header>
@@ -123,9 +150,21 @@ export default function Header() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+                aria-label="Tutup Menu"
+                className="flex h-9 w-9 items-center justify-center text-zinc-700 hover:text-orange-600 focus:outline-none transition-colors active:scale-90"
               >
-                <X className="h-5 w-5" />
+                <svg
+                  className="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
