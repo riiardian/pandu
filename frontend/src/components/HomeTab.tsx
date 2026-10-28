@@ -16,19 +16,14 @@ export default function HomeTab() {
   return (
     <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 py-4 sm:py-8">
       {/* Hero Section */}
-      <section className="text-center space-y-4 sm:space-y-6">
-        <div className="space-y-1.5">
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white drop-shadow-sm">
-            <span className="text-orange-500">PANDU</span>
-          </h1>
-          <p className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-400">
-            Protective Analysis &amp; Navigation for Digital Users
-          </p>
-        </div>
+      <section className="text-center space-y-4 sm:space-y-6 pt-2">
+        <p className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-400">
+          Protective Analysis &amp; Navigation for Digital Users
+        </p>
 
-        <h2 className="text-lg sm:text-2xl font-bold text-slate-100 leading-snug max-w-2xl mx-auto">
-          Ketika Rekayasa Sosial Mengaburkan Fakta, PANDU Menjadi Navigasi Anda.
-        </h2>
+        <h1 className="text-xl sm:text-3xl font-black tracking-tight text-slate-100 leading-snug max-w-2xl mx-auto">
+          Ketika Rekayasa Sosial Mengaburkan Fakta, <span className="text-orange-500">PANDU</span> Menjadi Navigasi Anda.
+        </h1>
 
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
           Platform navigasi pertahanan digital untuk generasi muda Indonesia. 
