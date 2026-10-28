@@ -213,7 +213,7 @@ export default function HomeTab() {
       </section>
 
       {/* 4. Alur Kerja Investigasi (Animated Cable Conduit Pipeline) */}
-      <section className="space-y-4 text-left">
+      <section id="alur-kerja" className="space-y-4 text-left scroll-mt-20">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
             Alur Kerja Sistem
@@ -224,7 +224,7 @@ export default function HomeTab() {
       </section>
 
       {/* 5. Bentuk Manipulasi Digital */}
-      <section className="space-y-4 text-left">
+      <section id="manipulasi-digital" className="space-y-4 text-left scroll-mt-20">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
             Bentuk Manipulasi Digital
@@ -279,7 +279,7 @@ export default function HomeTab() {
       </section>
 
       {/* 6. Pertanyaan Umum (FAQ) - Clean Accordion Blending with Background */}
-      <section className="space-y-4 text-left">
+      <section id="faq" className="space-y-4 text-left scroll-mt-20">
         <div className="border-b border-white/10 pb-3">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
             Pertanyaan Umum (FAQ)

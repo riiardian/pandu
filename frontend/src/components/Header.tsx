@@ -9,6 +9,9 @@ import {
   Search,
   BookOpen,
   FileCheck2,
+  Workflow,
+  AlertTriangle,
+  HelpCircle,
 } from "lucide-react";
 
 export default function Header() {
@@ -45,6 +48,9 @@ export default function Header() {
     { href: "/xray", label: "Radar Forensik", icon: Search, active: isXray },
     { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
     { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
+    { href: "/#alur-kerja", label: "Alur Kerja Sistem", icon: Workflow, active: false },
+    { href: "/#manipulasi-digital", label: "Bentuk Manipulasi Digital", icon: AlertTriangle, active: false },
+    { href: "/#faq", label: "Pertanyaan Umum (FAQ)", icon: HelpCircle, active: false },
   ];
 
   return (
@@ -112,7 +118,7 @@ export default function Header() {
           />
 
           {/* Minimalist Drawer Panel */}
-          <div className="relative ml-auto flex h-full w-[70vw] max-w-[260px] flex-col bg-[#101114] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
+          <div className="relative ml-auto flex h-full w-[78vw] max-w-[290px] flex-col bg-[#101114] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5">
               <span className="font-bold text-sm text-white tracking-wide">
