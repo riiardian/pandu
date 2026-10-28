@@ -44,7 +44,15 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full bg-transparent border-none">
+        {/* Header Ambient Luminous Aura (Ensures the top bar and status bar are bathed in light) */}
+        <div
+          className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-[340px] sm:w-[620px] h-[160px] rounded-full blur-[55px] sm:blur-[85px] opacity-85 z-[-1]"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(37, 99, 235, 0.75) 0%, rgba(124, 58, 237, 0.50) 45%, transparent 80%)",
+          }}
+        />
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           {/* Brand & Identity */}
           <Link
