@@ -54,6 +54,12 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **Cakupan Nomor Telepon Global & Pembersih UI Email**:
+  - Menghapus simbol `@` yang berlebih pada input email sehingga hanya menyisakan ikon amplop yang bersih dan minimalis.
+  - Mengubah prefix nomor telepon menjadi pemilih kode negara global interaktif (OSINT Industries style):
+    - Mendukung katalog negara global lengkap dengan bendera dan kode panggil (+62 Indonesia, +60 Malaysia, +65 Singapura, +855 Kamboja, +95 Myanmar, +1 AS, +44 UK, +234 Nigeria, dll).
+    - Dilengkapi pencarian nama negara atau kode panggil secara instan.
+    - Backend Go (`AnalyzePhone`) diperbarui untuk mengenali operator internasional dan negara asal nomor secara otomatis.
 - **UI Radar Forensik Presisi (Gaya OSINT Industries Search Dock)**:
   - Mengubah pemilih target 6 kotak kaku menjadi deretan dock pill horizontal dinamis persis referensi OSINT Industries:
     - Target tidak aktif hanya menampilkan ikon minimalis (Chat, Web, Telepon, Rekening, Email, Berkas).
