@@ -18,6 +18,7 @@ import {
   Mail,
   Upload,
   FileText,
+  ChevronDown,
 } from "lucide-react";
 
 interface ScannerTabProps {
@@ -74,7 +75,21 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
+  const [bankFilterQuery, setBankFilterQuery] = useState("");
+
   const selectedBankObj = BANK_CATALOG.find((b) => b.id.toLowerCase() === inputBankName.toLowerCase()) || BANK_CATALOG[0];
+
+  const filteredBanks = BANK_CATALOG.filter((b) => {
+    if (!bankFilterQuery.trim()) return true;
+    const q = bankFilterQuery.toLowerCase();
+    return (
+      b.name.toLowerCase().includes(q) ||
+      b.fullName.toLowerCase().includes(q) ||
+      b.code.toLowerCase().includes(q) ||
+      b.type.toLowerCase().includes(q)
+    );
+  });
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -212,200 +227,179 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
       {/* Main Scanner Card */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-5 shadow-xl">
-        {/* Multi-Target Category Tabs */}
-        <div>
-          <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-            Pilih Target Investigasi:
-          </label>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = scanType === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setScanType(tab.id as ScanCategory);
-                    setResult(null);
-                    setErrorMsg("");
-                  }}
-                  className={`flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-medium transition-all ${
-                    isActive
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 border border-blue-500"
-                      : "bg-[#0d0e12] border border-white/5 text-slate-400 hover:text-white hover:border-white/10"
-                  }`}
-                >
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-slate-400"}`} />
-                  <span className="text-[11px] leading-tight text-center">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+        {/* Multi-Target Category Tabs (OSINT Industries Dynamic Pill Dock) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = scanType === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setScanType(tab.id as ScanCategory);
+                  setResult(null);
+                  setErrorMsg("");
+                  setIsBankDropdownOpen(false);
+                }}
+                className={`flex items-center gap-2 py-2 px-3.5 rounded-full text-xs transition-all duration-200 cursor-pointer shrink-0 ${
+                  isActive
+                    ? "bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30 border border-blue-500"
+                    : "bg-[#060a14] border border-white/10 text-slate-400 hover:text-white hover:border-white/20 hover:bg-white/5"
+                }`}
+                title={tab.label}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {isActive && (
+                  <span className="text-xs font-semibold tracking-tight whitespace-nowrap animate-in fade-in duration-200">
+                    {tab.label}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Input Form Fields by Active Tab */}
-        <div className="pt-2 border-t border-white/10">
+        {/* Input Form Fields by Active Tab (OSINT Industries Unified Input Style) */}
+        <div className="pt-1">
           {scanType === "text" && (
-            <div className="space-y-2">
-              <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Muatan Teks Pesan WhatsApp / SMS / Telegram:
-              </label>
+            <div className="rounded-xl border border-white/10 bg-[#060a14] p-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
               <textarea
-                rows={4}
+                rows={3}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Contoh: Halo kak, kami dari Shopee/YouTube membuka lowongan sampingan like video komisi 300rb per hari. Hubungi telegram admin untuk klaim bonus..."
-                className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none font-sans"
+                placeholder="Tempel atau ketik muatan teks pesan WhatsApp, SMS, atau Telegram di sini..."
+                className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none resize-none font-sans"
               />
             </div>
           )}
 
           {scanType === "url" && (
-            <div className="space-y-2">
-              <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Alamat Web atau Tautan yang Diterima:
-              </label>
-              <div className="flex rounded-xl border border-white/10 bg-[#060a14] overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                <span className="inline-flex items-center px-3.5 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono">
-                  https://
-                </span>
-                <input
-                  type="text"
-                  value={inputURL}
-                  onChange={(e) => setInputURL(e.target.value)}
-                  placeholder="bca-tarif-transaksi.xyz/login atau link penerimaan bansos"
-                  className="w-full p-3 text-sm text-white bg-transparent placeholder-slate-600 focus:outline-none"
-                />
-              </div>
+            <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
+              <span className="flex items-center gap-1 px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono shrink-0 select-none">
+                <Globe className="h-3.5 w-3.5 text-blue-400" />
+                <span>https://</span>
+              </span>
+              <input
+                type="text"
+                value={inputURL}
+                onChange={(e) => setInputURL(e.target.value)}
+                placeholder="bca-tarif-transaksi.xyz/login atau link bansos..."
+                className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
+              />
             </div>
           )}
 
           {scanType === "phone" && (
-            <div className="space-y-2">
-              <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Nomor Telepon atau WhatsApp yang Menghubungi:
-              </label>
+            <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
+              <span className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-slate-300 bg-white/5 border-r border-white/10 font-mono font-bold shrink-0 select-none">
+                <span>🇮🇩 +62</span>
+              </span>
               <input
                 type="text"
                 value={inputPhone}
                 onChange={(e) => setInputPhone(e.target.value)}
-                placeholder="Contoh: 085819238491 atau +62821..."
-                className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                placeholder="85819238491 atau 08..."
+                className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
-              <p className="text-[11px] text-slate-500">
-                Sistem akan memverifikasi operator, kode wilayah, serta rekam jejak laporan kejahatan di basis data.
-              </p>
             </div>
           )}
 
           {scanType === "bank" && (
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                    Pilih Bank atau E-Wallet:
-                  </label>
-                  <span className="text-[11px] font-mono text-blue-400 font-semibold truncate max-w-[200px]">
-                    {selectedBankObj?.fullName}
-                  </span>
-                </div>
+            <div className="relative">
+              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+                {/* Integrated Bank Dropdown Trigger (OSINT Industries style) */}
+                <button
+                  type="button"
+                  onClick={() => setIsBankDropdownOpen(!isBankDropdownOpen)}
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                >
+                  <CreditCard className="h-3.5 w-3.5 text-blue-400" />
+                  <span>{selectedBankObj?.code}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
+                </button>
 
-                {/* Bank Nasional Group */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
-                    Bank Nasional:
-                  </span>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-                    {BANK_LIST.map((b) => {
-                      const isActive = inputBankName.toLowerCase() === b.id.toLowerCase();
-                      return (
-                        <button
-                          key={b.id}
-                          type="button"
-                          onClick={() => setInputBankName(b.id)}
-                          className={`py-2 px-1.5 rounded-xl text-xs font-semibold transition-all text-center cursor-pointer ${
-                            isActive
-                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500 font-bold"
-                              : "bg-[#0a0d14] border border-white/5 text-slate-300 hover:text-white hover:border-white/15 hover:bg-[#0f1422]"
-                          }`}
-                        >
-                          <span className="block truncate">{b.code}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* E-Wallet Group */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
-                    Dompet Digital (E-Wallet):
-                  </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                    {EWALLET_LIST.map((w) => {
-                      const isActive = inputBankName.toLowerCase() === w.id.toLowerCase();
-                      return (
-                        <button
-                          key={w.id}
-                          type="button"
-                          onClick={() => setInputBankName(w.id)}
-                          className={`py-2 px-1.5 rounded-xl text-xs font-semibold transition-all text-center cursor-pointer ${
-                            isActive
-                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500 font-bold"
-                              : "bg-[#0a0d14] border border-white/5 text-slate-300 hover:text-white hover:border-white/15 hover:bg-[#0f1422]"
-                          }`}
-                        >
-                          <span className="block truncate">{w.code}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Nomor Rekening / Akun {selectedBankObj?.code}:
-                </label>
+                {/* Account Input */}
                 <input
                   type="text"
                   value={inputBankAcc}
                   onChange={(e) => setInputBankAcc(e.target.value)}
-                  placeholder={`Masukkan nomor rekening / akun ${selectedBankObj?.code}`}
-                  className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                  placeholder={`Masukkan nomor rekening / akun ${selectedBankObj?.code}...`}
+                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
                 />
               </div>
+
+              {/* Dropdown Menu Anchored Beneath */}
+              {isBankDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
+                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
+                    <input
+                      type="text"
+                      value={bankFilterQuery}
+                      onChange={(e) => setBankFilterQuery(e.target.value)}
+                      placeholder="Cari bank atau e-wallet..."
+                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  {filteredBanks.map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => {
+                        setInputBankName(b.id);
+                        setIsBankDropdownOpen(false);
+                        setBankFilterQuery("");
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
+                        inputBankName.toLowerCase() === b.id.toLowerCase()
+                          ? "bg-blue-600/20 text-blue-300 font-bold"
+                          : "text-slate-300 hover:bg-white/5"
+                      }`}
+                    >
+                      <span className="truncate">{b.fullName}</span>
+                      <span className="text-[10px] font-mono text-slate-500 ml-2 shrink-0">{b.type}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {scanType === "email" && (
-            <div className="space-y-2">
-              <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Alamat Email Pengirim:
-              </label>
+            <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
+              <span className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono shrink-0 select-none">
+                <Mail className="h-3.5 w-3.5 text-blue-400" />
+                <span>@</span>
+              </span>
               <input
                 type="email"
                 value={inputEmail}
                 onChange={(e) => setInputEmail(e.target.value)}
-                placeholder="Contoh: rekrutmen.pertamina@gmail.com atau official@bca-promo.site"
-                className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                placeholder="rekrutmen.pertamina@gmail.com atau official@..."
+                className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
-              <p className="text-[11px] text-slate-500">
-                PANDU memeriksa apakah pengirim menggunakan email sekali pakai, domain tiruan (typosquatting), atau mencatut instansi perbankan dengan webmail gratisan.
-              </p>
             </div>
           )}
 
           {scanType === "file" && (
             <div className="space-y-3">
-              <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Pemeriksaan Berkas (.APK, Dokumen, atau Screenshot Bukti):
-              </label>
-
-              <div className="rounded-xl border border-dashed border-white/20 bg-[#060a14] p-5 text-center">
-                <Upload className="h-7 w-7 text-blue-400 mx-auto mb-2" />
-                <label className="inline-block cursor-pointer rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors">
-                  <span>Pilih Berkas dari HP</span>
+              <div className="flex items-center justify-between rounded-xl border border-dashed border-white/20 bg-[#060a14] p-3 sm:p-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-9 w-9 rounded-lg bg-blue-950/60 border border-blue-500/30 flex items-center justify-center shrink-0">
+                    <Upload className="h-4 w-4 text-blue-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-white truncate">
+                      {selectedFile ? selectedFile.name : "Pilih berkas .APK, dokumen, atau gambar"}
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Maksimal 5 MB"}
+                    </p>
+                  </div>
+                </div>
+                <label className="cursor-pointer rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shrink-0">
+                  <span>{selectedFile ? "Ganti" : "Pilih File"}</span>
                   <input
                     type="file"
                     onChange={handleFileUpload}
@@ -413,21 +407,17 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     accept=".apk,.exe,.zip,.pdf,.jpg,.jpeg,.png,.webp"
                   />
                 </label>
-                <p className="text-[11px] text-slate-500 mt-2">
-                  Byte berkas diperiksa langsung, maksimal 5 MB. Didukung: APK, gambar PNG/JPG, PDF, ZIP, dan berkas executable untuk analisis statis.
-                </p>
               </div>
 
               {selectedFile && (
-                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center gap-2 text-xs">
-                    <FileText className="h-4 w-4 text-blue-400" />
-                    <span className="font-mono text-white font-medium break-all">{selectedFile.name}</span>
-                    <span className="text-slate-500">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-2.5 px-3">
+                  <div className="flex items-center gap-2 text-xs min-w-0">
+                    <FileText className="h-4 w-4 text-blue-400 shrink-0" />
+                    <span className="font-mono text-white font-medium truncate">{selectedFile.name}</span>
                   </div>
                   <button
                     onClick={() => setSelectedFile(null)}
-                    className="text-xs text-slate-400 hover:text-white"
+                    className="text-xs text-rose-400 hover:text-rose-300 ml-2 shrink-0 cursor-pointer"
                   >
                     Hapus
                   </button>
