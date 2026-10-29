@@ -54,6 +54,16 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **UI Radar Forensik Presisi (Gaya OSINT Industries Search Dock)**:
+  - Mengubah pemilih target 6 kotak kaku menjadi deretan dock pill horizontal dinamis persis referensi OSINT Industries:
+    - Target tidak aktif hanya menampilkan ikon minimalis (Chat, Web, Telepon, Rekening, Email, Berkas).
+    - Saat diklik, tab yang aktif otomatis bertransisi melebar memunculkan nama target (`Pesan Chat`, `Rekening Bank`, dll).
+  - Mengintegrasikan kolom input menjadi satu kesatuan (*unified continuous input container*):
+    - Rekening Bank: Menyatukan pemilih bank sebagai tombol prefix di sisi kiri (`[ 💳 BCA ▾ ]`) dengan dropdown popover ringkas yang menempel langsung di bawahnya, bersanding dengan kolom nomor rekening.
+    - No. Telepon: Prefix kode negara bendera `[ 🇮🇩 +62 ]` menyatu di dalam baris input.
+    - Tautan Web: Prefix protokol `[ 🌐 https:// ]` menyatu di dalam baris input.
+    - Alamat Email: Prefix simbol `[ ✉️ @ ]` menyatu di dalam baris input.
+  - Memangkas ruang vertikal secara drastis, menghilangkan popup modal, dan memberikan nuansa perkakas investigasi intelijen yang rapi dan profesional.
 - **UI Pemilih Bank & E-Wallet Ergonomis (Zero Modal, 1-Tap FinTech Grid)**:
   - Menghapus modal pop-up berlebih, search bar berlebihan, dan filter angka yang kaku.
   - Menggantinya dengan grid tombol bank & e-wallet langsung di halaman (1-tap):
