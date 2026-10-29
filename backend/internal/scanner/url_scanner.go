@@ -519,7 +519,7 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 
 	// 8. Query public registration, scan context, and live web footprint in parallel.
 	if net.ParseIP(host) == nil {
-		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 		type sourceResponse struct{ source SourceResult }
 		ch := make(chan sourceResponse, 3)
 		go func() { ch <- sourceResponse{QueryRDAPDomain(ctx, host)} }()

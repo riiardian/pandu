@@ -77,7 +77,7 @@ func sortSources(sources []SourceResult) {
 	sort.SliceStable(sources, func(i, j int) bool { return sources[i].ID < sources[j].ID })
 }
 
-var threatHTTPClient = &http.Client{Timeout: 5 * time.Second}
+var threatHTTPClient = &http.Client{Timeout: 10 * time.Second}
 var stopForumSpamBaseURL = "https://api.stopforumspam.org/api"
 var circlHashlookupBaseURL = "https://hashlookup.circl.lu/lookup/sha256"
 var rdapBaseURL = "https://rdap.org/domain"
