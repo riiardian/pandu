@@ -273,10 +273,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {/* Intro Header Section */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-2 shadow-xl">
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Radar Forensik Siber
+          Investigasi Ancaman Digital
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Layanan deteksi terpadu untuk memverifikasi nomor kontak, rekening bank, tautan web, email, dan muatan file mencurigakan dari potensi kejahatan sosial engineering.
+          Verifikasi nomor kontak, rekening bank, tautan web, email, dan berkas mencurigakan berbasis data intelijen terbuka dan analisis rekayasa sosial.
         </p>
       </section>
 

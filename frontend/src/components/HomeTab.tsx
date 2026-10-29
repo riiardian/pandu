@@ -146,7 +146,7 @@ export default function HomeTab() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
-                  Radar Forensik
+                  Investigasi Ancaman Digital
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Investigasi otomatis pesan chat, nomor telepon, rekening bank, email, tautan web, hingga berkas APK dan gambar untuk menelusuri rekam jejak digital kejahatan siber secara menyeluruh.

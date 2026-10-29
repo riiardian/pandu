@@ -76,7 +76,7 @@ export default function Header() {
 
   const NAV_ITEMS = [
     { href: "/", label: "Beranda", icon: Home, active: isHome },
-    { href: "/xray", label: "Radar Forensik", icon: Search, active: isXray },
+    { href: "/xray", label: "Investigasi Ancaman", icon: Search, active: isXray },
     { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
     { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
     { href: "/#alur-kerja", label: "Alur Kerja Sistem", icon: Workflow, active: false },

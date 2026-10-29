@@ -4,8 +4,8 @@ import GeminiBackground from "@/components/GeminiBackground";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Radar Forensik Siber — PANDU",
-  description: "Layanan deteksi terpadu untuk memverifikasi nomor kontak, rekening bank, tautan web, email, dan muatan file mencurigakan dari potensi kejahatan sosial engineering.",
+  title: "Investigasi Ancaman Digital — PANDU",
+  description: "Verifikasi nomor kontak, rekening bank, tautan web, email, dan berkas mencurigakan berbasis data intelijen terbuka dan analisis rekayasa sosial.",
 };
 
 export default function XrayPage() {
