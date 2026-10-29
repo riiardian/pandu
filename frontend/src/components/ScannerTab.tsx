@@ -875,44 +875,46 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </div>
           )}
 
-          {/* Action CTA */}
-          <div className="pt-1 flex justify-end">
-            <button
-              onClick={() => {
-                const payload = {
-                  category:
-                    result.detected_category?.includes("APK") || result.file_type_category === "APK_TROJAN"
-                      ? "APK_SNIFFER"
-                      : result.detected_category?.includes("Loker")
-                      ? "LOKER_FREELANCE"
-                      : "PHISHING_URL",
-                  suspect_url:
-                    result.normalized_url ||
-                    result.clean_number ||
-                    result.email ||
-                    result.file_name ||
-                    "",
-                  chronology: `Hasil investigasi PANDU: ${
-                    result.detected_category || result.threat_level || "indikator digital"
-                  }. Indeks indikator ${result.risk_score}%.`,
-                };
-                if (typeof window !== "undefined") {
-                  try {
-                    sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
-                  } catch (e) {}
-                }
-                if (onForwardToDossier) {
-                  onForwardToDossier(payload);
-                } else {
-                  router.push("/aksi");
-                }
-              }}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all w-full sm:w-auto cursor-pointer"
-            >
-              <span>Bawa ke Pusat Laporan &amp; Dossier</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          {/* Action CTA (Hanya muncul jika di luar batas aman / skor > 20) */}
+          {result.risk_score > 20 && (
+            <div className="pt-1 flex justify-end">
+              <button
+                onClick={() => {
+                  const payload = {
+                    category:
+                      result.detected_category?.includes("APK") || result.file_type_category === "APK_TROJAN"
+                        ? "APK_SNIFFER"
+                        : result.detected_category?.includes("Loker")
+                        ? "LOKER_FREELANCE"
+                        : "PHISHING_URL",
+                    suspect_url:
+                      result.normalized_url ||
+                      result.clean_number ||
+                      result.email ||
+                      result.file_name ||
+                      "",
+                    chronology: `Hasil investigasi PANDU: ${
+                      result.detected_category || result.threat_level || "indikator digital"
+                    }. Indeks indikator ${result.risk_score}%.`,
+                  };
+                  if (typeof window !== "undefined") {
+                    try {
+                      sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
+                    } catch (e) {}
+                  }
+                  if (onForwardToDossier) {
+                    onForwardToDossier(payload);
+                  } else {
+                    router.push("/aksi");
+                  }
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all w-full sm:w-auto cursor-pointer"
+              >
+                <span>Bawa ke Pusat Laporan &amp; Dossier</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
