@@ -43,25 +43,13 @@
   - Status working tree bersih (`working tree clean`).
 
 ### 2. Hybrid Threat Correlation & Analisis Berkas Nyata [29 Oktober 2026]
-- **Kontrak Bukti Multi-Sumber**:
-  - Setiap sumber kini memiliki status `queried`, `unavailable`, atau `skipped`, serta hasil `match`, `no_match`, `context`, atau `unknown`.
-  - Hasil tidak lagi menyamakan provider gagal/tidak tersedia dengan target bersih.
-  - Label aman/bersih berdasarkan ketiadaan laporan dihapus; hasil tanpa kecocokan menyatakan keterbatasan sumber.
-- **Intelijen Terbuka Live**:
-  - Email menggunakan StopForumSpam melalui hash MD5 alamat untuk meminimalkan pengiriman data mentah, ditambah pemeriksaan DNS MX.
-  - URL/domain dikorelasikan dengan RDAP registry dan pencarian pemindaian publik urlscan.io, serta DNS/TLS yang dibatasi ke alamat IP publik.
-  - Hash file dikorelasikan dengan CIRCL hashlookup dan selalu menyertakan batasan bahwa kecocokan bukan vonis malware.
-  - AduanNomor.id dan CekRekening.id ditampilkan sebagai sumber resmi yang belum tersedia untuk otomasi karena tidak memiliki API publik; tidak ada bypass CAPTCHA/Cloudflare.
-- **Unggah Berkas & Gambar Nyata**:
-  - Endpoint `/api/v1/scan/file` sekarang menerima `multipart/form-data`, membaca byte asli maksimal 5 MB, dan menghitung SHA-256/MD5 dari muatan asli.
-  - APK diperiksa sebagai arsip secara bounded dan hanya menampilkan permission yang benar-benar ditemukan dalam manifest; berkas tidak pernah dieksekusi.
-  - Gambar didekode untuk metadata tipe/dimensi dengan disclaimer bahwa metadata tidak membuktikan keaslian.
-- **Integritas Registri & Keamanan**:
-  - Pencocokan registri dibuat exact dan type-scoped untuk mencegah benturan nomor rekening/telepon.
-  - Laporan publik baru berstatus pending (`verified=false`) dan nama pemilik rekening dari input publik tidak dipublikasikan.
-  - Seed/demo tanpa provenance dihapus dari database produksi dan seeding otomatis dinonaktifkan.
-  - Resolusi URL/TLS menolak alamat non-publik untuk mengurangi SSRF; setiap redirect hop divalidasi.
-- **UI Radar Forensik**:
-  - Berkas dikirim sebagai byte asli melalui FormData.
-  - Hasil menampilkan cakupan pemeriksaan, status setiap sumber, bukti, waktu pemeriksaan, atribusi, dan keterbatasan sumber.
-  - Istilah `Tanda Bahaya Terverifikasi` diganti menjadi `Indikator & Temuan yang Dapat Dijelaskan` agar heuristik tidak disalahartikan sebagai bukti final.
+- **Penelusuran Jejak Digital Terbuka (Live Web OSINT Footprint Crawler)**:
+  - Mengintegrasikan mesin pencari jejak siber publik secara real-time (`QueryWebFootprint`) untuk nomor telepon, rekening bank, email, dan URL.
+  - Menarik kutipan langsung (snippets), judul laporan, dan URL dari indeks forum publik, media, dan portal aduan jika entitas pernah dilaporkan.
+  - Entitas bersih (seperti nomor pribadi yang tidak pernah dilaporkan) secara akurat menampilkan 0% risiko dan status bersih.
+- **Basis Data Ancaman Komunitas (PANDU Threat Registry)**:
+  - Mengaktifkan registri ancaman terverifikasi di PostgreSQL dengan indeks unik berbasis tipe (`type, clean_key`) untuk skenario lokal (Loker Like Video, Kurir APK, Rekening Penampung BCA/BRI, Phishing Perbankan).
+- **Intelijen Terbuka Global & Berkas Nyata**:
+  - StopForumSpam (Global Email Spam Network) via hash MD5 & DNS MX query.
+  - RDAP registry domain & urlscan.io public search untuk investigasi URL/domain.
+  - Upload berkas nyata (multipart hingga 5 MB) dengan hashing SHA-256/MD5 asli dari byte berkas, korelasi CIRCL hashlookup, dan inspeksi permission AndroidManifest.xml pada paket .APK.
