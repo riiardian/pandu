@@ -79,6 +79,7 @@ type PageContentAnalysis struct {
 	CrossOriginFormActions []string `json:"cross_origin_form_actions"`
 	HasRewardBait          bool     `json:"has_reward_bait"`
 	HasJobBait             bool     `json:"has_job_bait"`
+	HasGamblingContent     bool     `json:"has_gambling_content"`
 	RequestsPassword       bool     `json:"requests_password"`
 	RequestsOTP            bool     `json:"requests_otp"`
 	RequestsEWallet        bool     `json:"requests_ewallet"`
@@ -168,6 +169,22 @@ func AnalyzePageContentHTML(pageURL string, body []byte) PageContentAnalysis {
 
 	analysis.HasRewardBait = containsAnyText(visible, []string{"klaim hadiah", "hadiah uang", "uang gratis", "saldo gratis", "bagi-bagi uang", "bagi bagi uang", "klaim saldo", "selamat anda terpilih", "bonus tunai", "dana gratis"})
 	analysis.HasJobBait = containsAnyText(visible, []string{"lowongan kerja", "kerja online", "kerja sampingan", "tugas like", "tugas follow", "komisi harian", "deposit tugas", "tugas vip"})
+
+	rawLower := strings.ToLower(raw)
+	gamblingPatterns := []string{
+		"bandar bola", "judi online", "taruhan bola", "taruhan online", "situs judi",
+		"slot gacor", "situs slot", "slot online", "live casino", "togel online",
+		"bandar togel", "sportbook", "agen bola", "daftar slot", "maxwin",
+		"rtp slot", "deposit slot", "pragmatic play", "sbobet", "judi slot",
+		"taruhan gamesport", "judi terpercaya", "bandar terpercaya", "poker online",
+		"agen judi", "situs taruhan", "judi resmi", "slot resmi", "link alternatif slot",
+	}
+	for _, gp := range gamblingPatterns {
+		if strings.Contains(visible, gp) || strings.Contains(strings.ToLower(analysis.PageTitle), gp) || strings.Contains(rawLower, gp) {
+			analysis.HasGamblingContent = true
+			break
+		}
+	}
 	for _, provider := range []struct{ name, marker string }{{"Google", "google"}, {"Facebook", "facebook"}, {"Apple", "apple"}, {"Microsoft", "microsoft"}} {
 		if (strings.Contains(visible, "login") || strings.Contains(visible, "masuk") || strings.Contains(visible, "lanjut")) && strings.Contains(visible, provider.marker) {
 			analysis.LoginProviders = appendUnique(analysis.LoginProviders, provider.name)
@@ -240,6 +257,9 @@ func AnalyzePageContentHTML(pageURL string, body []byte) PageContentAnalysis {
 		analysis.Summary = "Halaman memiliki formulir autentikasi atau data sensitif tanpa pola umpan yang terdeteksi. Login normal tidak dinilai berbahaya hanya karena meminta kredensial."
 	} else {
 		analysis.Summary = "Tidak ditemukan kombinasi umpan dan pengambilan data sensitif pada HTML publik yang berhasil dibaca."
+	}
+	if analysis.HasGamblingContent {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Judi Online / Taruhan Ilegal")
 	}
 	if analysis.HasRewardBait {
 		analysis.PageCategories = appendUnique(analysis.PageCategories, "Promosi / Hadiah")
@@ -394,18 +414,12 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	}
 
 	// 3. Evaluasi Ekstensi Domain / TLD
-	for tld, reason := range suspiciousTLDs {
+	for tld := range suspiciousTLDs {
 		if strings.HasSuffix(host, tld) {
 			result.TLD = tld
 			// TLD alternatif hanya konteks tambahan; tidak boleh mengubah kemiripan nama menjadi vonis phishing.
 			if result.ImpersonatedBrand != "" {
 				score += 5
-				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "INFO",
-					Title:       fmt.Sprintf("Konteks Ekstensi Domain (%s)", tld),
-					Explanation: reason + " Ekstensi domain sendiri bukan bukti phishing.",
-					Snippet:     host,
-				})
 			}
 			break
 		}
@@ -503,7 +517,20 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		if len(pageAnalysis.CrossOriginFormActions) > 0 {
 			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Tujuan form lintas domain", Value: strings.Join(pageAnalysis.CrossOriginFormActions, ", ")})
 		}
-		if pageAnalysis.RiskScore > 0 {
+		if pageAnalysis.HasGamblingContent {
+			hasStructuredThreatEvidence = true
+			if score < 80 {
+				score = 80
+			}
+			result.RedFlags = append([]RedFlag{
+				{
+					Level:       "CRITICAL",
+					Title:       "Terindikasi Situs Perjudian / Taruhan Online Ilegal",
+					Explanation: "Halaman web secara eksplisit memuat konten taruhan olahraga, bandar bola, kasino, atau slot ilegal (melanggar regulasi digital Indonesia). Waspadai risiko penipuan saldo deposit, pencurian identitas rekening, dan sanksi pemblokiran akses resmi.",
+					Snippet:     pageAnalysis.PageTitle,
+				},
+			}, result.RedFlags...)
+		} else if pageAnalysis.RiskScore > 0 {
 			score += pageAnalysis.RiskScore
 			result.RedFlags = append(result.RedFlags, RedFlag{
 				Level:       "HIGH",
@@ -622,8 +649,13 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 
 	switch {
 	case hasStructuredThreatEvidence && score >= 70:
-		result.ThreatLevel = "BAHAYA / TERCATAT PADA FEED PHISHING"
-		result.Recommendations = append(result.Recommendations, "JANGAN BUKA TAUTAN INI!", "Jangan pernah memasukkan username, kata sandi, nomor kartu, atau kode OTP pada website ini.")
+		if result.PageAnalysis != nil && result.PageAnalysis.HasGamblingContent {
+			result.ThreatLevel = "BAHAYA / TERINDIKASI JUDI ONLINE"
+			result.Recommendations = append(result.Recommendations, "Situs ini terindikasi kuat sebagai platform perjudian atau taruhan online ilegal.", "Jangan melakukan pendaftaran akun, pengisian nomor rekening, atau transfer deposit uang.")
+		} else {
+			result.ThreatLevel = "BAHAYA / TERCATAT PADA FEED PHISHING"
+			result.Recommendations = append(result.Recommendations, "JANGAN BUKA TAUTAN INI!", "Jangan pernah memasukkan username, kata sandi, nomor kartu, atau kode OTP pada website ini.")
+		}
 	case score >= 35:
 		result.ThreatLevel = "WASPADA / INDIKATOR HEURISTIK"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Kemiripan nama atau struktur domain bukan bukti tindak phishing tanpa kecocokan pada sumber ancaman.")
