@@ -140,6 +140,148 @@ const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
   ],
 };
 
+function RiskGaugeDial({ score, threatLevel }: { score: number; threatLevel: string }) {
+  const clampedScore = Math.max(0, Math.min(100, score || 0));
+  // Needle angle: -90deg at 0% score to +90deg at 100% score
+  const needleAngle = -90 + (clampedScore / 100) * 180;
+  // Radius = 85, Semi-circle length = PI * 85 ≈ 267.04
+  const arcLength = 267.04;
+  const strokeOffset = arcLength - (clampedScore / 100) * arcLength;
+
+  // Dynamic colors:
+  // Score < 35: Emerald Green (#10b981)
+  // Score 35 - 69: Amber Orange (#f59e0b)
+  // Score >= 70: Rose Red (#f43f5e)
+  let color = "#10b981";
+  let glowColor = "rgba(16, 185, 129, 0.4)";
+  let badgeBorder = "border-emerald-500/30";
+  let badgeBg = "bg-emerald-950/40 text-emerald-300";
+
+  if (clampedScore >= 70) {
+    color = "#f43f5e";
+    glowColor = "rgba(244, 63, 94, 0.5)";
+    badgeBorder = "border-rose-500/40";
+    badgeBg = "bg-rose-950/50 text-rose-300";
+  } else if (clampedScore >= 35) {
+    color = "#f59e0b";
+    glowColor = "rgba(245, 158, 11, 0.45)";
+    badgeBorder = "border-amber-500/30";
+    badgeBg = "bg-amber-950/40 text-amber-300";
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center p-3 text-center select-none">
+      {/* Semi-circular Speedometer Dial */}
+      <div className="relative w-[220px] sm:w-[240px] h-[125px] sm:h-[135px]">
+        <svg viewBox="0 0 240 140" className="w-full h-full overflow-visible">
+          <defs>
+            <filter id="dialGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={color} floodOpacity="0.6" />
+            </filter>
+            <linearGradient id="trackGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.25" />
+            </linearGradient>
+          </defs>
+
+          {/* Background Track Arc */}
+          <path
+            d="M 35 115 A 85 85 0 0 1 205 115"
+            fill="none"
+            stroke="url(#trackGradient)"
+            strokeWidth="11"
+            strokeLinecap="round"
+          />
+
+          {/* Active Progress Arc */}
+          <path
+            d="M 35 115 A 85 85 0 0 1 205 115"
+            fill="none"
+            stroke={color}
+            strokeWidth="11"
+            strokeDasharray="267.04"
+            strokeDashoffset={strokeOffset}
+            strokeLinecap="round"
+            filter="url(#dialGlow)"
+            className="transition-all duration-1000 ease-out"
+          />
+
+          {/* Scale Reference Marks */}
+          <text x="24" y="132" fill="#10b981" fontSize="10" fontFamily="monospace" fontWeight="bold">0%</text>
+          <text x="120" y="24" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">50%</text>
+          <text x="216" y="132" fill="#f43f5e" fontSize="10" fontFamily="monospace" fontWeight="bold">100%</text>
+
+          {/* Panah Timbangan (Rotating Needle) */}
+          <g
+            style={{
+              transform: `rotate(${needleAngle}deg)`,
+              transformOrigin: "120px 115px",
+              transition: "transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+          >
+            {/* Needle Body */}
+            <line
+              x1="120"
+              y1="115"
+              x2="120"
+              y2="42"
+              stroke={color}
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              filter="url(#dialGlow)"
+            />
+            {/* Arrowhead / Diamond Pointer Tip */}
+            <polygon
+              points="120,32 115,44 125,44"
+              fill={color}
+              filter="url(#dialGlow)"
+            />
+            {/* Counterbalance Tail */}
+            <line
+              x1="120"
+              y1="115"
+              x2="120"
+              y2="124"
+              stroke={color}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              opacity="0.6"
+            />
+            {/* Center Pivot Point */}
+            <circle cx="120" cy="115" r="7" fill={color} />
+            <circle cx="120" cy="115" r="3" fill="#0c0d12" />
+          </g>
+        </svg>
+      </div>
+
+      {/* Numerical Score & Verdict */}
+      <div className="-mt-3 space-y-1">
+        <div
+          className="text-3xl sm:text-4xl font-black font-sans tracking-tight"
+          style={{ color, textShadow: `0 0 18px ${glowColor}` }}
+        >
+          {clampedScore}%
+        </div>
+        <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
+          Indeks Risiko
+        </div>
+        <div className="pt-1">
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${badgeBorder} ${badgeBg}`}
+          >
+            <span
+              className="h-2 w-2 rounded-full animate-pulse shrink-0"
+              style={{ backgroundColor: color }}
+            />
+            <span className="truncate max-w-xs">{threatLevel}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
   const [scanType, setScanType] = useState<ScanCategory>("text");
@@ -670,12 +812,15 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         <div className="space-y-5 animate-in fade-in duration-300">
           {/* Diagnostic Header Card */}
           <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                  Hasil Diagnosis Forensik
-                </span>
-                <h3 className="text-lg sm:text-xl font-bold text-white mt-1">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-left w-full md:w-auto flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="text-[11px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                    Hasil Diagnosis Forensik
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
                   {result.detected_category ||
                     (result.impersonated_brand
                       ? `Pencatutan ${result.impersonated_brand}`
@@ -688,22 +833,20 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       : "Pemeriksaan Keabsahan Target")}
                 </h3>
                 {result.hostname && (
-                  <p className="text-xs font-mono text-slate-500 mt-0.5">
-                    Host: {result.hostname} {result.tld ? `(${result.tld})` : ""}
+                  <p className="text-xs font-mono text-slate-400">
+                    Host: <span className="text-white font-bold">{result.hostname}</span> {result.tld ? `(${result.tld})` : ""}
+                  </p>
+                )}
+                {result.original_url && result.original_url !== result.hostname && (
+                  <p className="text-xs font-mono text-slate-500 truncate max-w-md">
+                    URL: {result.original_url}
                   </p>
                 )}
               </div>
 
-              {/* Score Badge */}
-              <div className={`flex items-center gap-3 rounded-xl border px-4 py-2.5 ${getScoreColor(result.risk_score)}`}>
-                <div className="text-right">
-                  <div className="text-2xl font-black">{result.risk_score}%</div>
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider">Indeks Risiko</div>
-                </div>
-                <div className="h-8 w-px bg-current opacity-20" />
-                <div className="text-xs font-bold uppercase tracking-wide">
-                  {result.threat_level}
-                </div>
+              {/* Dynamic Cyber Risk Gauge Dial with Needle Pointer */}
+              <div className="shrink-0 flex justify-center w-full md:w-auto">
+                <RiskGaugeDial score={result.risk_score} threatLevel={result.threat_level} />
               </div>
             </div>
 

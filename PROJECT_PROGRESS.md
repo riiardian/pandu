@@ -142,6 +142,15 @@
   - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
   - Desain UI Minimalis & Bersih: Menghapus card informasi panjang yang berlebih. Digantikan stepper kabel horizontal elegan dengan badge nomor bulat: badge tahap aktif menyala biru terang (`scale-110` + neon glow), tahap sebelumnya otomatis redup/gelap, dan di bawah kabel hanya menampilkan 1 baris status aksi yang ringkas dan padat.
   - Judul Tahapan Kustom Sesuai Pilihan Pengguna: Memperbarui judul 4 tahapan untuk seluruh 6 target scanner (Chat, URL, No. Telepon, Rekening Bank, Email, Berkas/APK/Foto) dengan terminologi yang padat, presisi, dan natural.
+- **Indikator Indeks Risiko Cyber Gauge Speedometer (Panah Timbangan Dinamis)**:
+  - Mengganti box kotak persentase lama dengan speedometer semi-sirkular (180°) berdesain dark-mode cyber forensik modern.
+  - Dilengkapi jarum timbangan dinamis (*needle indicator*) yang bergerak memutar dari -90° (skor 0%) hingga +90° (skor 100%) dengan animasi pegas (*cubic-bezier*).
+  - Skala warna dinamis & glow neon:
+    - Risiko Aman (< 35%): Hijau zamrud (*emerald*) `#10b981` dengan jarum mengarah ke kiri (0%).
+    - Risiko Waspada (35% - 69%): Kuning oranye (*amber*) `#f59e0b` dengan jarum mengarah ke tengah.
+    - Risiko Kritis (>= 70%): Merah menyala (*rose red*) `#f43f5e` dengan jarum mengarah ke kanan (100%).
+  - Memuat teks persentase besar bercahaya, label 'Indeks Risiko', dan badge status ancaman berdenyut di bawah pusat jarum.
+  - Tata letak responsif: bersanding rapi dengan informasi target di layar desktop dan terpusat elegan di layar smartphone.
 - **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
   - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
