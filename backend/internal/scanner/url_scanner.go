@@ -90,6 +90,11 @@ type URLScanResult struct {
 	Recommendations   []string            `json:"recommendations"`
 }
 
+func scoreAfterSecurityPosture(score int, posture *WebSecurityPosture) int {
+	// Security headers describe hardening quality; they neither prove legitimacy nor erase threat evidence.
+	return score
+}
+
 // AnalyzeURL evaluates a web URL against heuristic deception rules.
 func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	input := strings.TrimSpace(rawInput)
@@ -120,6 +125,7 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	result.Hostname = host
 
 	score := 0
+	hasStructuredThreatEvidence := false
 
 	// 1. Cek apakah Hostname adalah Direct IP (contoh: http://103.123.45.67/login)
 	if net.ParseIP(host) != nil {
@@ -145,12 +151,12 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 			}
 
 			if !isOfficial {
-				score += 55
+				score += 25
 				result.ImpersonatedBrand = b.BrandName
 				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "CRITICAL",
-					Title:       fmt.Sprintf("Pencatutan Nama Instansi / Brand Resmi: %s", b.BrandName),
-					Explanation: fmt.Sprintf("Domain '%s' memuat nama '%s', namun domain resmi yang sah adalah '%s'. Ini adalah indikasi kuat situs tiruan (phishing) yang berniat mencuri akun Anda.", host, b.BrandName, strings.Join(b.OfficialDomains, ", ")),
+					Level:       "MEDIUM",
+					Title:       fmt.Sprintf("Kemiripan Nama dengan Brand Resmi: %s", b.BrandName),
+					Explanation: fmt.Sprintf("Domain '%s' memuat kata yang menyerupai brand '%s', sedangkan domain resmi yang dikenal adalah '%s'. Ini adalah indikator heuristik untuk verifikasi lebih lanjut, bukan bukti bahwa situs melakukan phishing.", host, b.BrandName, strings.Join(b.OfficialDomains, ", ")),
 					Snippet:     host,
 				})
 			}
@@ -161,13 +167,13 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	for tld, reason := range suspiciousTLDs {
 		if strings.HasSuffix(host, tld) {
 			result.TLD = tld
-			// Ekstensi berbiaya murah hanya menjadi penalti jika dikombinasikan dengan pencatutan brand!
+			// TLD alternatif hanya konteks tambahan; tidak boleh mengubah kemiripan nama menjadi vonis phishing.
 			if result.ImpersonatedBrand != "" {
-				score += 30
+				score += 5
 				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "CRITICAL",
-					Title:       fmt.Sprintf("Pencatutan Brand Menggunakan TLD Murah (%s)", tld),
-					Explanation: reason,
+					Level:       "INFO",
+					Title:       fmt.Sprintf("Konteks Ekstensi Domain (%s)", tld),
+					Explanation: reason + " Ekstensi domain sendiri bukan bukti phishing.",
 					Snippet:     host,
 				})
 			}
@@ -253,7 +259,8 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 			s := (<-ch).source
 			result.Sources = append(result.Sources, s)
 			if s.ID == "urlscan" && s.Outcome == OutcomeMatch {
-				score += 60
+				hasStructuredThreatEvidence = true
+				score += 80
 				result.RedFlags = append(result.RedFlags, RedFlag{
 					Level:       "CRITICAL",
 					Title:       "Domain Tercatat pada Feed Phishing Terstruktur",
@@ -309,11 +316,9 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	posture := AuditWebSecurityPosture(input)
 	if posture != nil {
 		result.WebPosture = posture
+		score = scoreAfterSecurityPosture(score, posture)
 		if strings.HasPrefix(posture.SecurityGrade, "A") {
-			if result.ImpersonatedBrand == "" {
-				score = 0
-			}
-			result.Recommendations = append(result.Recommendations, "Situs web tujuan memiliki struktur pertahanan web modern yang aktif (HTTPS, HSTS, dan proteksi clickjacking).")
+			result.Recommendations = append(result.Recommendations, "Situs menerapkan hardening web modern. Ini menunjukkan kualitas konfigurasi teknis, bukan bukti identitas pemilik atau reputasi keamanan situs.")
 		} else if strings.HasPrefix(posture.SecurityGrade, "C") && result.ImpersonatedBrand != "" {
 			score += 15
 			result.RedFlags = append(result.RedFlags, RedFlag{
@@ -336,19 +341,25 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		}
 	}
 
-	// Cap score
+	// Heuristik lokal tidak boleh menghasilkan vonis phishing tinggi tanpa bukti ancaman terstruktur.
+	if !hasStructuredThreatEvidence && score > 60 {
+		score = 60
+	}
 	if score > 100 {
 		score = 100
 	}
 	result.RiskScore = score
 
 	switch {
-	case score >= 70:
-		result.ThreatLevel = "BAHAYA / INDIKASI PHISHING TINGGI"
+	case hasStructuredThreatEvidence && score >= 70:
+		result.ThreatLevel = "BAHAYA / TERCATAT PADA FEED PHISHING"
 		result.Recommendations = append(result.Recommendations, "JANGAN BUKA TAUTAN INI!", "Jangan pernah memasukkan username, kata sandi, nomor kartu, atau kode OTP pada website ini.")
 	case score >= 35:
-		result.ThreatLevel = "WASPADA / MENCURIGAKAN"
-		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Pastikan Anda hanya mengakses situs resmi instansi terkait.")
+		result.ThreatLevel = "WASPADA / INDIKATOR HEURISTIK"
+		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Kemiripan nama atau struktur domain bukan bukti tindak phishing tanpa kecocokan pada sumber ancaman.")
+	case score > 0:
+		result.ThreatLevel = "PERLU VERIFIKASI / INDIKATOR HEURISTIK RINGAN"
+		result.Recommendations = append(result.Recommendations, "Ditemukan kemiripan struktur atau nama domain, tetapi tidak ada kecocokan pada feed ancaman yang berhasil diperiksa.")
 	default:
 		result.ThreatLevel = "TIDAK DITEMUKAN INDIKATOR ANCAMAN PADA SUMBER YANG DIPERIKSA"
 		result.Recommendations = append(result.Recommendations, "Tidak ditemukannya indikator pada sumber yang berhasil diperiksa bukan jaminan bahwa website aman.")

@@ -124,3 +124,8 @@
   - Riwayat urlscan biasa tetap dianggap konteks netral; hanya entri urlscan yang menyebut sumber feed OpenPhish dinaikkan menjadi kecocokan ancaman.
   - Nomor/rekening yang dilaporkan masyarakat tetap dikelola terpisah di Pusat Laporan PANDU dan tidak disamarkan sebagai intelijen internet eksternal.
   - Menambahkan regression test agar route `/scan/text`, `/scan/phone`, dan `/scan/bank` tetap tidak terekspos sampai sumber eksternal yang sah tersedia.
+- **Kalibrasi Skor URL — Pemisahan Heuristik dan Bukti Ancaman**:
+  - Memperbaiki false-positive `autogopay.site` yang sebelumnya memperoleh 85% hanya dari substring brand (+55) dan ekstensi `.site` (+30), meski tidak ada kecocokan urlscan/OpenPhish maupun jejak laporan publik.
+  - Kemiripan nama brand kini berbobot heuristik 25 dan TLD alternatif hanya konteks tambahan 5; keduanya tidak boleh menghasilkan status `phishing tinggi` tanpa bukti ancaman terstruktur.
+  - Status bahaya tinggi kini memerlukan provenance feed ancaman seperti OpenPhish. Grade A security headers diperlakukan sebagai konteks hardening teknis, bukan bukti situs resmi dan bukan penghapus bukti ancaman.
+  - Menambahkan regression test untuk pemisahan Grade A, heuristik brand, dan bukti reputasi terstruktur.

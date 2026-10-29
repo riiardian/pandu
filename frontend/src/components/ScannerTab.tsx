@@ -124,8 +124,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
   const getScoreColor = (score: number) => {
     if (score >= 70) return "text-rose-400 bg-rose-950/40 border-rose-500/40";
-    if (score >= 35) return "text-amber-400 bg-amber-950/40 border-amber-500/40";
-    return "text-emerald-400 bg-emerald-950/40 border-emerald-500/40";
+    if (score >= 35) return "text-indigo-300 bg-indigo-950/30 border-indigo-500/30";
+    return "text-blue-300 bg-blue-950/25 border-blue-500/25";
   };
 
   const TABS = [

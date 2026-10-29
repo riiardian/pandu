@@ -89,16 +89,17 @@ func TestAnalyzeText_NormalConversation(t *testing.T) {
 	}
 }
 
-func TestAnalyzeURL_BrandPhishing(t *testing.T) {
-	phishingURL := "https://bca-promo-gebyar-hadiah.xyz/login"
-	res := AnalyzeURL(phishingURL, false)
+func TestAnalyzeURL_BrandSimilarityWithoutThreatFeedStaysHeuristic(t *testing.T) {
+	res := AnalyzeURL("https://autogopay.site", false)
 
-	if res.RiskScore < 70 {
-		t.Fatalf("Expected critical risk score for BCA typosquatting on .xyz, got %d", res.RiskScore)
+	if res.ImpersonatedBrand != "GoPay Indonesia" {
+		t.Fatalf("expected GoPay similarity context, got: %s", res.ImpersonatedBrand)
 	}
-
-	if res.ImpersonatedBrand != "Bank Central Asia (BCA)" {
-		t.Fatalf("Expected BCA to be detected as impersonated brand, got: %s", res.ImpersonatedBrand)
+	if res.RiskScore >= 70 {
+		t.Fatalf("brand substring and alternative TLD without external threat-feed match must not produce a phishing verdict, got %d", res.RiskScore)
+	}
+	if strings.Contains(res.ThreatLevel, "PHISHING TINGGI") {
+		t.Fatalf("heuristics alone must not claim high-confidence phishing: %s", res.ThreatLevel)
 	}
 }
 
@@ -108,6 +109,16 @@ func TestAnalyzeURL_OfficialDomain(t *testing.T) {
 
 	if res.RiskScore > 10 {
 		t.Fatalf("Expected low risk score for official domain, got %d", res.RiskScore)
+	}
+}
+
+func TestSecurityGradeAIsContextNotReputationEvidence(t *testing.T) {
+	posture := &WebSecurityPosture{SecurityGrade: "A (Infrastruktur Terlindungi & Sangat Tangguh)"}
+	if got := scoreAfterSecurityPosture(80, posture); got != 80 {
+		t.Fatalf("Grade A headers must not erase structured threat evidence; got %d", got)
+	}
+	if got := scoreAfterSecurityPosture(30, posture); got != 30 {
+		t.Fatalf("Grade A headers must not erase local heuristic context; got %d", got)
 	}
 }
 
