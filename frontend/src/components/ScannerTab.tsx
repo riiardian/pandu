@@ -801,30 +801,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <RiskGaugeDial score={result.risk_score} />
           </div>
 
-          {/* Temuan Indikator (Hanya temuan berbobot, tanpa info sepele) */}
-          {result.red_flags && result.red_flags.filter((rf: any) => rf.level !== "INFO").length > 0 && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 space-y-2">
-              <div className="text-xs font-bold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Flame className="h-4 w-4" />
-                <span>Temuan Indikator ({result.red_flags.filter((rf: any) => rf.level !== "INFO").length})</span>
-              </div>
-              <div className="space-y-1.5 pt-1">
-                {result.red_flags.filter((rf: any) => rf.level !== "INFO").map((rf: any, idx: number) => (
-                  <div key={idx} className="flex items-start gap-2 text-xs">
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
-                      rf.level === "CRITICAL" ? "bg-rose-950 text-rose-300 border border-rose-500/40" : "bg-amber-950 text-amber-300 border border-amber-500/40"
-                    }`}>
-                      {rf.level}
-                    </span>
-                    <p className="text-slate-300 leading-relaxed">
-                      <strong className="text-white">{rf.title}:</strong> {rf.explanation}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Analisis AI Vision untuk Berkas / Gambar */}
           {result.ai_vision_result && (
             <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
@@ -839,18 +815,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </div>
           )}
 
-          {/* Sumber Data yang Diperiksa (Hanya tampilkan sumber aktif yang terverifikasi) */}
+          {/* Sumber Data yang Diperiksa (Clean & Minimalist) */}
           {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
-            <div className="rounded-xl border border-white/10 bg-[#0c0d12] p-4 space-y-3">
-              <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2.5">
-                <span className="font-mono font-bold text-slate-300 uppercase tracking-wider">
-                  Sumber Data Diperiksa ({result.sources.filter((s: any) => s.status === "queried").length})
-                </span>
-                <span className="text-[11px] font-mono text-slate-500">
-                  Terverifikasi Real-Time
-                </span>
+            <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
+              <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
+                Sumber Data Diperiksa ({result.sources.filter((s: any) => s.status === "queried").length})
               </div>
-              <div className="divide-y divide-white/5">
+              <div className="space-y-3.5 pt-0.5">
                 {result.sources.filter((s: any) => s.status === "queried").map((source: any) => {
                   const isMatch = source.outcome === "match";
 
@@ -887,27 +858,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   }
 
                   return (
-                    <div key={source.id} className="py-2.5 flex items-start justify-between gap-3 text-xs">
-                      <div className="min-w-0 flex-1 space-y-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-white">{source.name}</span>
-                          {source.attribution_url && (
-                            <a href={source.attribution_url} target="_blank" rel="noreferrer" className="text-[11px] text-blue-400 hover:text-blue-300 font-mono">
-                              [Tautan ↗]
-                            </a>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-slate-400 leading-normal truncate">
-                          {evidenceText}
-                        </p>
+                    <div key={source.id} className="space-y-1">
+                      <div className="text-sm font-semibold text-white">
+                        {source.name}
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
-                        isMatch
-                          ? "bg-rose-950 text-rose-300 border border-rose-500/40"
-                          : "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
-                      }`}>
-                        {isMatch ? "Ada Catatan" : "Bersih"}
-                      </span>
+                      <p className={`text-xs leading-relaxed ${isMatch ? "text-rose-300 font-medium" : "text-slate-400"}`}>
+                        {evidenceText}
+                      </p>
                     </div>
                   );
                 })}

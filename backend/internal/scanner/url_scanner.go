@@ -492,7 +492,7 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	}
 
 	// 7. Inspect page content and security behavior.
-	pageSource := NewSourceResult("page_content", "Inspeksi Konten & Perilaku Situs")
+	pageSource := NewSourceResult("page_content", "Pemeriksaan Konten & Alur Situs")
 	pageSource.Limitation = "PANDU memeriksa HTML publik tanpa mengeksekusi JavaScript berbahaya."
 	pageSource.AttributionURL = result.FinalDestination
 	if body, _, fetchErr := fetchPublicPageHTML(result.FinalDestination); fetchErr == nil {
