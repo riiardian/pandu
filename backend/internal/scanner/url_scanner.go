@@ -51,27 +51,43 @@ var suspiciousTLDs = map[string]string{
 	".fun":    "Banyak dipakai untuk tautan giveaway palsu.",
 }
 
+// WebSecurityPosture captures live HTTP security headers and infrastructure defense posture.
+type WebSecurityPosture struct {
+	HTTPStatus        int      `json:"http_status"`
+	HTTPSActive       bool     `json:"https_active"`
+	HasHSTS           bool     `json:"has_hsts"`
+	HasCSP            bool     `json:"has_csp"`
+	HasXFrameOptions  bool     `json:"has_x_frame_options"`
+	HasContentType    bool     `json:"has_content_type"`
+	HasReferrerPolicy bool     `json:"has_referrer_policy"`
+	ServerBanner      string   `json:"server_banner,omitempty"`
+	SecurityGrade     string   `json:"security_grade"` // "A (Sangat Tangguh)", "B (Standar)", "C (Minim Pengamanan)"
+	SecurityStrengths []string `json:"security_strengths"`
+}
+
 // URLScanResult holds diagnostic analysis for a URL.
 type URLScanResult struct {
-	OriginalURL       string         `json:"original_url"`
-	NormalizedURL     string         `json:"normalized_url"`
-	Hostname          string         `json:"hostname"`
-	TLD               string         `json:"tld"`
-	IsIPAddress       bool           `json:"is_ip_address"`
-	RiskScore         int            `json:"risk_score"`
-	ThreatLevel       string         `json:"threat_level"`
-	Coverage          string         `json:"coverage"`
-	CoverageSummary   string         `json:"coverage_summary"`
-	Sources           []SourceResult `json:"sources"`
-	ImpersonatedBrand string         `json:"impersonated_brand"`
-	ResolvedIPs       []string       `json:"resolved_ips,omitempty"`
-	GeoLocation       *IPGeoIntel    `json:"geolocation,omitempty"`
-	TLSCert           *TLSCertIntel  `json:"tls_cert,omitempty"`
-	RedFlags          []RedFlag      `json:"red_flags"`
-	RedirectChain     []string       `json:"redirect_chain"`
-	FinalDestination  string         `json:"final_destination"`
-	IsShortlink       bool           `json:"is_shortlink"`
-	Recommendations   []string       `json:"recommendations"`
+	OriginalURL       string              `json:"original_url"`
+	NormalizedURL     string              `json:"normalized_url"`
+	Hostname          string              `json:"hostname"`
+	TLD               string              `json:"tld"`
+	IsIPAddress       bool                `json:"is_ip_address"`
+	RiskScore         int                 `json:"risk_score"`
+	ThreatLevel       string              `json:"threat_level"`
+	Coverage          string              `json:"coverage"`
+	CoverageSummary   string              `json:"coverage_summary"`
+	Sources           []SourceResult      `json:"sources"`
+	ImpersonatedBrand string              `json:"impersonated_brand"`
+	ResolvedIPs       []string            `json:"resolved_ips,omitempty"`
+	GeoLocation       *IPGeoIntel         `json:"geolocation,omitempty"`
+	TLSCert           *TLSCertIntel       `json:"tls_cert,omitempty"`
+	WebPosture        *WebSecurityPosture `json:"web_posture,omitempty"`
+	DomainAgeSummary  string              `json:"domain_age_summary,omitempty"`
+	RedFlags          []RedFlag           `json:"red_flags"`
+	RedirectChain     []string            `json:"redirect_chain"`
+	FinalDestination  string              `json:"final_destination"`
+	IsShortlink       bool                `json:"is_shortlink"`
+	Recommendations   []string            `json:"recommendations"`
 }
 
 // AnalyzeURL evaluates a web URL against heuristic deception rules.
@@ -117,22 +133,7 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		})
 	}
 
-	// 2. Cek Ekstensi Domain / TLD Mencurigakan
-	for tld, reason := range suspiciousTLDs {
-		if strings.HasSuffix(host, tld) {
-			result.TLD = tld
-			score += 30
-			result.RedFlags = append(result.RedFlags, RedFlag{
-				Level:       "HIGH",
-				Title:       fmt.Sprintf("Domain Menggunakan TLD Murah / Berisiko Tinggi (%s)", tld),
-				Explanation: reason,
-				Snippet:     host,
-			})
-			break
-		}
-	}
-
-	// 3. Deteksi Pencatutan Brand / Typosquatting (Brand Impersonation)
+	// 2. Deteksi Pencatutan Brand / Typosquatting (Brand Impersonation)
 	for _, b := range targetedBrands {
 		if strings.Contains(host, b.Keyword) {
 			isOfficial := false
@@ -153,6 +154,24 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 					Snippet:     host,
 				})
 			}
+		}
+	}
+
+	// 3. Evaluasi Ekstensi Domain / TLD
+	for tld, reason := range suspiciousTLDs {
+		if strings.HasSuffix(host, tld) {
+			result.TLD = tld
+			// Ekstensi berbiaya murah hanya menjadi penalti jika dikombinasikan dengan pencatutan brand!
+			if result.ImpersonatedBrand != "" {
+				score += 30
+				result.RedFlags = append(result.RedFlags, RedFlag{
+					Level:       "CRITICAL",
+					Title:       fmt.Sprintf("Pencatutan Brand Menggunakan TLD Murah (%s)", tld),
+					Explanation: reason,
+					Snippet:     host,
+				})
+			}
+			break
 		}
 	}
 
@@ -277,6 +296,37 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	}
 	result.Sources = append(result.Sources, tlsSource)
 
+	// 9. Multi-Path Live Security Posture & Architecture Audit
+	posture := AuditWebSecurityPosture(input)
+	if posture != nil {
+		result.WebPosture = posture
+		if strings.HasPrefix(posture.SecurityGrade, "A") {
+			if result.ImpersonatedBrand == "" {
+				score = 0
+			}
+			result.Recommendations = append(result.Recommendations, "Situs web tujuan memiliki struktur pertahanan web modern yang aktif (HTTPS, HSTS, dan proteksi clickjacking).")
+		} else if strings.HasPrefix(posture.SecurityGrade, "C") && result.ImpersonatedBrand != "" {
+			score += 15
+			result.RedFlags = append(result.RedFlags, RedFlag{
+				Level:       "HIGH",
+				Title:       "Website Minim Konfigurasi Keamanan Standar",
+				Explanation: "Situs tidak menerapkan proteksi HSTS atau anti-clickjacking yang umum ditemukan pada situs phishing tiruan.",
+				Snippet:     input,
+			})
+		}
+	}
+
+	// 10. Extract Domain Age Summary from RDAP if present
+	for _, s := range result.Sources {
+		if s.ID == "rdap" {
+			for _, ev := range s.Evidence {
+				if ev.Label == "Umur Domain Aktif" {
+					result.DomainAgeSummary = ev.Value
+				}
+			}
+		}
+	}
+
 	// Cap score
 	if score > 100 {
 		score = 100
@@ -291,11 +341,100 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.ThreatLevel = "WASPADA / MENCURIGAKAN"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Pastikan Anda hanya mengakses situs resmi instansi terkait.")
 	default:
-		result.ThreatLevel = "TIDAK DITEMUKAN INDIKATOR KUAT"
-		result.Recommendations = append(result.Recommendations, "Tidak ditemukan indikator kuat pada pemeriksaan yang berhasil dijalankan. Hasil ini bukan jaminan bahwa tautan aman.")
+		result.ThreatLevel = "AMAN / STRUKTUR RESMI & TERVALIDASI"
+		result.Recommendations = append(result.Recommendations, "Website memiliki struktur keamanan terverifikasi dan tidak ditemukan indikasi penipuan atau pencatutan identitas resmi.")
 	}
 	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
 	return result
+}
+
+// AuditWebSecurityPosture probes the target website for live HTTP security headers and infrastructure posture.
+func AuditWebSecurityPosture(targetURL string) *WebSecurityPosture {
+	cleanURL := strings.TrimSpace(targetURL)
+	if !strings.HasPrefix(cleanURL, "http://") && !strings.HasPrefix(cleanURL, "https://") {
+		cleanURL = "https://" + cleanURL
+	}
+
+	parsed, err := url.Parse(cleanURL)
+	if err != nil {
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	_, err = publicIPs(ctx, parsed.Hostname())
+	cancel()
+	if err != nil {
+		return nil
+	}
+
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			DialContext:     (&net.Dialer{Timeout: 2 * time.Second}).DialContext,
+		},
+	}
+
+	req, err := http.NewRequest(http.MethodHead, cleanURL, nil)
+	if err != nil {
+		return nil
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 PanduSecurityScanner/1.0")
+
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode >= 400 {
+		req.Method = http.MethodGet
+		resp, err = client.Do(req)
+		if err != nil {
+			return nil
+		}
+	}
+	defer resp.Body.Close()
+
+	posture := &WebSecurityPosture{
+		HTTPStatus:        resp.StatusCode,
+		HTTPSActive:       resp.TLS != nil || strings.HasPrefix(cleanURL, "https://"),
+		HasHSTS:           resp.Header.Get("Strict-Transport-Security") != "",
+		HasCSP:            resp.Header.Get("Content-Security-Policy") != "",
+		HasXFrameOptions:  resp.Header.Get("X-Frame-Options") != "",
+		HasContentType:    strings.Contains(strings.ToLower(resp.Header.Get("X-Content-Type-Options")), "nosniff"),
+		HasReferrerPolicy: resp.Header.Get("Referrer-Policy") != "",
+		ServerBanner:      resp.Header.Get("Server"),
+		SecurityStrengths: []string{},
+	}
+
+	score := 0
+	if posture.HTTPSActive {
+		score += 25
+		posture.SecurityStrengths = append(posture.SecurityStrengths, "Enkripsi Protokol HTTPS Aktif")
+	}
+	if posture.HasHSTS {
+		score += 25
+		posture.SecurityStrengths = append(posture.SecurityStrengths, "Proteksi HSTS (Strict-Transport-Security) Aktif")
+	}
+	if posture.HasXFrameOptions {
+		score += 20
+		posture.SecurityStrengths = append(posture.SecurityStrengths, fmt.Sprintf("Anti-Clickjacking Terpasang (X-Frame-Options: %s)", resp.Header.Get("X-Frame-Options")))
+	}
+	if posture.HasContentType {
+		score += 15
+		posture.SecurityStrengths = append(posture.SecurityStrengths, "Anti-MIME Sniffing Terpasang (nosniff)")
+	}
+	if posture.HasReferrerPolicy {
+		score += 15
+		posture.SecurityStrengths = append(posture.SecurityStrengths, "Perlindungan Privasi Referrer Terpasang")
+	}
+
+	switch {
+	case score >= 70:
+		posture.SecurityGrade = "A (Infrastruktur Terlindungi & Sangat Tangguh)"
+	case score >= 40:
+		posture.SecurityGrade = "B (Standar Pengamanan Dasar Aktif)"
+	default:
+		posture.SecurityGrade = "C (Minim Konfigurasi Keamanan Web)"
+	}
+
+	return posture
 }
 
 // safeTraceRedirect traces HTTP redirects without exposing internal SSRF

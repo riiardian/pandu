@@ -568,7 +568,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             )}
 
             {/* Technical Detail Badges */}
-            {(result.operator || result.hlr_region || result.institution_type || result.bank_routing_code || result.domain || result.geolocation || result.tls_cert || result.sha256) && (
+            {(result.operator || result.hlr_region || result.institution_type || result.bank_routing_code || result.domain || result.geolocation || result.tls_cert || result.domain_age_summary || result.web_posture || result.sha256) && (
               <div className="pt-2 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 {result.operator && (
                   <div className="rounded-xl bg-white/5 p-3">
@@ -614,6 +614,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="font-bold text-white font-mono">{result.account_holder}</span>
                   </div>
                 )}
+                {result.domain_age_summary && (
+                  <div className="rounded-xl bg-white/5 p-3">
+                    <span className="text-slate-500 block">Umur Registrasi Domain:</span>
+                    <span className="font-bold text-emerald-400 font-mono">{result.domain_age_summary}</span>
+                  </div>
+                )}
                 {result.domain && (
                   <div className="rounded-xl bg-white/5 p-3">
                     <span className="text-slate-500 block">Domain Server:</span>
@@ -632,6 +638,26 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="text-slate-500 block">Penerbit Sertifikat SSL:</span>
                     <span className="font-bold text-white">{result.tls_cert.issuer}</span>
                     <span className="block text-[10px] text-slate-500 font-mono mt-0.5">Berlaku s/d {result.tls_cert.valid_until}</span>
+                  </div>
+                )}
+                {result.web_posture && (
+                  <div className="rounded-xl bg-white/5 p-3 sm:col-span-3 space-y-2 border border-blue-500/20 bg-blue-950/10">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400 block font-bold">Struktur Pertahanan Keamanan Web:</span>
+                      <span className={`font-mono font-bold text-xs ${result.web_posture.security_grade.startsWith("A") ? "text-emerald-400" : "text-amber-400"}`}>
+                        {result.web_posture.security_grade}
+                      </span>
+                    </div>
+                    {result.web_posture.security_strengths && result.web_posture.security_strengths.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                        {result.web_posture.security_strengths.map((str: string, sidx: number) => (
+                          <div key={sidx} className="flex items-center gap-1.5 text-[11px] text-slate-300">
+                            <span className="text-emerald-400">✓</span>
+                            <span>{str}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
                 {result.sha256 && (

@@ -248,7 +248,18 @@ func QueryRDAPDomain(ctx context.Context, domain string) SourceResult {
 	}
 	for _, event := range data.Events {
 		if event.Action == "registration" || event.Action == "expiration" || event.Action == "last changed" {
-			result.Evidence = append(result.Evidence, EvidenceItem{Label: event.Action, Value: event.Date})
+			label := event.Action
+			if event.Action == "registration" {
+				label = "Tanggal registrasi"
+				if t, err := time.Parse(time.RFC3339, event.Date); err == nil {
+					ageDays := int(time.Since(t).Hours() / 24)
+					result.Evidence = append(result.Evidence, EvidenceItem{
+						Label: "Umur Domain Aktif",
+						Value: fmt.Sprintf("%d Hari (Terdaftar sejak %s)", ageDays, t.Format("02 Jan 2006")),
+					})
+				}
+			}
+			result.Evidence = append(result.Evidence, EvidenceItem{Label: label, Value: event.Date})
 		}
 	}
 	return result
