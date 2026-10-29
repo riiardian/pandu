@@ -255,14 +255,14 @@ function RiskGaugeDial({ score }: { score: number }) {
             </text>
           ))}
 
-          {/* SPEEDTEST RECTANGULAR BAR NEEDLE (Bentuk Kotak Speedtest) */}
+          {/* SPEEDTEST RECTANGULAR BAR NEEDLE IN SOLID WHITE (Zero blur, zero shadow) */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Rectangular Blue Bar */}
-            <rect x="146.5" y="61" width="7" height="74" rx="1.5" fill="#2563eb" />
-            <line x1="150" y1="63" x2="150" y2="125" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" />
+            {/* Rectangular Solid White Bar */}
+            <rect x="146.5" y="61" width="7" height="74" rx="1.5" fill="#ffffff" />
+            <line x1="150" y1="63" x2="150" y2="125" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
           </g>
 
           {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
