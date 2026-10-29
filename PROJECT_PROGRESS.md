@@ -54,6 +54,23 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **Mesin Rekayasa Sosial & Taksonomi Modus Penipuan Digital Komprehensif**:
+  - Membedah pola manipulasi emosi (Cognitive Bias) multi-vektor:
+    - *Fear / Panic Exploit* (+25): Eksploitasi rasa takut dan kepanikan nyawa (kecelakaan, kritis di RS, ancaman penjara/polisi).
+    - *Financial Coercion* (+20): Desakan transaksi finansial kilat (biaya administrasi darurat, uang muka, transfer ke rekening).
+    - *Credential Harvesting* (+25): Pancingan OTP, PIN ATM, CVV, password, dan foto selfie KTP.
+    - *Urgency Exploit* (+15): Ketergesa-gesaan semu membatasi waktu berpikir logis.
+    - *Authority Bias* (+15): Pencatutan instansi RS/UGD, kepolisian, kejaksaan, dan perbankan.
+  - Implementasi detektor taksonomi kejahatan rekayasa sosial Indonesia:
+    - Modus Darurat Medis / Kecelakaan Keluarga Palsu (Medical Emergency Extortion) -> deteksi instan skor 95-100% Kritis.
+    - Modus Pemerasan Aparat Penegak Hukum / Kasus Narkoba / Tilang Gadungan.
+    - Modus Phishing Perubahan Tarif Bank / Pembajakan M-Banking.
+    - Modus Teror Pinjol / Ancaman Sebar Data Pribadi & Foto KTP (Doxing).
+    - Modus Sniffer APK Kurir / Undangan Nikah / Tilang ETLE.
+    - Modus Loker Freelance / Misi Like Video & Follow Toko (Task Scam).
+    - Modus Hadiah / Undian Palsu / Biaya Tebusan Admin di Muka.
+    - Modus Impersonasi Kerabat Ganti Nomor HP Pinjam Uang.
+    - Deteksi Korelasi Triad Rekayasa Sosial (Fear + Urgency + Coercion) yang otomatis memicu peringatan merah kritis.
 - **Jarak & Proporsi Area Upload Berkas**:
   - Menambahkan jarak pemisah tegas (`gap-3 sm:gap-4`) antara teks berkas di kiri dan tombol `Pilih File` di kanan.
   - Memperpendek teks instruksi menjadi `Unggah APK, gambar, atau dokumen` agar tidak terpotong kaku atau bertumpuk dengan tombol di layar HP.
