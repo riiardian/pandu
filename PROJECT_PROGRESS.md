@@ -54,6 +54,12 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **UI Pemilih Bank & E-Wallet Ergonomis (Zero Modal, 1-Tap FinTech Grid)**:
+  - Menghapus modal pop-up berlebih, search bar berlebihan, dan filter angka yang kaku.
+  - Menggantinya dengan grid tombol bank & e-wallet langsung di halaman (1-tap):
+    - Baris Bank Nasional: BCA, BRI, Mandiri, BNI, BSI, CIMB, Danamon, Permata, BTN, Jago, SeaBank.
+    - Baris Dompet Digital: DANA, GoPay, OVO, ShopeePay.
+  - Tombol aktif menyala biru solid, placeholder input nomor rekening sinkron otomatis mengikuti bank terpilih.
 - **Intelijen Terbuka Global & Berkas Nyata**:
   - StopForumSpam (Global Email Spam Network) via hash MD5 & DNS MX query.
   - RDAP registry domain & urlscan.io public search untuk investigasi URL/domain.
