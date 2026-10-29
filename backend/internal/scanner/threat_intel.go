@@ -393,41 +393,58 @@ func QueryWebFootprint(ctx context.Context, category, identifier string) SourceR
 	urlMatches := urlRe.FindAllStringSubmatch(bodyStr, -1)
 
 	maxItems := min(len(snipMatches), len(urlMatches))
-	var findings []EvidenceItem
-
-	targetNum := regexp.MustCompile(`[^0-9a-zA-Z]`).ReplaceAllString(clean, "")
-
-	for i := 0; i < maxItems && len(findings) < 4; i++ {
+	var rawSnippetsBuilder strings.Builder
+	for i := 0; i < maxItems && i < 6; i++ {
 		urlClean := strings.TrimSpace(tagStripRe.ReplaceAllString(urlMatches[i][1], ""))
 		snipClean := strings.TrimSpace(html.UnescapeString(tagStripRe.ReplaceAllString(snipMatches[i][1], "")))
-
-		lowerSnip := strings.ToLower(snipClean)
-		lowerUrl := strings.ToLower(urlClean)
-		hasScamRef := strings.Contains(lowerSnip, "penipuan") || strings.Contains(lowerSnip, "penipu") ||
-			strings.Contains(lowerSnip, "scam") || strings.Contains(lowerSnip, "waspada") ||
-			strings.Contains(lowerSnip, "lapor") || strings.Contains(lowerUrl, "scam") ||
-			strings.Contains(lowerUrl, "penipu") || strings.Contains(lowerUrl, "tellows") ||
-			strings.Contains(lowerUrl, "truecaller")
-
-		if hasScamRef && (strings.Contains(lowerSnip, strings.ToLower(targetNum)) || strings.Contains(lowerUrl, "scam") || strings.Contains(lowerUrl, "penipu") || strings.Contains(lowerUrl, "tellows") || strings.Contains(lowerUrl, "truecaller")) {
-			findings = append(findings, EvidenceItem{
-				Label: fmt.Sprintf("Aduan Terbuka #%d (%s)", len(findings)+1, urlClean),
-				Value: snipClean,
-			})
+		if snipClean != "" {
+			rawSnippetsBuilder.WriteString(fmt.Sprintf("%d. [%s] %s\n", i+1, urlClean, snipClean))
 		}
+	}
+	rawSnippets := rawSnippetsBuilder.String()
+	if rawSnippets == "" {
+		rawSnippets = "Tidak ada cuplikan halaman publik yang ditemukan pada indeks mesin pencari."
 	}
 
 	result.Status = SourceQueried
-	if len(findings) > 0 {
-		result.Outcome = OutcomeMatch
-		result.Matches = len(findings)
-		result.Evidence = findings
+
+	// Pass raw web scraping data to AI Agent for real-time cognitive reasoning!
+	agentCtx, agentCancel := context.WithTimeout(context.Background(), 20*time.Second)
+	osintReport, agentErr := QueryAIAgentOSINT(agentCtx, category, clean, rawSnippets)
+	agentCancel()
+
+	if agentErr == nil && osintReport != nil {
+		if osintReport.HasReportedCases {
+			result.Outcome = OutcomeMatch
+			result.Matches = len(osintReport.FoundModuses)
+			if result.Matches == 0 {
+				result.Matches = 1
+			}
+			result.Evidence = append(result.Evidence, EvidenceItem{
+				Label: "Analisis Intelijen AI Agent",
+				Value: osintReport.Explanation,
+			})
+			for idx, modus := range osintReport.FoundModuses {
+				result.Evidence = append(result.Evidence, EvidenceItem{
+					Label: fmt.Sprintf("Temuan Modus #%d", idx+1),
+					Value: modus,
+				})
+			}
+		} else {
+			result.Outcome = OutcomeNoMatch
+			result.Matches = 0
+			result.Evidence = append(result.Evidence, EvidenceItem{
+				Label: "Penalaran AI Agent atas Hasil Web",
+				Value: osintReport.Explanation,
+			})
+		}
 	} else {
+		// Fallback if AI Agent offline
 		result.Outcome = OutcomeNoMatch
 		result.Matches = 0
 		result.Evidence = append(result.Evidence, EvidenceItem{
 			Label: "Hasil Penelusuran Terbuka",
-			Value: "Tidak ditemukan jejak aduan atau laporan penipuan publik pada indeks mesin pencari terbuka.",
+			Value: "Pencarian web terbuka selesai. Tidak ditemukan jejak laporan kejahatan spesifik pada target ini.",
 		})
 	}
 

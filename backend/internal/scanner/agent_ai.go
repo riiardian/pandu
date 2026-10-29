@@ -279,3 +279,101 @@ Kembalikan HANYA JSON valid tanpa formatting markdown:
 
 	return &analysis, nil
 }
+
+// AIOSINTReport holds agentic reasoning results from open web scraping.
+type AIOSINTReport struct {
+	HasReportedCases bool     `json:"has_reported_cases"`
+	RiskScore        int      `json:"risk_score"`
+	ThreatLevel      string   `json:"threat_level"`
+	Explanation      string   `json:"explanation"`
+	FoundModuses     []string `json:"found_moduses,omitempty"`
+}
+
+// QueryAIAgentOSINT reasons over raw web scraping snippets for a target entity.
+func QueryAIAgentOSINT(ctx context.Context, targetType, targetValue, rawSnippets string) (*AIOSINTReport, error) {
+	apiKey := getRouterKey()
+	if apiKey == "" {
+		return nil, fmt.Errorf("router api key tidak ditemukan")
+	}
+
+	cleanType := strings.TrimSpace(targetType)
+	cleanVal := strings.TrimSpace(targetValue)
+	if cleanVal == "" {
+		return nil, fmt.Errorf("target value kosong")
+	}
+
+	systemPrompt := `Anda adalah AI Agent Intelijen Siber & OSINT PANDU.
+Tugas Anda: Menganalisis hasil penelusuran web terbuka (OSINT) untuk entitas yang dicurigai.
+Anda harus membedakan dengan tegas antara:
+1. Laporan riil penipuan / korban yang secara spesifik menyebut target ini.
+2. Hasil pencarian umum / halaman depan direktori (misal: deskripsi layanan Truecaller, Kredibel, atau artikel umum tentang cara menghindari penipuan) yang kebetulan muncul tetapi TIDAK menyebut target melakukan kejahatan.
+
+PANDUAN PENILAIAN:
+- Jika target benar-benar dilaporkan atau dibahas sebagai pelaku penipuan: has_reported_cases: true, risk_score: 75-95, threat_level: "WASPADA TINGGI / DITEMUKAN JEJAK ADUAN PUBLIK", jelaskan modus spesifik yang dilaporkan korban.
+- Jika hasil web HANYA memuat direktori umum, artikel edukasi, atau tidak ada aduan spesifik terhadap target ini: has_reported_cases: false, risk_score: 0, threat_level: "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN", jelaskan bahwa pencarian hanya memuat direktori umum dan tidak ada laporan penipuan terhadap target ini.
+
+Kembalikan HANYA JSON valid tanpa formatting markdown:
+{
+  "has_reported_cases": true/false,
+  "risk_score": 0-100,
+  "threat_level": "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN atau WASPADA TINGGI",
+  "explanation": "penjelasan penalaran logis atas temuan web terbuka",
+  "found_moduses": ["modus 1", "modus 2"]
+}`
+
+	userPrompt := fmt.Sprintf("Jenis Target: %s\nNilai Target: %s\n\nCuplikan Hasil Pencarian Web Terbuka:\n%s", cleanType, cleanVal, rawSnippets)
+
+	reqBody := openAIChatRequest{
+		Model:  aiModelName,
+		Stream: false,
+		Messages: []openAIChatMessage{
+			{Role: "system", Content: systemPrompt},
+			{Role: "user", Content: userPrompt},
+		},
+		MaxTokens: 1500,
+	}
+
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, routerBaseURL, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+apiKey)
+
+	resp, err := aiHTTPClient.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	if err != nil {
+		return nil, err
+	}
+
+	var chatResp openAIChatResponse
+	if err := json.Unmarshal(bodyBytes, &chatResp); err != nil {
+		return nil, err
+	}
+	if len(chatResp.Choices) == 0 {
+		return nil, fmt.Errorf("tidak ada respons dari AI Agent OSINT")
+	}
+
+	rawContent := strings.TrimSpace(chatResp.Choices[0].Message.Content)
+	rawContent = strings.TrimPrefix(rawContent, "```json")
+	rawContent = strings.TrimPrefix(rawContent, "```")
+	rawContent = strings.TrimSuffix(rawContent, "```")
+	rawContent = strings.TrimSpace(rawContent)
+
+	var report AIOSINTReport
+	if err := json.Unmarshal([]byte(rawContent), &report); err != nil {
+		return nil, fmt.Errorf("gagal parsing output AI Agent OSINT: %w (output: %s)", err, rawContent)
+	}
+
+	return &report, nil
+}

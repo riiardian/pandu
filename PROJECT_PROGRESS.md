@@ -141,3 +141,8 @@
   - Setiap tahapan dikunci durasi animasinya minimal 2 detik (2.000 ms) per tahap (total minimal 8 detik per investigasi lengkap), sehingga pengguna merasakan proses investigasi teknis yang matang meskipun server sedang low-traffic.
   - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
   - Dilengkapi indikator radar berdenyut, segmented progress bar 4 bagian, penanda centang hijau untuk tahap yang rampung, dan teks status transisi dinamis.
+- **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
+  - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
+  - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
+  - AI Agent membaca, membedah, dan menalar apakah entitas (nomor HP, rekening bank, domain) benar-benar dilaporkan dalam kasus penipuan riil atau hanya muncul di direktori umum (Truecaller/Kredibel) tanpa aduan spesifik.
+  - Waktu respons komputasi AI murni alami (8-10 detik) dan menyajikan argumen penalaran intelijen yang otentik.
