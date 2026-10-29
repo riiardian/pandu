@@ -141,6 +141,7 @@
   - Setiap tahapan dikunci durasi animasinya minimal 2 detik (2.000 ms) per tahap (total minimal 8 detik per investigasi lengkap), sehingga pengguna merasakan proses investigasi teknis yang matang meskipun server sedang low-traffic.
   - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
   - Desain UI Minimalis & Bersih: Menghapus card informasi panjang yang berlebih. Digantikan stepper kabel horizontal elegan dengan badge nomor bulat: badge tahap aktif menyala biru terang (`scale-110` + neon glow), tahap sebelumnya otomatis redup/gelap, dan di bawah kabel hanya menampilkan 1 baris status aksi yang ringkas dan padat.
+  - Judul Tahapan Kustom Sesuai Pilihan Pengguna: Memperbarui judul 4 tahapan untuk seluruh 6 target scanner (Chat, URL, No. Telepon, Rekening Bank, Email, Berkas/APK/Foto) dengan terminologi yang padat, presisi, dan natural.
 - **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
   - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.

@@ -103,112 +103,40 @@ interface PipelineStep {
 
 const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
   text: [
-    {
-      title: "Normalisasi Muatan Teks & Konteks Pesan",
-      desc: "Mengurai teks, membersihkan karakter pengabur, dan memetakan struktur kalimat.",
-    },
-    {
-      title: "Analisis Psikologi Rekayasa Sosial & Bias Kognitif",
-      desc: "Membedah pemicu emosi (kepanikan, ketergesaan semu, desakan transfer dana, imbalan fiktif).",
-    },
-    {
-      title: "Pencocokan Taksonomi Kejahatan Siber Indonesia",
-      desc: "Mengkorelasikan pola dengan database modus (darurat kecelakaan, tilang, loker like video).",
-    },
-    {
-      title: "Evaluasi AI Forensik & Sintesis Rekomendasi",
-      desc: "Menyusun indikator temuan dan merumuskan panduan tindakan pengamanan pengguna.",
-    },
+    { title: "Membaca Muatan Pesan", desc: "" },
+    { title: "Mendeteksi Pola Manipulasi", desc: "" },
+    { title: "Mencocokkan Modus Penipuan", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
   url: [
-    {
-      title: "Inspeksi Pasif Alamat & Penelusuran Rantai Pengalihan",
-      desc: "Mengurai komponen host, memeriksa sanitasi port, dan melacak redirection chain.",
-    },
-    {
-      title: "Audit Postur Keamanan & Pertahanan Infrastruktur",
-      desc: "Memeriksa enkripsi HTTPS, proteksi HSTS, anti-clickjacking, CSP, dan sertifikat TLS.",
-    },
-    {
-      title: "Perayapan Pasif Formulir HTML & Jebakan Login",
-      desc: "Mendeteksi umpan hadiah/loker, formulir pencurian nomor e-wallet, OTP, atau aksi lintas domain.",
-    },
-    {
-      title: "Korelasi Registri Domain RDAP & Feed Phishing Global",
-      desc: "Menghitung umur registrasi resmi domain dan mencocokkan riwayat pada feed OpenPhish urlscan.io.",
-    },
+    { title: "Memeriksa Alamat & Pengalihan", desc: "" },
+    { title: "Mengaudit Enkripsi & Struktur Server", desc: "" },
+    { title: "Membedah Halaman & Alur Data", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
   phone: [
-    {
-      title: "Validasi Prefix Seluler & Wilayah Distribusi HLR",
-      desc: "Mengidentifikasi kode negara panggil, operator telekomunikasi, dan jenis kartu prabayar/pascabayar.",
-    },
-    {
-      title: "Perayapan OSINT Jejak Digital & Forum Aduan Terbuka",
-      desc: "Merayapi mesin pencari publik dan forum diskusi mencari catatan laporan penipuan pada nomor.",
-    },
-    {
-      title: "Pencocokan Registri Laporan Masyarakat Terverifikasi",
-      desc: "Memeriksa basis data aduan komunitas PANDU untuk mendeteksi rekam jejak kriminal target.",
-    },
-    {
-      title: "Kalkulasi Profil Risiko & Sintesis Rekomendasi Kontak",
-      desc: "Menyimpulkan apakah nomor bersih atau terindikasi pernah dilaporkan dalam aksi kejahatan siber.",
-    },
+    { title: "Mengidentifikasi Asal Nomor", desc: "" },
+    { title: "Melacak Rekam Jejak Digital", desc: "" },
+    { title: "Menguji Riwayat Daftar Hitam", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
   bank: [
-    {
-      title: "Identifikasi Institusi Perbankan & Klaster Kliring",
-      desc: "Memvalidasi lembaga perbankan penerima dana dan kode routing BI-Fast / SKNBI nasional.",
-    },
-    {
-      title: "Perayapan OSINT Rekam Jejak Transaksi Fiktif di Internet",
-      desc: "Menelusuri direktori terbuka atas nomor rekening pada riwayat laporan transaksi penipuan.",
-    },
-    {
-      title: "Audit Daftar Hitam & Deteksi Rekening Penampung (Mule)",
-      desc: "Mencocokkan nomor rekening dengan laporan aduan dan mengevaluasi indikator perantara penampung.",
-    },
-    {
-      title: "Penyusunan Hasil Uji & Langkah Proteksi Finansial",
-      desc: "Menyajikan status keabsahan rekening dan panduan konfirmasi sebelum mentransfer dana.",
-    },
+    { title: "Memvalidasi Lembaga Perbankan", desc: "" },
+    { title: "Penelusuran Jejak Kejahatan Finansial", desc: "" },
+    { title: "Menguji Riwayat Rekening Mencurigakan", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
   email: [
-    {
-      title: "Verifikasi Struktur RFC & Analisis Reputasi Domain",
-      desc: "Menguji validitas format email dan mendeteksi penggunaan domain burner/disposable sementara.",
-    },
-    {
-      title: "Penelusuran Hash Reputasi Global StopForumSpam",
-      desc: "Mencocokkan hash email pada jaringan pemantau spam dunia untuk melihat histori frekuensi laporan.",
-    },
-    {
-      title: "Resolusi DNS Mail Exchange (MX) Publik",
-      desc: "Menguji apakah domain server benar-benar aktif memiliki konfigurasi penerimaan surat di internet.",
-    },
-    {
-      title: "Deteksi Penyamaran Merek & Instansi Resmi",
-      desc: "Menganalisis indikator akun gratisan (@gmail) yang mencatut nama korporat atau instansi resmi.",
-    },
+    { title: "Memeriksa Format & Domain", desc: "" },
+    { title: "Mengecek Reputasi Spam Global", desc: "" },
+    { title: "Menguji Server Penerima Email", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
   file: [
-    {
-      title: "Ekstraksi Byte Asli & Perhitungan Sidik Jari Kriptografis",
-      desc: "Membaca byte berkas langsung (bukan nama file) dan menghitung hash SHA-256 serta MD5.",
-    },
-    {
-      title: "Inspeksi Struktur Arsip & Ekstraksi Multimodal",
-      desc: "Membongkar arsip APK (AndroidManifest) atau memproses decoding resolusi citra digital.",
-    },
-    {
-      title: "Bedah Forensik AI Vision / Izin Bahaya Android",
-      desc: "Mendeteksi kejanggalan visual font struk transfer palsu atau izin sadap SMS OTP pada APK.",
-    },
-    {
-      title: "Korelasi Dataset Global CIRCL & Penyusunan Diagnostik",
-      desc: "Mencocokkan hash dengan database CIRCL hashlookup dan merangkum rekomendasi keamanan.",
-    },
+    { title: "Membaca Byte & Hash Berkas", desc: "" },
+    { title: "Memeriksa Struktur Berkas", desc: "" },
+    { title: "Membedah Teks & Kejanggalan Visual", desc: "" },
+    { title: "Menghitung Indeks Risiko", desc: "" },
   ],
 };
 
@@ -729,10 +657,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           </div>
 
           {/* Single Clean Active Stage Label */}
-          <div className="text-center space-y-1 pt-1">
-            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 font-semibold">
-              Tahap {currentStepIndex + 1} dari {TOOL_PIPELINES[scanType].length}
-            </div>
+          <div className="text-center pt-1">
             <h4 className="text-sm sm:text-base font-bold text-white tracking-wide animate-in fade-in duration-200">
               {TOOL_PIPELINES[scanType][currentStepIndex]?.title}...
             </h4>
