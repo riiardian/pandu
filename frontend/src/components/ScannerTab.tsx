@@ -524,10 +524,18 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="font-bold text-blue-400 font-mono">{result.bank_routing_code}</span>
                   </div>
                 )}
-                {result.standard_digits && (
+                {result.report_status && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Standar Format Digit:</span>
-                    <span className="font-bold text-white">{result.standard_digits}</span>
+                    <span className="text-slate-500 block">Status Registri Cek Rekening:</span>
+                    <span className={`font-bold font-mono ${result.total_reports > 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                      {result.report_status}
+                    </span>
+                  </div>
+                )}
+                {result.account_holder && (
+                  <div className="rounded-xl bg-white/5 p-3">
+                    <span className="text-slate-500 block">Nama Pemilik Akun:</span>
+                    <span className="font-bold text-white font-mono">{result.account_holder}</span>
                   </div>
                 )}
                 {result.domain && (

@@ -34,10 +34,10 @@ type BankScanResult struct {
 	CleanNumber     string    `json:"clean_number"`
 	BankRoutingCode string    `json:"bank_routing_code"`
 	InstitutionType string    `json:"institution_type"` // "Bank Konvensional", "Bank Syariah", "E-Wallet"
-	StandardDigits  string    `json:"standard_digits"`
-	DigitLength     int       `json:"digit_length"`
-	IsLengthValid   bool      `json:"is_length_valid"`
-	MuleRiskLevel   string    `json:"mule_risk_level"`
+	ReportStatus    string    `json:"report_status"`    // "Belum Ada Catatan Laporan Kejahatan" / "Terdaftar di Basis Data Laporan"
+	TotalReports    int       `json:"total_reports"`
+	AccountHolder   string    `json:"account_holder,omitempty"`
+	MuleRiskSummary string    `json:"mule_risk_summary"`
 	RiskScore       int       `json:"risk_score"`
 	ThreatLevel     string    `json:"threat_level"`
 	RedFlags        []RedFlag `json:"red_flags"`
@@ -305,12 +305,11 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 		CleanNumber:     accOnly,
 		BankRoutingCode: "Tidak Terdaftar di BI Fast",
 		InstitutionType: "Bank / Layanan Keuangan",
-		StandardDigits:  "10-16 digit",
-		DigitLength:     len(accOnly),
-		IsLengthValid:   true,
-		MuleRiskLevel:   "TERDETEKSI NORMAL / BELUM DILAPORKAN",
+		ReportStatus:    "Belum Ada Catatan Laporan Kejahatan",
+		TotalReports:    0,
+		MuleRiskSummary: "Waspadai modus rekening perorangan sewaan (mule account) jika bertransaksi dengan instansi resmi.",
 		RiskScore:       0,
-		ThreatLevel:     "AMAN / FORMAT VALID & BERSIH",
+		ThreatLevel:     "BERSIH / BELUM PERNAH DILAPORKAN",
 		RedFlags:        []RedFlag{},
 		Recommendations: []string{},
 	}
@@ -379,28 +378,14 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 
 	if matchedSpec != nil {
 		result.InstitutionType = matchedSpec.Type
-		result.StandardDigits = matchedSpec.Example
 		result.BankRoutingCode = matchedSpec.RoutingCode
-
-		if len(accOnly) < matchedSpec.MinDig || len(accOnly) > matchedSpec.MaxDig {
-			result.IsLengthValid = false
-			result.RiskScore = 60
-			result.ThreatLevel = "WASPADA / ANOMALI PANJANG DIGIT"
-			result.RedFlags = append(result.RedFlags, RedFlag{
-				Level:       "HIGH",
-				Title:       "Panjang Nomor Rekening Tidak Sesuai Format " + matchedSpec.Name,
-				Explanation: fmt.Sprintf("Nomor yang Anda masukkan berjumlah %d digit, sedangkan format resmi %s adalah %s.", len(accOnly), matchedSpec.Name, matchedSpec.Example),
-				Snippet:     accOnly,
-			})
-		} else {
-			result.RiskScore = 0
-			result.ThreatLevel = "AMAN / FORMAT VALID & BERSIH"
-			result.Recommendations = append(result.Recommendations, fmt.Sprintf("Format digit nomor rekening sesuai dengan standar resmi %s (%s).", matchedSpec.Name, matchedSpec.Example))
-		}
 	}
 
-	result.Recommendations = append(result.Recommendations, "Periksa nama pemilik rekening saat di layar konfirmasi transfer ATM/m-banking. Pastikan atas nama instansi resmi, bukan perorangan.")
-	result.Recommendations = append(result.Recommendations, "Waspadai transaksi jika nama penerima rekening berbeda dengan nama orang yang menghubungi Anda.")
+	result.Recommendations = append(result.Recommendations,
+		"Verifikasi Nama Pemilik Rekening: Saat di layar konfirmasi transfer ATM/m-banking, pastikan nama penerima adalah nama instansi resmi jika Anda bertransaksi dengan perusahaan. Waspadai jika nama yang muncul adalah nama perorangan.",
+		"Waspadai Modus Rekening Sewaan (Mule Account): Penipu profesional selalu menggunakan rekening bank asli milik orang lain yang dibeli/disewa untuk menyamarkan identitas sebenarnya.",
+		"Prosedur Darurat Pembekuan: Jika Anda terlanjur mentransfer uang ke rekening penipu, segera hubungi Call Center resmi bank Anda dalam kurun waktu < 24 jam untuk mengajukan pemblokiran rekening penampung.",
+	)
 
 	return result
 }

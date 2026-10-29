@@ -192,21 +192,29 @@ func handleScanBank(c *fiber.Ctx) error {
 
 	result := scanner.AnalyzeBank(req.BankName, req.AccountNumber)
 
-	// Cross-check against PostgreSQL Blacklist Registry
+	// Cross-check against PostgreSQL CekRekening & Blacklist Registry
 	reg := blacklist.GetRegistry()
 	checkKey := req.AccountNumber
 	if matchedEntry, found := reg.CheckBlacklist(checkKey); found {
 		result.RiskScore = 99
 		result.ThreatLevel = "KRITIS / REKENING PENAMPUNG TERDAFTAR"
+		result.ReportStatus = fmt.Sprintf("Terdaftar %d Laporan Kejahatan", matchedEntry.ReportCount)
+		result.TotalReports = matchedEntry.ReportCount
+		result.AccountHolder = matchedEntry.AccountHolder
 		result.BlacklistEntry = matchedEntry
 		result.RedFlags = append([]scanner.RedFlag{
 			{
 				Level:       "CRITICAL",
-				Title:       "Rekening Masuk Daftar Hitam Sindikat Penipuan",
-				Explanation: fmt.Sprintf("Rekening terdaftar atas nama '%s' (%s) telah dilaporkan %d kali: %s", matchedEntry.AccountHolder, matchedEntry.ReportedBank, matchedEntry.ReportCount, matchedEntry.Description),
+				Title:       "Rekening Masuk Daftar Hitam Laporan Penipuan (Cek Rekening)",
+				Explanation: fmt.Sprintf("Nomor rekening ini telah dilaporkan %d kali oleh korban tindak pidana penipuan atas nama '%s' (%s): %s", matchedEntry.ReportCount, matchedEntry.AccountHolder, matchedEntry.ReportedBank, matchedEntry.Description),
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)
+	} else {
+		result.ReportStatus = "Belum Ada Catatan Laporan Kejahatan"
+		result.TotalReports = 0
+		result.RiskScore = 0
+		result.ThreatLevel = "BERSIH / BELUM PERNAH DILAPORKAN"
 	}
 
 	return c.JSON(fiber.Map{
