@@ -173,7 +173,7 @@ const SPEEDTEST_LABELS = [
   { x: 209.75, y: 185.14, val: 100 },
 ];
 
-function RiskGaugeDial({ score, threatLevel }: { score: number; threatLevel: string }) {
+function RiskGaugeDial({ score }: { score: number }) {
   const clampedScore = Math.max(0, Math.min(100, score || 0));
   // Needle angle: -130deg at 0% score to +130deg at 100% score (260deg sweep, Ookla Speedtest spec)
   const needleAngle = -130 + (clampedScore / 100) * 260;
@@ -188,28 +188,22 @@ function RiskGaugeDial({ score, threatLevel }: { score: number; threatLevel: str
   let mainColor = "#10b981";
   let gradStart = "#06b6d4";
   let gradEnd = "#10b981";
-  let badgeBorder = "border-emerald-500/30";
-  let badgeBg = "bg-emerald-950/40 text-emerald-300";
 
   if (clampedScore >= 70) {
     mainColor = "#ef4444";
     gradStart = "#f59e0b";
     gradEnd = "#ef4444";
-    badgeBorder = "border-rose-500/40";
-    badgeBg = "bg-rose-950/50 text-rose-300";
   } else if (clampedScore >= 35) {
     mainColor = "#f59e0b";
     gradStart = "#10b981";
     gradEnd = "#f59e0b";
-    badgeBorder = "border-amber-500/30";
-    badgeBg = "bg-amber-950/40 text-amber-300";
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-2 text-center select-none">
+    <div className="flex flex-col items-center justify-center text-center select-none">
       {/* Speedtest Style Radial Gauge */}
-      <div className="relative w-[270px] sm:w-[290px] h-[210px] sm:h-[220px]">
-        <svg viewBox="0 0 300 235" className="w-full h-full overflow-visible">
+      <div className="relative w-[270px] sm:w-[290px] h-[195px] sm:h-[205px]">
+        <svg viewBox="0 0 300 220" className="w-full h-full overflow-visible">
           <defs>
             {/* Multi-tier bloom glow for active sweep */}
             <filter id="speedtestBloom" x="-20%" y="-20%" width="140%" height="140%">
@@ -331,51 +325,7 @@ function RiskGaugeDial({ score, threatLevel }: { score: number; threatLevel: str
             <circle cx="150" cy="135" r="9" fill="#141a29" stroke={mainColor} strokeWidth="1.2" />
             <circle cx="150" cy="135" r="3.5" fill="#ffffff" />
           </g>
-
-          {/* Center Readout (Inside gauge lower center, Ookla Speedtest typography) */}
-          <g transform="translate(150, 168)">
-            <text
-              x="0"
-              y="0"
-              fill="#ffffff"
-              fontSize="46"
-              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-              fontWeight="300"
-              letterSpacing="-1.5"
-              textAnchor="middle"
-            >
-              {clampedScore}
-              <tspan fontSize="22" fontWeight="600" fill={mainColor} dx="2">
-                %
-              </tspan>
-            </text>
-            <text
-              x="0"
-              y="18"
-              fill="#94a3b8"
-              fontSize="9"
-              fontFamily="monospace"
-              fontWeight="700"
-              letterSpacing="2"
-              textAnchor="middle"
-            >
-              INDEKS RISIKO
-            </text>
-          </g>
         </svg>
-      </div>
-
-      {/* Threat Level Status Pill Badge */}
-      <div className="mt-2.5">
-        <span
-          className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${badgeBorder} ${badgeBg}`}
-        >
-          <span
-            className="h-2 w-2 rounded-full animate-pulse shrink-0"
-            style={{ backgroundColor: mainColor }}
-          />
-          <span className="truncate max-w-xs">{threatLevel}</span>
-        </span>
       </div>
     </div>
   );
@@ -907,17 +857,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         <div className="space-y-4 animate-in fade-in duration-300 pt-2">
           {/* Borderless Speedometer Gauge (No Box / No Card) */}
           <div className="py-2 flex flex-col items-center justify-center text-center select-none">
-            <RiskGaugeDial score={result.risk_score} threatLevel={result.threat_level} />
-            <div className="mt-2 text-center space-y-0.5">
-              <div className="text-base font-bold text-white tracking-wide">
-                {result.hostname || result.clean_number || result.account_number || result.email || result.file_name || "Target Terperiksa"}
-              </div>
-              {result.detected_category && (
-                <div className="text-xs text-slate-400">
-                  {result.detected_category}
-                </div>
-              )}
-            </div>
+            <RiskGaugeDial score={result.risk_score} />
           </div>
 
           {/* Temuan Indikator (Hanya jika ada red flags) */}

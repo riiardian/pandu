@@ -162,6 +162,7 @@
   - Skala Angka & Iluminasi Dinamis: Angka skala (0, 20, 40, 60, 80, 100) dan 21 garis radial ticks di dalam busur yang otomatis menyala putih terang saat dilewati sapuan jarum, mempertahankan redline danger zone di 80-100%.
   - Jarum Tapered Blade Speedtest: Bilah jarum meruncing dari pangkal poros lebar ke ujung jarum presisi di batas ribbon, dilengkapi lightguide spine bersinar di bagian tengah, titik indikator ujung putih, serta hub poros logam dengan cincin aksen bercahaya.
   - Hero Readout Tipografi Speedtest: Menampilkan angka skor besar di bagian tengah bawah gauge dengan simbol % berwarna aksen dan sub-label monospaced INDEKS RISIKO, disusul pill badge status ancaman terpusat rapi.
+  - Penyederhanaan Tampilan Bersih (Zero-Clutter Pure Gauge): Menghapus teks persentase tengah (0%) & label INDEKS RISIKO di dalam dial, menghapus pill badge status ancaman ('BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN'), serta menghapus baris target/nomor telepon di bawah speedometer sehingga speedometer tampil murni melayang elegan dan langsung berlanjut ke temuan indikator / sumber data riil.
 - **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
   - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
