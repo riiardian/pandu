@@ -262,7 +262,6 @@ function RiskGaugeDial({ score }: { score: number }) {
           >
             {/* Rectangular Solid White Bar */}
             <rect x="146.5" y="61" width="7" height="74" rx="1.5" fill="#ffffff" />
-            <line x1="150" y1="63" x2="150" y2="125" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
           </g>
 
           {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
