@@ -799,6 +799,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           {/* Borderless Speedometer Gauge (No Box / No Card) */}
           <div className="py-2 flex flex-col items-center justify-center text-center select-none">
             <RiskGaugeDial score={result.risk_score} />
+            <div className="mt-2 text-xs font-mono font-bold tracking-widest text-slate-300 uppercase">
+              INDEKS SCORE <span className="text-base font-sans font-black ml-1.5" style={{ color: getRiskTierColor(result.risk_score) }}>{result.risk_score}%</span>
+            </div>
           </div>
 
           {/* Analisis AI Vision untuk Berkas / Gambar */}
@@ -815,11 +818,11 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </div>
           )}
 
-          {/* Sumber Data yang Diperiksa (Clean & Minimalist) */}
+          {/* Hasil Pemeriksaan (Clean & Minimalist) */}
           {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
             <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
               <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
-                Sumber Data Diperiksa ({result.sources.filter((s: any) => s.status === "queried").length})
+                Hasil Pemeriksaan
               </div>
               <div className="space-y-3.5 pt-0.5">
                 {result.sources.filter((s: any) => s.status === "queried").map((source: any) => {
