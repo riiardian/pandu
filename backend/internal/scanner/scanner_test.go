@@ -122,6 +122,75 @@ func TestSecurityGradeAIsContextNotReputationEvidence(t *testing.T) {
 	}
 }
 
+func TestAnalyzePageContentDetectsRewardCredentialAndOTPFlow(t *testing.T) {
+	html := `<!doctype html><html><head><title>Klaim Saldo Gratis</title></head><body>
+		<h1>Selamat! Klaim hadiah uang Rp1.000.000 sekarang</h1>
+		<button>Login dengan Google</button><button>Masuk Facebook</button>
+		<form action="https://collector.example/submit">
+			<input type="email" name="email"><input type="password" name="password">
+			<input type="tel" name="nomor_dana"><input type="text" name="kode_otp">
+		</form></body></html>`
+
+	result := AnalyzePageContentHTML("https://promo.example/", []byte(html))
+	if !result.HasRewardBait || !result.RequestsPassword || !result.RequestsOTP || !result.RequestsEWallet {
+		t.Fatalf("expected reward + credential + OTP/e-wallet flow, got %+v", result)
+	}
+	if len(result.LoginProviders) != 2 {
+		t.Fatalf("expected Google and Facebook login bait, got %v", result.LoginProviders)
+	}
+	if len(result.CrossOriginFormActions) != 1 {
+		t.Fatalf("expected cross-origin form destination evidence, got %v", result.CrossOriginFormActions)
+	}
+	if result.RiskScore < 50 || result.RiskScore > 60 {
+		t.Fatalf("page-content heuristic must be material but bounded at 60, got %d", result.RiskScore)
+	}
+	foundPromo := false
+	for _, c := range result.PageCategories {
+		if c == "Promosi / Hadiah" {
+			foundPromo = true
+			break
+		}
+	}
+	if !foundPromo {
+		t.Fatalf("expected PageCategories to include 'Promosi / Hadiah', got %v", result.PageCategories)
+	}
+}
+
+func TestAnalyzePageContentNormalLoginIsNotSocialEngineering(t *testing.T) {
+	tests := []struct {
+		name string
+		html string
+	}{
+		{name: "same-origin session", html: `<!doctype html><html><head><title>Portal Akun</title></head><body>
+			<form action="/session"><label>Email</label><input type="email" name="email">
+			<label>Password</label><input type="password" name="password"></form></body></html>`},
+		{name: "external identity provider", html: `<!doctype html><html><head><title>Portal Akun</title></head><body>
+			<form action="https://identity.example.net/session"><label>Email</label><input type="email" name="email">
+			<label>Password</label><input type="password" name="password"></form></body></html>`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := AnalyzePageContentHTML("https://example.com/login", []byte(tt.html))
+			if result.HasRewardBait || result.RequestsOTP || result.RequestsEWallet {
+				t.Fatalf("ordinary login must not be described as a social-engineering flow: %+v", result)
+			}
+			if result.RiskScore != 0 {
+				t.Fatalf("ordinary login alone must remain neutral, got %d", result.RiskScore)
+			}
+			foundAuth := false
+			for _, c := range result.PageCategories {
+				if c == "Portal Autentikasi / Login" {
+					foundAuth = true
+					break
+				}
+			}
+			if !foundAuth {
+				t.Fatalf("expected PageCategories to include 'Portal Autentikasi / Login', got %v", result.PageCategories)
+			}
+		})
+	}
+}
+
 func TestAnalyzeURL_NoRiskDoesNotClaimAbsoluteSafety(t *testing.T) {
 	res := AnalyzeURL("https://example.com", false)
 	level := strings.ToLower(res.ThreatLevel)

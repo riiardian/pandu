@@ -4,9 +4,13 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"html"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -66,33 +70,259 @@ type WebSecurityPosture struct {
 }
 
 // URLScanResult holds diagnostic analysis for a URL.
+type PageContentAnalysis struct {
+	PageTitle              string   `json:"page_title,omitempty"`
+	PageCategories         []string `json:"page_categories"`
+	FormCount              int      `json:"form_count"`
+	InputTypes             []string `json:"input_types"`
+	LoginProviders         []string `json:"login_providers"`
+	CrossOriginFormActions []string `json:"cross_origin_form_actions"`
+	HasRewardBait          bool     `json:"has_reward_bait"`
+	HasJobBait             bool     `json:"has_job_bait"`
+	RequestsPassword       bool     `json:"requests_password"`
+	RequestsOTP            bool     `json:"requests_otp"`
+	RequestsEWallet        bool     `json:"requests_ewallet"`
+	RequestsFinancialData  bool     `json:"requests_financial_data"`
+	RiskScore              int      `json:"risk_score"`
+	Summary                string   `json:"summary"`
+}
+
 type URLScanResult struct {
-	OriginalURL       string              `json:"original_url"`
-	NormalizedURL     string              `json:"normalized_url"`
-	Hostname          string              `json:"hostname"`
-	TLD               string              `json:"tld"`
-	IsIPAddress       bool                `json:"is_ip_address"`
-	RiskScore         int                 `json:"risk_score"`
-	ThreatLevel       string              `json:"threat_level"`
-	Coverage          string              `json:"coverage"`
-	CoverageSummary   string              `json:"coverage_summary"`
-	Sources           []SourceResult      `json:"sources"`
-	ImpersonatedBrand string              `json:"impersonated_brand"`
-	ResolvedIPs       []string            `json:"resolved_ips,omitempty"`
-	GeoLocation       *IPGeoIntel         `json:"geolocation,omitempty"`
-	TLSCert           *TLSCertIntel       `json:"tls_cert,omitempty"`
-	WebPosture        *WebSecurityPosture `json:"web_posture,omitempty"`
-	DomainAgeSummary  string              `json:"domain_age_summary,omitempty"`
-	RedFlags          []RedFlag           `json:"red_flags"`
-	RedirectChain     []string            `json:"redirect_chain"`
-	FinalDestination  string              `json:"final_destination"`
-	IsShortlink       bool                `json:"is_shortlink"`
-	Recommendations   []string            `json:"recommendations"`
+	OriginalURL       string               `json:"original_url"`
+	NormalizedURL     string               `json:"normalized_url"`
+	Hostname          string               `json:"hostname"`
+	TLD               string               `json:"tld"`
+	IsIPAddress       bool                 `json:"is_ip_address"`
+	RiskScore         int                  `json:"risk_score"`
+	ThreatLevel       string               `json:"threat_level"`
+	Coverage          string               `json:"coverage"`
+	CoverageSummary   string               `json:"coverage_summary"`
+	Sources           []SourceResult       `json:"sources"`
+	ImpersonatedBrand string               `json:"impersonated_brand"`
+	ResolvedIPs       []string             `json:"resolved_ips,omitempty"`
+	GeoLocation       *IPGeoIntel          `json:"geolocation,omitempty"`
+	TLSCert           *TLSCertIntel        `json:"tls_cert,omitempty"`
+	WebPosture        *WebSecurityPosture  `json:"web_posture,omitempty"`
+	PageAnalysis      *PageContentAnalysis `json:"page_analysis,omitempty"`
+	DomainAgeSummary  string               `json:"domain_age_summary,omitempty"`
+	RedFlags          []RedFlag            `json:"red_flags"`
+	RedirectChain     []string             `json:"redirect_chain"`
+	FinalDestination  string               `json:"final_destination"`
+	IsShortlink       bool                 `json:"is_shortlink"`
+	Recommendations   []string             `json:"recommendations"`
 }
 
 func scoreAfterSecurityPosture(score int, posture *WebSecurityPosture) int {
 	// Security headers describe hardening quality; they neither prove legitimacy nor erase threat evidence.
 	return score
+}
+
+var (
+	htmlTagPattern    = regexp.MustCompile(`(?is)<[^>]+>`)
+	htmlScriptPattern = regexp.MustCompile(`(?is)<(script|style|noscript)[^>]*>.*?</(script|style|noscript)>`)
+	htmlTitlePattern  = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
+	htmlInputPattern  = regexp.MustCompile(`(?is)<input\b[^>]*>`)
+	htmlFormPattern   = regexp.MustCompile(`(?is)<form\b[^>]*>`)
+)
+
+func htmlAttribute(tag, name string) string {
+	pattern := regexp.MustCompile(`(?i)\b` + regexp.QuoteMeta(name) + `\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))`)
+	match := pattern.FindStringSubmatch(tag)
+	if len(match) == 0 {
+		return ""
+	}
+	for _, value := range match[1:] {
+		if value != "" {
+			return html.UnescapeString(strings.TrimSpace(value))
+		}
+	}
+	return ""
+}
+
+func containsAnyText(text string, terms []string) bool {
+	for _, term := range terms {
+		if strings.Contains(text, term) {
+			return true
+		}
+	}
+	return false
+}
+
+func appendUnique(values []string, value string) []string {
+	for _, existing := range values {
+		if existing == value {
+			return values
+		}
+	}
+	return append(values, value)
+}
+
+// AnalyzePageContentHTML inventories public page forms without filling or submitting them.
+func AnalyzePageContentHTML(pageURL string, body []byte) PageContentAnalysis {
+	analysis := PageContentAnalysis{PageCategories: []string{}, InputTypes: []string{}, LoginProviders: []string{}, CrossOriginFormActions: []string{}}
+	raw := string(body)
+	if titleMatch := htmlTitlePattern.FindStringSubmatch(raw); len(titleMatch) > 1 {
+		analysis.PageTitle = strings.TrimSpace(html.UnescapeString(htmlTagPattern.ReplaceAllString(titleMatch[1], " ")))
+	}
+	visible := strings.ToLower(html.UnescapeString(htmlTagPattern.ReplaceAllString(htmlScriptPattern.ReplaceAllString(raw, " "), " ")))
+
+	analysis.HasRewardBait = containsAnyText(visible, []string{"klaim hadiah", "hadiah uang", "uang gratis", "saldo gratis", "bagi-bagi uang", "bagi bagi uang", "klaim saldo", "selamat anda terpilih", "bonus tunai", "dana gratis"})
+	analysis.HasJobBait = containsAnyText(visible, []string{"lowongan kerja", "kerja online", "kerja sampingan", "tugas like", "tugas follow", "komisi harian", "deposit tugas", "tugas vip"})
+	for _, provider := range []struct{ name, marker string }{{"Google", "google"}, {"Facebook", "facebook"}, {"Apple", "apple"}, {"Microsoft", "microsoft"}} {
+		if (strings.Contains(visible, "login") || strings.Contains(visible, "masuk") || strings.Contains(visible, "lanjut")) && strings.Contains(visible, provider.marker) {
+			analysis.LoginProviders = appendUnique(analysis.LoginProviders, provider.name)
+		}
+	}
+
+	for _, inputTag := range htmlInputPattern.FindAllString(raw, -1) {
+		inputType := strings.ToLower(htmlAttribute(inputTag, "type"))
+		if inputType == "" {
+			inputType = "text"
+		}
+		analysis.InputTypes = appendUnique(analysis.InputTypes, inputType)
+		attrs := strings.ToLower(strings.Join([]string{htmlAttribute(inputTag, "name"), htmlAttribute(inputTag, "id"), htmlAttribute(inputTag, "placeholder"), htmlAttribute(inputTag, "autocomplete"), inputType}, " "))
+		if inputType == "password" || containsAnyText(attrs, []string{"password", "kata sandi", "passwd"}) {
+			analysis.RequestsPassword = true
+		}
+		if containsAnyText(attrs, []string{"otp", "one-time", "verification code", "kode verifikasi", "kode_otp"}) {
+			analysis.RequestsOTP = true
+		}
+		if containsAnyText(attrs, []string{"dana", "gopay", "ovo", "shopeepay", "linkaja", "e-wallet", "ewallet", "nomor_dompet", "nomor_dana"}) {
+			analysis.RequestsEWallet = true
+		}
+		if containsAnyText(attrs, []string{"card number", "nomor kartu", "credit_card", "debit_card", "cvv", "cvc", "pin", "rekening"}) {
+			analysis.RequestsFinancialData = true
+		}
+	}
+
+	analysis.FormCount = len(htmlFormPattern.FindAllString(raw, -1))
+	base, _ := url.Parse(pageURL)
+	for _, formTag := range htmlFormPattern.FindAllString(raw, -1) {
+		action := htmlAttribute(formTag, "action")
+		if action == "" || base == nil {
+			continue
+		}
+		actionURL, err := url.Parse(action)
+		if err != nil {
+			continue
+		}
+		resolved := base.ResolveReference(actionURL)
+		if resolved.Hostname() != "" && !strings.EqualFold(resolved.Hostname(), base.Hostname()) {
+			analysis.CrossOriginFormActions = appendUnique(analysis.CrossOriginFormActions, resolved.String())
+		}
+	}
+
+	lure := analysis.HasRewardBait || analysis.HasJobBait
+	sensitive := analysis.RequestsPassword || analysis.RequestsOTP || analysis.RequestsEWallet || analysis.RequestsFinancialData
+	score := 0
+	if lure && analysis.RequestsPassword {
+		score += 20
+	}
+	if lure && analysis.RequestsOTP {
+		score += 25
+	}
+	if lure && (analysis.RequestsEWallet || analysis.RequestsFinancialData) {
+		score += 20
+	}
+	if lure && len(analysis.LoginProviders) > 0 {
+		score += 10
+	}
+	if lure && sensitive && len(analysis.CrossOriginFormActions) > 0 {
+		score += 20
+	}
+	if score > 60 {
+		score = 60
+	}
+	analysis.RiskScore = score
+	if score > 0 {
+		analysis.Summary = "Ditemukan kombinasi umpan dan permintaan data sensitif pada HTML publik. Ini adalah indikator alur rekayasa sosial, bukan bukti bahwa data pernah dikirim atau disalahgunakan."
+	} else if sensitive {
+		analysis.Summary = "Halaman memiliki formulir autentikasi atau data sensitif tanpa pola umpan yang terdeteksi. Login normal tidak dinilai berbahaya hanya karena meminta kredensial."
+	} else {
+		analysis.Summary = "Tidak ditemukan kombinasi umpan dan pengambilan data sensitif pada HTML publik yang berhasil dibaca."
+	}
+	if analysis.HasRewardBait {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Promosi / Hadiah")
+	}
+	if analysis.HasJobBait {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Lowongan / Tugas Online")
+	}
+	if analysis.RequestsPassword || len(analysis.LoginProviders) > 0 {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Portal Autentikasi / Login")
+	}
+	if analysis.RequestsEWallet || analysis.RequestsFinancialData {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Pembayaran / Finansial")
+	}
+	if len(analysis.PageCategories) == 0 {
+		analysis.PageCategories = appendUnique(analysis.PageCategories, "Halaman Informasi / Profil")
+	}
+	sort.Strings(analysis.PageCategories)
+
+	sort.Strings(analysis.InputTypes)
+	sort.Strings(analysis.LoginProviders)
+	sort.Strings(analysis.CrossOriginFormActions)
+	return analysis
+}
+
+// fetchPublicPageHTML performs a passive bounded GET and never submits forms or executes JavaScript.
+func fetchPublicPageHTML(targetURL string) ([]byte, string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(targetURL))
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.User != nil {
+		return nil, "", fmt.Errorf("target URL tidak valid")
+	}
+	if parsed.Port() != "" && parsed.Port() != "80" && parsed.Port() != "443" {
+		return nil, "", fmt.Errorf("port target tidak diizinkan")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if _, err := publicIPs(ctx, parsed.Hostname()); err != nil {
+		return nil, "", err
+	}
+	client := &http.Client{
+		Timeout:   5 * time.Second,
+		Transport: &http.Transport{TLSClientConfig: &tls.Config{MinVersion: tls.VersionTLS12}, DialContext: (&net.Dialer{Timeout: 3 * time.Second}).DialContext},
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if len(via) >= 5 {
+				return http.ErrUseLastResponse
+			}
+			if req.URL.Scheme != "http" && req.URL.Scheme != "https" {
+				return fmt.Errorf("redirect scheme ditolak")
+			}
+			if req.URL.Port() != "" && req.URL.Port() != "80" && req.URL.Port() != "443" {
+				return fmt.Errorf("redirect port ditolak")
+			}
+			redirectCtx, redirectCancel := context.WithTimeout(req.Context(), 2*time.Second)
+			defer redirectCancel()
+			_, resolveErr := publicIPs(redirectCtx, req.URL.Hostname())
+			return resolveErr
+		},
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
+	if err != nil {
+		return nil, "", err
+	}
+	req.Header.Set("User-Agent", "PANDU-Passive-Page-Analyzer/1.0 (+https://pandu.web.id)")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		return nil, "", fmt.Errorf("http_%d", resp.StatusCode)
+	}
+	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
+	if !strings.Contains(contentType, "text/html") && !strings.Contains(contentType, "application/xhtml+xml") {
+		return nil, contentType, fmt.Errorf("konten bukan HTML")
+	}
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 1024*1024+1))
+	if err != nil {
+		return nil, contentType, err
+	}
+	if len(body) > 1024*1024 {
+		return nil, contentType, fmt.Errorf("HTML melampaui batas 1 MB")
+	}
+	return body, contentType, nil
 }
 
 // AnalyzeURL evaluates a web URL against heuristic deception rules.
@@ -247,7 +477,47 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.FinalDestination = input
 	}
 
-	// 7. Query public registration, scan context, and live web footprint in parallel.
+	// 7. Passively inspect public HTML. Never fill fields, execute JavaScript, or submit forms.
+	pageSource := NewSourceResult("page_content", "Analisis Pasif Form & Alur Halaman")
+	pageSource.Limitation = "PANDU hanya membaca HTML publik maksimal 1 MB tanpa mengisi atau mengirim formulir. Konten yang baru muncul setelah JavaScript, login, CAPTCHA, atau interaksi pengguna mungkin tidak terlihat."
+	pageSource.AttributionURL = result.FinalDestination
+	if body, _, fetchErr := fetchPublicPageHTML(result.FinalDestination); fetchErr == nil {
+		pageAnalysis := AnalyzePageContentHTML(result.FinalDestination, body)
+		result.PageAnalysis = &pageAnalysis
+		pageSource.Status = SourceQueried
+		pageSource.Outcome = OutcomeContext
+		pageSource.Evidence = append(pageSource.Evidence,
+			EvidenceItem{Label: "Judul halaman", Value: pageAnalysis.PageTitle},
+			EvidenceItem{Label: "Form publik ditemukan", Value: fmt.Sprintf("%d", pageAnalysis.FormCount)},
+			EvidenceItem{Label: "Ringkasan alur", Value: pageAnalysis.Summary},
+		)
+		if len(pageAnalysis.PageCategories) > 0 {
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Klasifikasi halaman", Value: strings.Join(pageAnalysis.PageCategories, ", ")})
+		}
+		if len(pageAnalysis.InputTypes) > 0 {
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Tipe input", Value: strings.Join(pageAnalysis.InputTypes, ", ")})
+		}
+		if len(pageAnalysis.LoginProviders) > 0 {
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Login yang ditawarkan", Value: strings.Join(pageAnalysis.LoginProviders, ", ")})
+		}
+		if len(pageAnalysis.CrossOriginFormActions) > 0 {
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Tujuan form lintas domain", Value: strings.Join(pageAnalysis.CrossOriginFormActions, ", ")})
+		}
+		if pageAnalysis.RiskScore > 0 {
+			score += pageAnalysis.RiskScore
+			result.RedFlags = append(result.RedFlags, RedFlag{
+				Level:       "HIGH",
+				Title:       "Alur Umpan dan Permintaan Data Sensitif Terdeteksi",
+				Explanation: pageAnalysis.Summary,
+				Snippet:     pageAnalysis.PageTitle,
+			})
+		}
+	} else {
+		pageSource.ErrorCategory = "html_unavailable"
+	}
+	result.Sources = append(result.Sources, pageSource)
+
+	// 8. Query public registration, scan context, and live web footprint in parallel.
 	if net.ParseIP(host) == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 		type sourceResponse struct{ source SourceResult }

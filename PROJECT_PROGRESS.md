@@ -129,3 +129,9 @@
   - Kemiripan nama brand kini berbobot heuristik 25 dan TLD alternatif hanya konteks tambahan 5; keduanya tidak boleh menghasilkan status `phishing tinggi` tanpa bukti ancaman terstruktur.
   - Status bahaya tinggi kini memerlukan provenance feed ancaman seperti OpenPhish. Grade A security headers diperlakukan sebagai konteks hardening teknis, bukan bukti situs resmi dan bukan penghapus bukti ancaman.
   - Menambahkan regression test untuk pemisahan Grade A, heuristik brand, dan bukti reputasi terstruktur.
+- **Analisis Pasif Alur Halaman Web — Pembeda Login Normal vs Rekayasa Sosial**:
+  - PANDU membaca HTML publik maksimal 1 MB tanpa menjalankan JavaScript, mengisi kolom, menekan submit, menyimpan cookie, atau mengirim kredensial/OTP.
+  - Menginventarisasi judul halaman, jumlah form, tipe input, opsi login Google/Facebook/Apple/Microsoft, permintaan password/OTP/e-wallet/data finansial, dan tujuan form lintas domain.
+  - Login biasa, termasuk form same-origin dan identity provider lintas domain, tetap bernilai 0 jika tidak disertai umpan hadiah/kerja atau korelasi permintaan data sensitif.
+  - Risiko konten hanya naik dari rangkaian perilaku seperti umpan hadiah/kerja + password/OTP/e-wallet + tujuan form janggal; heuristik konten dibatasi maksimal 60 dan tidak menjadi vonis phishing terstruktur.
+  - Menampilkan bagian `Alur Data pada Halaman Publik` beserta batasan bahwa konten JavaScript, CAPTCHA, atau halaman setelah login mungkin tidak terlihat.

@@ -569,6 +569,37 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             )}
 
+            {/* Passive public-page flow analysis */}
+            {result.page_analysis && (
+              <div className="pt-2 border-t border-white/10 space-y-2">
+                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Alur Data pada Halaman Publik
+                </span>
+                <div className="rounded-xl border border-blue-500/20 bg-blue-950/10 p-3 space-y-2 text-xs">
+                  <p className="text-slate-300 leading-relaxed">{result.page_analysis.summary}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {result.page_analysis.page_categories?.map((cat: string, cidx: number) => (
+                      <span key={`cat-${cidx}`} className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-semibold text-[11px]">{cat}</span>
+                    ))}
+                    {result.page_analysis.form_count > 0 && <span className="rounded bg-white/10 px-2 py-1 text-slate-300">{result.page_analysis.form_count} form</span>}
+                    {result.page_analysis.has_reward_bait && <span className="rounded bg-indigo-950/60 px-2 py-1 text-indigo-300">Umpan hadiah</span>}
+                    {result.page_analysis.has_job_bait && <span className="rounded bg-indigo-950/60 px-2 py-1 text-indigo-300">Umpan kerja</span>}
+                    {result.page_analysis.requests_password && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta password</span>}
+                    {result.page_analysis.requests_otp && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta OTP</span>}
+                    {result.page_analysis.requests_ewallet && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta nomor e-wallet</span>}
+                    {result.page_analysis.requests_financial_data && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta data finansial</span>}
+                  </div>
+                  {result.page_analysis.login_providers?.length > 0 && (
+                    <p className="text-slate-400">Opsi login terlihat: <span className="text-slate-200">{result.page_analysis.login_providers.join(", ")}</span></p>
+                  )}
+                  {result.page_analysis.cross_origin_form_actions?.length > 0 && (
+                    <p className="text-slate-400 break-all">Tujuan form lintas domain: <span className="font-mono text-slate-200">{result.page_analysis.cross_origin_form_actions.join(", ")}</span></p>
+                  )}
+                  <p className="text-slate-500">PANDU hanya membaca HTML publik; tidak mengisi kredensial, tidak meminta OTP, dan tidak mengirim formulir.</p>
+                </div>
+              </div>
+            )}
+
             {/* Live DNS MX Records (if email) */}
             {result.mx_records && result.mx_records.length > 0 && (
               <div className="pt-2 border-t border-white/10 space-y-1.5">
