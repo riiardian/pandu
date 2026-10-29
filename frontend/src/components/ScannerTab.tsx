@@ -266,65 +266,55 @@ function RiskGaugeDial({ score }: { score: number }) {
               y1={t.y1}
               x2={t.x2}
               y2={t.y2}
-              stroke={t.isMajor ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.2)"}
-              strokeWidth={t.isMajor ? 1.8 : 1.0}
+              stroke={t.isMajor ? "#ffffff" : "rgba(255, 255, 255, 0.45)"}
+              strokeWidth={t.isMajor ? 2.6 : 1.2}
               strokeLinecap="round"
             />
           ))}
 
-          {/* Scale Labels (Illuminated when passed by sweep) */}
-          {SPEEDTEST_LABELS.map((l, idx) => {
-            const isPassed = l.val <= clampedScore;
-            return (
-              <text
-                key={idx}
-                x={l.x}
-                y={l.y}
-                fill={isPassed ? "#ffffff" : "rgba(255, 255, 255, 0.45)"}
-                fontSize="10"
-                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-                fontWeight={isPassed ? "700" : "500"}
-                textAnchor="middle"
-                dominantBaseline="central"
-              >
-                {l.val}
-              </text>
-            );
-          })}
+          {/* Scale Labels (Solid thick bold white 0 to 100) */}
+          {SPEEDTEST_LABELS.map((l, idx) => (
+            <text
+              key={idx}
+              x={l.x}
+              y={l.y}
+              fill="#ffffff"
+              stroke="#ffffff"
+              strokeWidth="0.5"
+              fontSize="13.5"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+              fontWeight="900"
+              textAnchor="middle"
+              dominantBaseline="central"
+            >
+              {l.val}
+            </text>
+          ))}
 
-          {/* SPEEDTEST TAPERED NEEDLE */}
+          {/* CUSTOM ELECTRIC BLUE ARROWHEAD NEEDLE */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
             filter="url(#speedtestNeedleShadow)"
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Subtle counterbalance tail */}
-            <polygon points="147.5,135 147,147 153,147 152.5,135" fill="#1e2433" />
+            {/* Aerodynamic Counterbalance Tail */}
+            <polygon points="147.5,135 147,153 153,153 152.5,135" fill="#111827" stroke="#1f2937" strokeWidth="0.8" />
+            <circle cx="150" cy="147" r="1.6" fill="#00d2ff" />
 
-            {/* Tapered Blade Stem */}
-            <polygon
-              points="146.5,117 149.25,41 150,39 150.75,41 153.5,117"
-              fill={mainColor}
-            />
-            {/* Luminous Center Lightguide Spine */}
-            <line
-              x1="150"
-              y1="117"
-              x2="150"
-              y2="42"
-              stroke="#ffffff"
-              strokeWidth="1.0"
-              strokeLinecap="round"
-              opacity="0.9"
-            />
-            {/* Illuminated Needle Tip */}
-            <circle cx="150" cy="41" r="1.5" fill="#ffffff" />
+            {/* Main Stem: Two-tone Electric Blue */}
+            <polygon points="147.5,135 148.5,51 151.5,51 152.5,135" fill="#0284c7" />
+            <polygon points="150,135 150,51 151.5,51 152.5,135" fill="#00d2ff" />
 
-            {/* Center Hub Pivot */}
-            <circle cx="150" cy="135" r="14" fill="#0c101a" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-            <circle cx="150" cy="135" r="9" fill="#141a29" stroke={mainColor} strokeWidth="1.2" />
-            <circle cx="150" cy="135" r="3.5" fill="#ffffff" />
+            {/* Distinct Precision Arrowhead Tip */}
+            <polygon points="146.2,51 150,35 150,51" fill="#0284c7" />
+            <polygon points="153.8,51 150,35 150,51" fill="#00d2ff" />
+            {/* Sharp white illuminated spine and apex */}
+            <line x1="150" y1="135" x2="150" y2="37" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+            <polygon points="148.8,39 150,35 151.2,39" fill="#ffffff" />
           </g>
+
+          {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
+          <circle cx="150" cy="135" r="13" fill="#000000" stroke="#334155" strokeWidth="1.6" />
         </svg>
       </div>
     </div>
