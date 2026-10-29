@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -31,6 +32,60 @@ func TestAnalyzeText_APKMalware(t *testing.T) {
 
 	if len(res.ExtractedFiles) == 0 {
 		t.Fatal("Expected .apk file to be extracted")
+	}
+}
+
+func TestAnalyzeText_AccidentEmergencyScam(t *testing.T) {
+	sample := `keluarga bapak kecelakaan kini sudah kami bawa kerumah sakit, untuk proses administrasi terkena biaya 2juta rupiah, jika tidak segera di proses putri bapak tidak akan tertolong transfer ke rekening saya xxx`
+	res := AnalyzeText(sample)
+
+	if res.RiskScore < 85 {
+		t.Fatalf("Expected critical risk score for hospital emergency scam, got %d", res.RiskScore)
+	}
+
+	if res.ThreatLevel != "KRITIS / INDIKASI PENIPUAN TINGGI" {
+		t.Fatalf("Expected threat level KRITIS, got: %s", res.ThreatLevel)
+	}
+
+	if res.DetectedCategory != "Darurat Medis / Pemerasan Kecelakaan Keluarga Palsu" {
+		t.Fatalf("Expected category Darurat Medis, got: %s", res.DetectedCategory)
+	}
+
+	hasTriadFlag := false
+	for _, rf := range res.RedFlags {
+		if strings.Contains(rf.Title, "Triad") || strings.Contains(rf.Title, "Kepanikan Kecelakaan") {
+			hasTriadFlag = true
+			break
+		}
+	}
+	if !hasTriadFlag {
+		t.Fatal("Expected Triad or Accident Emergency RedFlag to be present")
+	}
+}
+
+func TestAnalyzeText_PoliceExtortion(t *testing.T) {
+	sample := `Selamat siang, kami dari Unit Narkoba Bareskrim Polri mengamankan putra bapak terkait kasus narkoba. Jika ingin diselesaikan secara damai dan tidak masuk sel tahanan, segera kirim uang damai 10 juta ke rekening penyidik sebelum jam 2 siang.`
+	res := AnalyzeText(sample)
+
+	if res.RiskScore < 85 {
+		t.Fatalf("Expected critical risk score for police extortion, got %d", res.RiskScore)
+	}
+
+	if res.DetectedCategory != "Pemerasan Berkedok Aparat Penegak Hukum" {
+		t.Fatalf("Expected category Pemerasan Berkedok Aparat, got: %s", res.DetectedCategory)
+	}
+}
+
+func TestAnalyzeText_NormalConversation(t *testing.T) {
+	sample := `Halo Rio, besok pagi kita kumpul di perpus jam 9 buat ngerjain tugas kelompok ya, jangan lupa bawa laptop.`
+	res := AnalyzeText(sample)
+
+	if res.RiskScore > 15 {
+		t.Fatalf("Expected low risk score for normal conversation, got %d", res.RiskScore)
+	}
+
+	if res.ThreatLevel != "TIDAK DITEMUKAN POLA MANIPULASI" {
+		t.Fatalf("Expected threat level TIDAK DITEMUKAN POLA MANIPULASI, got: %s", res.ThreatLevel)
 	}
 }
 

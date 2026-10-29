@@ -8,7 +8,7 @@ import (
 
 // CognitiveBias represents a psychological manipulation vector exploited by scammers.
 type CognitiveBias struct {
-	Category     string   `json:"category"`      // e.g. "URGENCY", "AUTHORITY", "GREED", "SCARCITY", "FEAR"
+	Category     string   `json:"category"`      // e.g. "URGENCY", "AUTHORITY", "GREED", "SCARCITY", "FEAR", "COERCION", "CREDENTIAL"
 	Label        string   `json:"label"`         // Indonesian human-readable label
 	Description  string   `json:"description"`   // Explanation of how the victim is manipulated
 	TriggerWords []string `json:"trigger_words"` // Matched keywords
@@ -47,7 +47,7 @@ func AnalyzeText(rawText string) TextScanResult {
 	result := TextScanResult{
 		RiskScore:       0,
 		Coverage:        CoverageComplete,
-		CoverageSummary: "Analisis heuristik rekayasa sosial dan indikator psikologis pesan selesai.",
+		CoverageSummary: "Analisis heuristik rekayasa sosial multi-vektor dan taksonomi penipuan digital selesai.",
 		Sources:         []SourceResult{},
 		CognitiveBiases: []CognitiveBias{},
 		RedFlags:        []RedFlag{},
@@ -64,30 +64,142 @@ func AnalyzeText(rawText string) TextScanResult {
 	}
 
 	score := 0
+	hasFear := false
+	hasUrgency := false
+	hasCoercion := false
+	hasCredential := false
 
-	// 1. Check Cognitive Biases (Psychological Manipulation)
+	// 1. Evaluate Cognitive Biases (Psychological Manipulation)
 	biases := evaluateBiases(lower)
 	for _, b := range biases {
 		result.CognitiveBiases = append(result.CognitiveBiases, b)
 		score += b.Weight
+		switch b.Category {
+		case "FEAR":
+			hasFear = true
+		case "URGENCY":
+			hasUrgency = true
+		case "COERCION":
+			hasCoercion = true
+		case "CREDENTIAL":
+			hasCredential = true
+		}
 	}
 
-	// 2. Specific Scam Modus Pattern Matching (Indonesian Local Context)
+	// 2. Specific Digital Scam Modus Pattern Matching (Comprehensive Indonesian Taxonomy)
 
-	// A. Modus File Berbahaya (.APK, .EXE, Undangan/Surat Tilang)
-	if len(result.ExtractedFiles) > 0 {
+	// A. Modus Darurat Medis / Kecelakaan Keluarga Palsu (Emergency Medical Extortion Scam)
+	emergencyWords := []string{
+		"kecelakaan", "tertabrak", "kritis", "ugd", "igd", "rumah sakit", "rsud", "operasi",
+		"kantong darah", "butuh darah", "tidak tertolong", "tertusuk", "masuk ugd", "masuk igd",
+		"ruang icu", "dokter jaga", "kondisi darurat", "pasien kritis", "ambulans",
+	}
+	familyWords := []string{
+		"keluarga", "anak", "putri", "putra", "ibu", "bapak", "istri", "suami", "adik", "kakak", "saudara",
+	}
+	paymentWords := []string{
+		"transfer", "biaya", "administrasi", "rekening", "uang", "juta", "rupiah", "bayar", "dp", "uang muka", "tebus",
+	}
+
+	matchedEmergency := matchAny(lower, emergencyWords)
+	matchedFamily := matchAny(lower, familyWords)
+	matchedPayment := matchAny(lower, paymentWords)
+
+	if len(matchedEmergency) >= 1 && len(matchedPayment) >= 1 && (len(matchedFamily) >= 1 || strings.Contains(lower, "tertulung") || strings.Contains(lower, "tertolong") || strings.Contains(lower, "segera") || strings.Contains(lower, "kini")) {
+		score += 80
+		result.DetectedCategory = "Darurat Medis / Pemerasan Kecelakaan Keluarga Palsu"
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Modus Rekayasa Sosial Kepanikan Kecelakaan Keluarga (Medical Emergency Scam)",
+			Explanation: "Skenario klasik rekayasa sosial tingkat tinggi: pelaku sengaja memicu rasa panik orang tua/keluarga dengan mengabarkan anggota keluarga mengalami kecelakaan fatal di rumah sakit dan menuntut transfer uang biaya operasi/administrasi ke nomor rekening pribadi. Fakta penting: Rumah sakit resmi memiliki SOP penanganan darurat tanpa menahan tindakan medis karena biaya, dan TIDAK PERNAH menuntut transfer uang darurat ke rekening pribadi pihak ketiga melalui pesan chat.",
+			Snippet:     strings.Join(append(matchedEmergency, matchedPayment...), ", "),
+		})
+		result.Recommendations = append(result.Recommendations,
+			"JANGAN PERNAH mentransfer uang ke rekening perorangan yang diberikan pengirim.",
+			"Tetap tenang dan segera hubungi langsung nomor telepon anggota keluarga yang bersangkutan atau kerabat terdekat.",
+			"Hubungi saluran resmi Rumah Sakit / IGD terkait secara mandiri untuk memverifikasi data pasien.",
+		)
+	}
+
+	// B. Modus Pemerasan Aparat Penegak Hukum / Kasus Narkoba / Tilang (Law Enforcement Extortion)
+	policeWords := []string{"polisi", "polres", "polda", "bareskrim", "penyidik", "narkoba", "narkotika", "ditangkap", "surat penangkapan", "tahanan", "razia", "kasus pidana", "bea cukai", "tppu", "pencucian uang"}
+	extortWords := []string{"uang damai", "dana jaminan", "selesai secara damai", "tidak masuk sel", "sebelum diserahkan", "bantu selesaikan", "jangan beritahu", "uang tebusan"}
+	matchedPolice := matchAny(lower, policeWords)
+	matchedExtort := matchAny(lower, extortWords)
+
+	if (len(matchedPolice) >= 1 && len(matchedExtort) >= 1) || (len(matchedPolice) >= 2 && strings.Contains(lower, "transfer")) {
 		score += 75
-		result.DetectedCategory = "Penyebaran Malware / Sniffer APK"
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Pemerasan Berkedok Aparat Penegak Hukum"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Indikasi Pemerasan Berkedok Aparat Penegak Hukum Gadungan",
+			Explanation: "Pelaku menakut-nakuti korban dengan tuduhan penangkapan kasus pidana (narkoba/razia/bea cukai) dan menawarkan opsi 'damai' dengan syarat transfer sejumlah uang. Aparat penegak hukum resmi TIDAK PERNAH meminta uang damai atau transfer jaminan ke rekening perorangan melalui telepon/chat.",
+			Snippet:     strings.Join(append(matchedPolice, matchedExtort...), ", "),
+		})
+		result.Recommendations = append(result.Recommendations,
+			"Tolak segala bentuk tawaran damai atau transfer uang jaminan.",
+			"Datangi langsung kantor kepolisian / polsek setempat untuk verifikasi kebenaran laporan.",
+		)
+	}
+
+	// C. Modus Phishing Perbankan / Perubahan Tarif Transaksi / Pemblokiran Akun
+	bankTariffWords := []string{"tarif transaksi", "perubahan tarif", "auto debet", "kenaikan biaya", "tarif transfer", "bca mobile", "brimo", "livin", "kartu atm", "kartu kredit", "rekening diblokir", "kartu tertelan", "blokir akun", "pembatalan tarif"}
+	matchedBankTariff := matchAny(lower, bankTariffWords)
+	if len(matchedBankTariff) >= 2 || (len(matchedBankTariff) >= 1 && (len(result.ExtractedURLs) > 0 || strings.Contains(lower, "link") || strings.Contains(lower, "batal"))) {
+		score += 70
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Phishing Perbankan / Kenaikan Tarif Palsu"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Modus Phishing Perubahan Tarif Bank & Pembajakan Akun (Bank Impersonation)",
+			Explanation: "Pesan menyebarkan kepanikan palsu bahwa tarif transfer bank naik drastis (misal Rp 150.000/bulan) dan mengarahkan korban ke link phishing untuk 'membatalkan'. Tautan tersebut dibuat untuk mencuri nomor kartu, CVV, dan kode OTP m-banking korban.",
+			Snippet:     strings.Join(matchedBankTariff, ", "),
+		})
+		result.Recommendations = append(result.Recommendations,
+			"Jangan klik tautan pembatalan tarif apapun. Bank resmi tidak pernah meminta konfirmasi pembatalan tarif lewat link chat pribadi.",
+			"Hubungi kontak resmi HaloBCA (1500888), Contact BRI (1500017), atau bank terkait.",
+		)
+	}
+
+	// D. Modus Teror Pinjol / Ancaman Sebar Data Pribadi & Foto KTP (Doxing & Harassment)
+	terrorWords := []string{"sebar data", "bayar hutang", "bawa kabur uang", "kontak darurat", "foto ktp anda", "permalukan", "surat somasi", "debt collector", "teror", "hukum pidana penipuan", "maling uang"}
+	matchedTerror := matchAny(lower, terrorWords)
+	if len(matchedTerror) >= 2 {
+		score += 65
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Teror Pinjol Ilegal / Pemerasan Sebar Data Pribadi"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Indikasi Intimidasi Penagihan Liar / Pemerasan Sebar Data (Doxing)",
+			Explanation: "Pola pesan intimidasi yang mengancam menyebarkan foto KTP atau mempermalukan ke kontak darurat. Layanan keuangan resmi berizin OJK terikat regulasi ketat dan dilarang keras menyebarkan data pribadi atau melakukan intimidasi di luar koridor hukum.",
+			Snippet:     strings.Join(matchedTerror, ", "),
+		})
+		result.Recommendations = append(result.Recommendations,
+			"Amankan bukti tangkapan layar (screenshot) dan jangan tertekan untuk mentransfer dana secara sembarangan.",
+			"Laporkan nomor peneror ke portal aduannomor.id dan Satgas Pasti OJK.",
+		)
+	}
+
+	// E. Modus File Berbahaya (.APK, .EXE, Undangan/Surat Tilang/Kurir)
+	if len(result.ExtractedFiles) > 0 {
+		score += 80
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Penyebaran Malware / Sniffer APK"
+		}
 		result.RedFlags = append(result.RedFlags, RedFlag{
 			Level:       "CRITICAL",
 			Title:       "Terdeteksi Lampiran File Aplikasi Berbahaya (.APK)",
-			Explanation: "Penipu sering mengirim file berformat .APK (seperti Surat Tilang, Undangan Pernikahan, atau Resi Paket). Jika diinstal, aplikasi ini dapat menyadap SMS OTP m-banking dan menguras saldo rekening secara otomatis.",
+			Explanation: "Penipu sering mengirim file berformat .APK (seperti Surat Tilang ETLE, Undangan Pernikahan, atau Resi Paket). Jika diinstal, aplikasi ini dapat menyadap SMS OTP m-banking dan menguras saldo rekening secara otomatis.",
 			Snippet:     strings.Join(result.ExtractedFiles, ", "),
 		})
 		result.Recommendations = append(result.Recommendations, "JANGAN PERNAH MENGKLIK ATAU MENGINSTAL file .APK yang dikirim lewat WhatsApp/Telegram!")
 	}
 
-	// B. Modus Loker Freelance / Misi Like Video & Follow Toko
+	// F. Modus Loker Freelance / Misi Like Video & Follow Toko (Task Scam)
 	lokerKeywords := []string{"like video", "follow toko", "komisi harian", "gaji paruh waktu", "kerja paruh waktu", "freelance tugas", "misi telegram", "penghasilan tambahan", "screenshot bukti tugas"}
 	matchedLoker := matchAny(lower, lokerKeywords)
 	if len(matchedLoker) >= 2 || (strings.Contains(lower, "like") && strings.Contains(lower, "komisi")) {
@@ -104,11 +216,11 @@ func AnalyzeText(rawText string) TextScanResult {
 		result.Recommendations = append(result.Recommendations, "Waspadai tawaran kerja yang meminta Anda menyetor uang/deposit dengan dalih 'uang jaminan' atau 'tugas VIP'. Perusahaan resmi tidak pernah memungut biaya dari calon pekerja.")
 	}
 
-	// C. Modus Pinjaman Online Ilegal / Pencairan Dana Instan Tanpa Syarat
+	// G. Modus Pinjaman Online Ilegal / Pencairan Dana Instan Tanpa Syarat
 	pinjolKeywords := []string{"tanpa jaminan", "langsung cair", "tanpa bi checking", "bunga 0%", "dana kilat", "cair 5 menit", "modal ktp"}
 	matchedPinjol := matchAny(lower, pinjolKeywords)
 	if len(matchedPinjol) >= 2 {
-		score += 30
+		score += 35
 		if result.DetectedCategory == "" {
 			result.DetectedCategory = "Tawaran Pinjaman / Investasi Menyesatkan"
 		}
@@ -120,46 +232,13 @@ func AnalyzeText(rawText string) TextScanResult {
 		})
 	}
 
-	// D. Modus Bantuan Pemerintah / Bansos / Kuota Gratis
-	bansosKeywords := []string{"bansos", "bantuan pemerintah", "kuota gratis", "subsidi bpjs", "prakerja gelombang", "hadiah dari bri", "undian berhadiah dana"}
-	matchedBansos := matchAny(lower, bansosKeywords)
-	if len(matchedBansos) >= 1 && len(result.ExtractedURLs) > 0 {
-		score += 35
-		if result.DetectedCategory == "" {
-			result.DetectedCategory = "Phishing Bantuan / Giveaway Palsu"
-		}
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "HIGH",
-			Title:       "Pencatutan Bantuan / Giveaway Resmi Melalui Tautan Tak Dikenal",
-			Explanation: "Instansi pemerintah dan bank BUMN resmi tidak pernah membagikan tautan bantuan melalui pesan broadcast WhatsApp pribadi menggunakan domain gratisan atau shortlink.",
-			Snippet:     strings.Join(matchedBansos, ", "),
-		})
-	}
-
-	// E. Modus Teman / Kerabat Pinjam Uang (Impersonasi)
-	impersonasiKeywords := []string{"ganti nomor", "nomor baru", "lagi di jalan", "atm ketelen", "pinjam dulu", "urgent butuh", "besok diganti", "tolong transferin dulu"}
-	matchedImp := matchAny(lower, impersonasiKeywords)
-	if len(matchedImp) >= 2 {
-		score += 30
-		if result.DetectedCategory == "" {
-			result.DetectedCategory = "Impersonasi Teman / Kerabat Darurat"
-		}
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "HIGH",
-			Title:       "Indikasi Pembajakan Akun / Impersonasi Kerabat",
-			Explanation: "Penipu menyamar sebagai orang terdekat yang mendadak berganti nomor HP dan meminta transfer uang cepat karena situasi darurat tanpa ingin menerima panggilan telepon.",
-			Snippet:     strings.Join(matchedImp, ", "),
-		})
-		result.Recommendations = append(result.Recommendations, "Lakukan verifikasi dua arah: Telepon suara atau video call nomor lama kerabat Anda untuk memastikan kebenaran sebelum mengirim uang.")
-	}
-
-	// F. Modus Hadiah / Undian Berbayar (Advance-Fee Fraud)
+	// H. Modus Hadiah / Undian Berbayar (Advance-Fee Fraud)
 	hadiahKeywords := []string{"menang undian", "selamat anda", "pemenang hadiah", "klaim hadiah", "hadiah tunai", "bonus saldo"}
 	tebusKeywords := []string{"transfer deposit", "uang deposit", "setor modal", "biaya admin", "pajak pemenang", "biaya tebus"}
 	matchedHadiah := matchAny(lower, hadiahKeywords)
 	matchedTebus := matchAny(lower, tebusKeywords)
 	if len(matchedHadiah) >= 1 && (len(matchedTebus) >= 1 || strings.Contains(lower, "deposit") || strings.Contains(lower, "transfer")) {
-		score += 55
+		score += 65
 		if result.DetectedCategory == "" {
 			result.DetectedCategory = "Penipuan Hadiah / Undian Palsu (Advance-Fee)"
 		}
@@ -172,7 +251,54 @@ func AnalyzeText(rawText string) TextScanResult {
 		result.Recommendations = append(result.Recommendations, "Jangan pernah mentransfer uang, biaya administrasi, atau deposit untuk mencairkan hadiah apapun.")
 	}
 
-	// G. Deteksi Tautan / Link Mencurigakan di dalam teks
+	// I. Modus Teman / Kerabat Pinjam Uang (Impersonasi)
+	impersonasiKeywords := []string{"ganti nomor", "nomor baru", "lagi di jalan", "atm ketelen", "pinjam dulu", "urgent butuh", "besok diganti", "tolong transferin dulu", "hp saya rusak"}
+	matchedImp := matchAny(lower, impersonasiKeywords)
+	if len(matchedImp) >= 2 {
+		score += 45
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Impersonasi Teman / Kerabat Darurat"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "HIGH",
+			Title:       "Indikasi Pembajakan Akun / Impersonasi Kerabat",
+			Explanation: "Penipu menyamar sebagai orang terdekat yang mendadak berganti nomor HP dan meminta transfer uang cepat karena situasi darurat tanpa ingin menerima panggilan telepon.",
+			Snippet:     strings.Join(matchedImp, ", "),
+		})
+		result.Recommendations = append(result.Recommendations, "Lakukan verifikasi dua arah: Telepon suara atau video call nomor lama kerabat Anda untuk memastikan kebenaran sebelum mengirim uang.")
+	}
+
+	// J. Modus Bantuan Pemerintah / Bansos / Kuota Gratis Phishing
+	bansosKeywords := []string{"bansos", "bantuan pemerintah", "kuota gratis", "subsidi bpjs", "prakerja gelombang", "hadiah dari bri", "undian berhadiah dana"}
+	matchedBansos := matchAny(lower, bansosKeywords)
+	if len(matchedBansos) >= 1 && len(result.ExtractedURLs) > 0 {
+		score += 40
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Phishing Bantuan / Giveaway Palsu"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "HIGH",
+			Title:       "Pencatutan Bantuan / Giveaway Resmi Melalui Tautan Tak Dikenal",
+			Explanation: "Instansi pemerintah dan bank BUMN resmi tidak pernah membagikan tautan bantuan melalui pesan broadcast WhatsApp pribadi menggunakan domain gratisan atau shortlink.",
+			Snippet:     strings.Join(matchedBansos, ", "),
+		})
+	}
+
+	// K. Modus Pencurian Kredensial Rahasia (OTP / PIN / CVV / Password)
+	if hasCredential && (strings.Contains(lower, "kirim") || strings.Contains(lower, "berikan") || strings.Contains(lower, "sebutkan") || strings.Contains(lower, "verifikasi") || strings.Contains(lower, "link")) {
+		score += 70
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Pencurian Kredensial Rahasia (Credential Harvesting)"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Permintaan Kode Rahasia / OTP / PIN Transaksi",
+			Explanation: "Pihak bank, dompet digital, maupun instansi resmi TIDAK PERNAH meminta kode OTP, PIN, password, atau nomor CVV kartu debit/kredit Anda untuk alasan apapun.",
+		})
+		result.Recommendations = append(result.Recommendations, "JANGAN PERNAH membagikan kode OTP atau PIN kepada siapapun, termasuk pihak yang mengaku petugas resmi.")
+	}
+
+	// L. Deteksi Tautan / Link Mencurigakan di dalam teks
 	if len(result.ExtractedURLs) > 0 {
 		score += 15
 		for _, u := range result.ExtractedURLs {
@@ -192,6 +318,20 @@ func AnalyzeText(rawText string) TextScanResult {
 		}
 	}
 
+	// 3. Social Engineering Triad Multiplier (FEAR + URGENCY + COERCION)
+	if hasFear && hasUrgency && hasCoercion {
+		if score < 90 {
+			score = 94
+		}
+		result.RedFlags = append([]RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Kombinasi Pola Manipulasi Tingkat Tinggi (Triad Rekayasa Sosial)",
+				Explanation: "Pesan ini memadukan tiga senjata rekayasa sosial paling berbahaya sekaligus: Memanipulasi Rasa Takut Ekstrem (Fear), Membatasi Waktu Berpikir (Urgency), dan Menuntut Pengalihan Finansial Segera (Coercion). Skenario seperti ini hampir pasti merupakan tindak kejahatan manipulasi sosial.",
+			},
+		}, result.RedFlags...)
+	}
+
 	// Normalisasi Skor (Cap 100)
 	if score > 100 {
 		score = 100
@@ -202,16 +342,24 @@ func AnalyzeText(rawText string) TextScanResult {
 	switch {
 	case score >= 70:
 		result.ThreatLevel = "KRITIS / INDIKASI PENIPUAN TINGGI"
-		result.Recommendations = append(result.Recommendations, "Hentikan seluruh komunikasi dengan pengirim pesan ini segera.", "Jangan kirimkan uang, data diri (KTP/Foto selfie), atau kode OTP apapun.")
+		result.Recommendations = append([]string{
+			"Hentikan seluruh komunikasi dengan pengirim pesan ini segera.",
+			"JANGAN kirimkan uang, data diri (KTP/Foto selfie), atau kode OTP apapun.",
+		}, result.Recommendations...)
 	case score >= 45:
 		result.ThreatLevel = "BAHAYA / WASPADA TINGGI"
-		result.Recommendations = append(result.Recommendations, "Lakukan konfirmasi manual melalui saluran resmi instansi/perusahaan terkait.", "Jangan terburu-buru mengambil keputusan atas desakan pesan ini.")
+		result.Recommendations = append([]string{
+			"Lakukan konfirmasi manual melalui saluran resmi instansi/perusahaan terkait.",
+			"Jangan terburu-buru mengambil keputusan atas desakan pesan ini.",
+		}, result.Recommendations...)
 	case score >= 20:
 		result.ThreatLevel = "WASPADA / PERLU PERHATIAN"
-		result.Recommendations = append(result.Recommendations, "Periksa kembali identitas pengirim dan verifikasi tautan yang disertakan.")
+		result.Recommendations = append([]string{
+			"Periksa kembali identitas pengirim dan verifikasi tautan yang disertakan.",
+		}, result.Recommendations...)
 	default:
 		result.ThreatLevel = "TIDAK DITEMUKAN POLA MANIPULASI"
-		result.Recommendations = append(result.Recommendations, "Pesan tidak menunjukkan ciri-ciri manipulasi psikologis, desakan waktu, atau iming-iming hadiah mencurigakan.")
+		result.Recommendations = append(result.Recommendations, "Pesan tidak menunjukkan ciri-ciri manipulasi psikologis, desakan waktu, atau iming-iming mencurigakan.")
 	}
 
 	if result.DetectedCategory == "" {
@@ -228,8 +376,63 @@ func AnalyzeText(rawText string) TextScanResult {
 func evaluateBiases(text string) []CognitiveBias {
 	var biases []CognitiveBias
 
-	// 1. Urgency (Manipulasi Ketergesa-gesaan)
-	urgencyWords := []string{"segera", "hari ini juga", "sebelum terlambat", "hanya 10 menit", "blokir permanen", "dalam 24 jam", "kesempatan terakhir", "sekarang juga", "batas akhir"}
+	// 1. Fear / Panic / Extortion (Manipulasi Kepanikan / Rasa Takut Ekstrem)
+	fearWords := []string{
+		"kecelakaan", "tidak tertolong", "kritis", "darurat", "nyawa", "operasi",
+		"masuk ugd", "masuk igd", "kantong darah", "butuh darah", "ditangkap", "masuk sel",
+		"masuk tahanan", "polisi", "narkoba", "sebar data", "hukum", "somasi", "pidana",
+		"tersangka", "kasus hukum", "ancaman penjara", "tertahan di bea cukai", "tertabrak",
+	}
+	matchedFear := matchAny(text, fearWords)
+	if len(matchedFear) > 0 {
+		biases = append(biases, CognitiveBias{
+			Category:     "FEAR",
+			Label:        "Manipulasi Kepanikan & Rasa Takut Ekstrem (Fear / Panic Exploit)",
+			Description:  "Penipu memanfaatkan rasa takut dan kekhawatiran mendalam korban (kabar kecelakaan anak, ancaman pidana polisi, atau penyebaran data) agar logika kritis padam.",
+			TriggerWords: matchedFear,
+			Weight:       25,
+		})
+	}
+
+	// 2. Coercion / Financial Pressure (Desakan Finansial & Instruksi Transfer)
+	coercionWords := []string{
+		"transfer ke rekening", "transfer ke", "biaya administrasi", "biaya admin",
+		"uang muka", "deposit", "setor modal", "tebus", "biaya obat", "uang damai",
+		"dana jaminan", "bayar hutang", "uang jaminan", "transfer uang", "kirim uang", "rekening saya",
+	}
+	matchedCoercion := matchAny(text, coercionWords)
+	if len(matchedCoercion) > 0 {
+		biases = append(biases, CognitiveBias{
+			Category:     "COERCION",
+			Label:        "Desakan Transaksi Finansial (Financial Coercion)",
+			Description:  "Mengarahkan korban untuk segera melakukan transfer dana ke rekening perorangan sebagai prasyarat keluar dari situasi darurat.",
+			TriggerWords: matchedCoercion,
+			Weight:       20,
+		})
+	}
+
+	// 3. Credential Harvesting (Eksploitasi Kredensial & Data Rahasia)
+	credentialWords := []string{
+		"kode otp", "kode verifikasi", "nomor cvv", "nomor cvc", "pin atm",
+		"password", "kata sandi", "foto ktp", "selfie ktp", "6 digit",
+	}
+	matchedCredential := matchAny(text, credentialWords)
+	if len(matchedCredential) > 0 {
+		biases = append(biases, CognitiveBias{
+			Category:     "CREDENTIAL",
+			Label:        "Eksploitasi Kredensial & Data Rahasia (Credential Harvesting)",
+			Description:  "Upaya memancing korban menyerahkan kode rahasia satu kali pakai (OTP), PIN, atau nomor kartu untuk pengambilalihan akun perbankan.",
+			TriggerWords: matchedCredential,
+			Weight:       25,
+		})
+	}
+
+	// 4. Urgency (Manipulasi Ketergesa-gesaan)
+	urgencyWords := []string{
+		"segera", "hari ini juga", "sebelum terlambat", "hanya 10 menit", "blokir permanen",
+		"dalam 24 jam", "kesempatan terakhir", "sekarang juga", "batas akhir", "sebelum hangus",
+		"menit lagi", "tidak akan tertolong", "dalam waktu 1 jam",
+	}
 	matchedUrgency := matchAny(text, urgencyWords)
 	if len(matchedUrgency) > 0 {
 		biases = append(biases, CognitiveBias{
@@ -241,21 +444,28 @@ func evaluateBiases(text string) []CognitiveBias {
 		})
 	}
 
-	// 2. Authority (Mencatut Otoritas / Pejabat / Perusahaan Besar)
-	authorityWords := []string{"polri", "kepolisian", "bca", "bri", "mandiri", "kominfo", "pajak", "kurir j&t", "kurir jne", "admin pusat", "customer service pusat", "pihak bank", "kejaksaan", "bumn"}
+	// 5. Authority (Mencatut Otoritas / Pejabat / Perusahaan Besar)
+	authorityWords := []string{
+		"polri", "kepolisian", "polres", "polda", "kejaksaan", "bca", "bri", "mandiri", "bni",
+		"bsi", "kominfo", "pajak", "kurir j&t", "kurir jne", "admin pusat", "customer service pusat",
+		"pihak bank", "rumah sakit", "rsud", "dokter", "pihak medis", "bea cukai", "kpk", "ojk", "bumn",
+	}
 	matchedAuthority := matchAny(text, authorityWords)
 	if len(matchedAuthority) > 0 {
 		biases = append(biases, CognitiveBias{
 			Category:     "AUTHORITY",
 			Label:        "Pencatutan Otoritas Resmi (Authority Bias)",
-			Description:  "Menggunakan nama instansi negara, bank, atau aparat penegak hukum untuk memunculkan rasa takut dan kepatuhan instan korban.",
+			Description:  "Menggunakan nama instansi negara, bank, rumah sakit, atau aparat penegak hukum untuk memunculkan kepatuhan dan rasa segan instan korban.",
 			TriggerWords: matchedAuthority,
 			Weight:       15,
 		})
 	}
 
-	// 3. Greed / False Reward (Iming-iming Keuntungan Instan)
-	greedWords := []string{"gratis", "bonus saldo", "pemenang undian", "menang undian", "dapat uang", "profit 100%", "tanpa modal", "uang mudah", "gaji harian jutaan", "hadiah tunai", "klaim hadiah", "menang"}
+	// 6. Greed / False Reward (Iming-iming Keuntungan Instan)
+	greedWords := []string{
+		"gratis", "bonus saldo", "pemenang undian", "menang undian", "dapat uang",
+		"profit 100%", "tanpa modal", "uang mudah", "gaji harian jutaan", "hadiah tunai", "klaim hadiah",
+	}
 	matchedGreed := matchAny(text, greedWords)
 	if len(matchedGreed) > 0 {
 		biases = append(biases, CognitiveBias{
@@ -267,8 +477,11 @@ func evaluateBiases(text string) []CognitiveBias {
 		})
 	}
 
-	// 4. Scarcity (Kelangkaan Buatan)
-	scarcityWords := []string{"hanya untuk 5 orang", "slot terbatas", "sisa kuota", "kuota hampir habis", "khusus member terpilih", "hanya hari ini", "sebelum hangus", "10 menit", "menit lagi"}
+	// 7. Scarcity (Kelangkaan Buatan)
+	scarcityWords := []string{
+		"hanya untuk 5 orang", "slot terbatas", "sisa kuota", "kuota hampir habis",
+		"khusus member terpilih", "hanya hari ini",
+	}
 	matchedScarcity := matchAny(text, scarcityWords)
 	if len(matchedScarcity) > 0 {
 		biases = append(biases, CognitiveBias{
