@@ -496,9 +496,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-xl border border-dashed border-white/20 bg-[#060a14] p-3 sm:p-4">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 rounded-lg bg-blue-950/60 border border-blue-500/30 flex items-center justify-center shrink-0">
-                    <Upload className="h-4 w-4 text-blue-400" />
-                  </div>
+                  <Upload className="h-5 w-5 text-blue-400 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-white truncate">
                       {selectedFile ? selectedFile.name : "Pilih berkas .APK, dokumen, atau gambar"}
