@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,6 +24,28 @@ type ScanURLRequest struct {
 	FollowRedirects bool   `json:"follow_redirects"`
 }
 
+// ScanPhoneRequest payload
+type ScanPhoneRequest struct {
+	Phone string `json:"phone"`
+}
+
+// ScanBankRequest payload
+type ScanBankRequest struct {
+	BankName      string `json:"bank_name"`
+	AccountNumber string `json:"account_number"`
+}
+
+// ScanEmailRequest payload
+type ScanEmailRequest struct {
+	Email string `json:"email"`
+}
+
+// ScanFileRequest payload
+type ScanFileRequest struct {
+	FileName string `json:"file_name"`
+	FileSize int64  `json:"file_size"`
+}
+
 // RegisterRoutes registers all API routes for Pandu Engine.
 func RegisterRoutes(app *fiber.App) {
 	v1 := app.Group("/api/v1")
@@ -40,6 +63,10 @@ func RegisterRoutes(app *fiber.App) {
 	// Pillar 1: Recognize (Scanner)
 	v1.Post("/scan/text", handleScanText)
 	v1.Post("/scan/url", handleScanURL)
+	v1.Post("/scan/phone", handleScanPhone)
+	v1.Post("/scan/bank", handleScanBank)
+	v1.Post("/scan/email", handleScanEmail)
+	v1.Post("/scan/file", handleScanFile)
 
 	// Pillar 2: Learn (Sandbox Simulation)
 	v1.Get("/sandbox/scenarios", handleGetScenarios)
@@ -110,6 +137,139 @@ func handleScanURL(c *fiber.Ctx) error {
 				Level:       "CRITICAL",
 				Title:       "Domain Masuk Daftar Hitam PANDU",
 				Explanation: "Domain/URL ini telah diverifikasi sebagai phishing: " + matchedEntry.Description,
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    result,
+	})
+}
+
+func handleScanPhone(c *fiber.Ctx) error {
+	var req ScanPhoneRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	result := scanner.AnalyzePhone(req.Phone)
+
+	// Cross-check against PostgreSQL Blacklist Registry
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklist(req.Phone); found {
+		result.RiskScore = 98
+		result.ThreatLevel = "KRITIS / PENIPUAN TERVERIFIKASI"
+		result.BlacklistEntry = matchedEntry
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Nomor Terdaftar di Basis Data Daftar Hitam PANDU",
+				Explanation: fmt.Sprintf("Nomor ini telah dilaporkan %d kali oleh masyarakat terkait kasus: %s (Kategori: %s)", matchedEntry.ReportCount, matchedEntry.Description, matchedEntry.Category),
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    result,
+	})
+}
+
+func handleScanBank(c *fiber.Ctx) error {
+	var req ScanBankRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	result := scanner.AnalyzeBank(req.BankName, req.AccountNumber)
+
+	// Cross-check against PostgreSQL Blacklist Registry
+	reg := blacklist.GetRegistry()
+	checkKey := req.AccountNumber
+	if matchedEntry, found := reg.CheckBlacklist(checkKey); found {
+		result.RiskScore = 99
+		result.ThreatLevel = "KRITIS / REKENING PENAMPUNG TERDAFTAR"
+		result.BlacklistEntry = matchedEntry
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Rekening Masuk Daftar Hitam Sindikat Penipuan",
+				Explanation: fmt.Sprintf("Rekening terdaftar atas nama '%s' (%s) telah dilaporkan %d kali: %s", matchedEntry.AccountHolder, matchedEntry.ReportedBank, matchedEntry.ReportCount, matchedEntry.Description),
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    result,
+	})
+}
+
+func handleScanEmail(c *fiber.Ctx) error {
+	var req ScanEmailRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	result := scanner.AnalyzeEmail(req.Email)
+
+	// Cross-check against PostgreSQL Blacklist Registry
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklist(req.Email); found {
+		result.RiskScore = 98
+		result.ThreatLevel = "KRITIS / EMAIL SPAM TERDAFTAR"
+		result.BlacklistEntry = matchedEntry
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Email Terdaftar dalam Basis Data Ancaman PANDU",
+				Explanation: fmt.Sprintf("Alamat email ini dilaporkan %d kali terlibat dalam aksi: %s", matchedEntry.ReportCount, matchedEntry.Description),
+				Snippet:     matchedEntry.Identifier,
+			},
+		}, result.RedFlags...)
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    result,
+	})
+}
+
+func handleScanFile(c *fiber.Ctx) error {
+	var req ScanFileRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	result := scanner.AnalyzeFile(req.FileName, req.FileSize, nil)
+
+	// Cross-check against PostgreSQL Blacklist Registry
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklist(req.FileName); found {
+		result.RiskScore = 99
+		result.ThreatLevel = "KRITIS / MALWARE TERDAFTAR"
+		result.BlacklistEntry = matchedEntry
+		result.RedFlags = append([]scanner.RedFlag{
+			{
+				Level:       "CRITICAL",
+				Title:       "Berkas Masuk Daftar Hitam Malware",
+				Explanation: fmt.Sprintf("Berkas dengan nama/hash ini telah dilaporkan %d kali: %s", matchedEntry.ReportCount, matchedEntry.Description),
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)

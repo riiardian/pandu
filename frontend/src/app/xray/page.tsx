@@ -4,8 +4,8 @@ import GeminiBackground from "@/components/GeminiBackground";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Deception X-Ray Scanner — PANDU",
-  description: "Pembedah anatomi pesan teks mencurigakan dan tautan digital berbasis aturan heuristik transparan.",
+  title: "Radar Forensik Siber — PANDU",
+  description: "Layanan deteksi terpadu untuk memverifikasi nomor kontak, rekening bank, tautan web, email, dan muatan file mencurigakan dari potensi kejahatan sosial engineering.",
 };
 
 export default function XrayPage() {
