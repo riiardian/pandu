@@ -41,8 +41,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const [inputBankName, setInputBankName] = useState("BCA");
   const [inputBankAcc, setInputBankAcc] = useState("");
   const [inputEmail, setInputEmail] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [fileSize, setFileSize] = useState<number>(0);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -91,23 +90,40 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       endpoint = "/api/v1/scan/email";
       payload = { email: inputEmail };
     } else if (scanType === "file") {
-      if (!fileName.trim()) {
-        setErrorMsg("Pilih atau masukkan nama berkas yang ingin diperiksa.");
+      if (!selectedFile) {
+        setErrorMsg("Pilih berkas atau gambar yang ingin diperiksa.");
+        return;
+      }
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        setErrorMsg("Ukuran berkas maksimal 5 MB.");
         return;
       }
       endpoint = "/api/v1/scan/file";
-      payload = { file_name: fileName, file_size: fileSize };
     }
 
     setLoading(true);
     try {
+      const isFileScan = scanType === "file" && selectedFile;
+      const requestBody = isFileScan
+        ? (() => {
+            const form = new FormData();
+            form.append("file", selectedFile);
+            return form;
+          })()
+        : JSON.stringify(payload);
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: isFileScan ? undefined : { "Content-Type": "application/json" },
+        body: requestBody,
       });
 
-      const json = await res.json();
+      const responseText = await res.text();
+      let json: any;
+      try {
+        json = JSON.parse(responseText);
+      } catch {
+        throw new Error(res.status === 413 ? "Ukuran berkas melebihi batas 5 MB." : "Respons engine PANDU tidak dapat dibaca.");
+      }
       if (!res.ok || !json.success) {
         throw new Error(json.message || "Gagal memproses pemindaian.");
       }
@@ -123,8 +139,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileName(file.name);
-      setFileSize(file.size);
+      if (file.size > 5 * 1024 * 1024) {
+        setSelectedFile(null);
+        setErrorMsg("Ukuran berkas maksimal 5 MB.");
+        return;
+      }
+      setSelectedFile(file);
       setErrorMsg("");
       setResult(null);
     }
@@ -325,24 +345,19 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   />
                 </label>
                 <p className="text-[11px] text-slate-500 mt-2">
-                  Format didukung: Berkas Android (.APK), Gambar tangkapan layar chat/transfer (.PNG, .JPG), atau Dokumen lampiran.
+                  Byte berkas diperiksa langsung, maksimal 5 MB. Didukung: APK, gambar PNG/JPG, PDF, ZIP, dan berkas executable untuk analisis statis.
                 </p>
               </div>
 
-              {fileName && (
+              {selectedFile && (
                 <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
                   <div className="flex items-center gap-2 text-xs">
                     <FileText className="h-4 w-4 text-blue-400" />
-                    <span className="font-mono text-white font-medium">{fileName}</span>
-                    {fileSize > 0 && (
-                      <span className="text-slate-500">({(fileSize / 1024).toFixed(1)} KB)</span>
-                    )}
+                    <span className="font-mono text-white font-medium break-all">{selectedFile.name}</span>
+                    <span className="text-slate-500">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
                   </div>
                   <button
-                    onClick={() => {
-                      setFileName("");
-                      setFileSize(0);
-                    }}
+                    onClick={() => setSelectedFile(null)}
                     className="text-xs text-slate-400 hover:text-white"
                   >
                     Hapus
@@ -415,12 +430,73 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             </div>
 
+            {/* Coverage and queried-source evidence */}
+            {result.coverage_summary && (
+              <div className={`rounded-xl border p-4 space-y-1 ${
+                result.coverage === "complete"
+                  ? "border-blue-500/30 bg-blue-950/20"
+                  : "border-amber-500/30 bg-amber-950/20"
+              }`}>
+                <div className="text-xs font-bold text-white">
+                  Cakupan pemeriksaan: {result.coverage === "complete" ? "Lengkap" : result.coverage === "partial" ? "Parsial" : "Terbatas"}
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">{result.coverage_summary}</p>
+              </div>
+            )}
+
+            {result.sources && result.sources.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+                  Sumber yang Diperiksa
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {result.sources.map((source: any) => (
+                    <div key={source.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-xs font-bold text-white">{source.name}</div>
+                          <div className="text-[10px] font-mono text-slate-500 break-all">{source.checked_at}</div>
+                        </div>
+                        <span className={`rounded px-2 py-1 text-[10px] font-bold ${
+                          source.status === "unavailable"
+                            ? "bg-amber-950/60 text-amber-300"
+                            : source.outcome === "match"
+                            ? "bg-rose-950/60 text-rose-300"
+                            : "bg-blue-950/60 text-blue-300"
+                        }`}>
+                          {source.status === "unavailable"
+                            ? "Tidak tersedia"
+                            : source.outcome === "match"
+                            ? "Ada kecocokan"
+                            : source.outcome === "no_match"
+                            ? "Tidak ditemukan"
+                            : "Konteks ditemukan"}
+                        </span>
+                      </div>
+                      {source.evidence?.map((item: any, index: number) => (
+                        <div key={`${source.id}-${index}`} className="text-[11px] text-slate-300">
+                          <span className="text-slate-500">{item.label}: </span>
+                          <span className="font-mono break-all">{item.value}</span>
+                        </div>
+                      ))}
+                      {source.limitation && <p className="text-[11px] text-slate-500 leading-relaxed">{source.limitation}</p>}
+                      {source.attribution_url && (
+                        <a href={source.attribution_url} target="_blank" rel="noreferrer" className="text-[11px] text-blue-400 hover:text-blue-300">
+                          Lihat sumber
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Blacklist Match Card if registered */}
             {result.blacklist_entry && (
               <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
                   <Flame className="h-4 w-4 shrink-0" />
-                  <span>Entitas Resmi Terdaftar di Basis Data Daftar Hitam PANDU</span>
+                  <span>Entitas Tercatat di Registri Internal Terverifikasi PANDU</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1 text-slate-300">
                   <div>
@@ -526,8 +602,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 )}
                 {result.report_status && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Status Registri Cek Rekening:</span>
-                    <span className={`font-bold font-mono ${result.total_reports > 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                    <span className="text-slate-500 block">Status Registri Internal PANDU:</span>
+                    <span className={`font-bold font-mono ${result.total_reports > 0 ? "text-rose-400" : "text-slate-300"}`}>
                       {result.report_status}
                     </span>
                   </div>
@@ -654,7 +730,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               <div className="flex items-center gap-2">
                 <Flame className="h-5 w-5 text-rose-400" />
                 <h4 className="text-sm sm:text-base font-bold text-white">
-                  Tanda Bahaya Terverifikasi (Explainable Red Flags)
+                  Indikator &amp; Temuan yang Dapat Dijelaskan
                 </h4>
               </div>
 
@@ -731,9 +807,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       result.email ||
                       result.file_name ||
                       "",
-                    chronology: `Terdeteksi indikasi ${
-                      result.detected_category || result.threat_level || "penipuan"
-                    } dengan skor risiko ${result.risk_score}%.`,
+                    chronology: `Hasil pemeriksaan PANDU: ${
+                      result.detected_category || result.threat_level || "indikator digital"
+                    }. Indeks indikator ${result.risk_score}%; hasil bergantung pada sumber yang berhasil diperiksa.`,
                   };
                   if (typeof window !== "undefined") {
                     try {

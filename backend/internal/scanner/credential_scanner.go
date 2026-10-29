@@ -1,81 +1,102 @@
 package scanner
 
 import (
+	"archive/zip"
+	"bytes"
+	"context"
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
+	"net/http"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // PhoneScanResult holds forensic details for a phone number.
 type PhoneScanResult struct {
-	OriginalInput   string    `json:"original_input"`
-	CleanNumber     string    `json:"clean_number"`
-	CountryCode     string    `json:"country_code"`
-	CountryName     string    `json:"country_name"`
-	Operator        string    `json:"operator"`
-	HLRRegion       string    `json:"hlr_region"`
-	NumberType      string    `json:"number_type"` // "Prabayar / Seluler", "VoIP / Virtual Number", "Luar Negeri"
-	VirtualRisk     bool      `json:"virtual_risk"`
-	RiskScore       int       `json:"risk_score"`
-	ThreatLevel     string    `json:"threat_level"`
-	RedFlags        []RedFlag `json:"red_flags"`
-	Recommendations []string  `json:"recommendations"`
-	BlacklistEntry  any       `json:"blacklist_entry,omitempty"`
+	OriginalInput   string         `json:"original_input"`
+	CleanNumber     string         `json:"clean_number"`
+	CountryCode     string         `json:"country_code"`
+	CountryName     string         `json:"country_name"`
+	Operator        string         `json:"operator"`
+	HLRRegion       string         `json:"hlr_region"`
+	NumberType      string         `json:"number_type"`
+	RiskScore       int            `json:"risk_score"`
+	ThreatLevel     string         `json:"threat_level"`
+	Coverage        string         `json:"coverage"`
+	CoverageSummary string         `json:"coverage_summary"`
+	Sources         []SourceResult `json:"sources"`
+	RedFlags        []RedFlag      `json:"red_flags"`
+	Recommendations []string       `json:"recommendations"`
+	BlacklistEntry  any            `json:"blacklist_entry,omitempty"`
 }
 
 // BankScanResult holds forensic details for a bank account or e-wallet.
 type BankScanResult struct {
-	OriginalBank    string    `json:"original_bank"`
-	AccountNumber   string    `json:"account_number"`
-	CleanNumber     string    `json:"clean_number"`
-	BankRoutingCode string    `json:"bank_routing_code"`
-	InstitutionType string    `json:"institution_type"` // "Bank Konvensional", "Bank Syariah", "E-Wallet"
-	ReportStatus    string    `json:"report_status"`    // "Belum Ada Catatan Laporan Kejahatan" / "Terdaftar di Basis Data Laporan"
-	TotalReports    int       `json:"total_reports"`
-	AccountHolder   string    `json:"account_holder,omitempty"`
-	MuleRiskSummary string    `json:"mule_risk_summary"`
-	RiskScore       int       `json:"risk_score"`
-	ThreatLevel     string    `json:"threat_level"`
-	RedFlags        []RedFlag `json:"red_flags"`
-	Recommendations []string  `json:"recommendations"`
-	BlacklistEntry  any       `json:"blacklist_entry,omitempty"`
+	OriginalBank    string         `json:"original_bank"`
+	AccountNumber   string         `json:"account_number"`
+	CleanNumber     string         `json:"clean_number"`
+	BankRoutingCode string         `json:"bank_routing_code"`
+	InstitutionType string         `json:"institution_type"`
+	ReportStatus    string         `json:"report_status"`
+	TotalReports    int            `json:"total_reports"`
+	AccountHolder   string         `json:"account_holder,omitempty"`
+	MuleRiskSummary string         `json:"mule_risk_summary"`
+	RiskScore       int            `json:"risk_score"`
+	ThreatLevel     string         `json:"threat_level"`
+	Coverage        string         `json:"coverage"`
+	CoverageSummary string         `json:"coverage_summary"`
+	Sources         []SourceResult `json:"sources"`
+	RedFlags        []RedFlag      `json:"red_flags"`
+	Recommendations []string       `json:"recommendations"`
+	BlacklistEntry  any            `json:"blacklist_entry,omitempty"`
 }
 
 // EmailScanResult holds forensic details for an email address.
 type EmailScanResult struct {
-	Email           string             `json:"email"`
-	Username        string             `json:"username"`
-	Domain          string             `json:"domain"`
-	IsDisposable    bool               `json:"is_disposable"`
-	IsFreeProvider  bool               `json:"is_free_provider"`
-	Impersonating   string             `json:"impersonating,omitempty"`
-	MXRecords       []string           `json:"mx_records"`
-	GlobalIntel     *GlobalThreatIntel `json:"global_intel,omitempty"`
-	RiskScore       int                `json:"risk_score"`
-	ThreatLevel     string             `json:"threat_level"`
-	RedFlags        []RedFlag          `json:"red_flags"`
-	Recommendations []string           `json:"recommendations"`
-	BlacklistEntry  any                `json:"blacklist_entry,omitempty"`
+	Email           string         `json:"email"`
+	Username        string         `json:"username"`
+	Domain          string         `json:"domain"`
+	IsDisposable    bool           `json:"is_disposable"`
+	IsFreeProvider  bool           `json:"is_free_provider"`
+	Impersonating   string         `json:"impersonating,omitempty"`
+	MXRecords       []string       `json:"mx_records"`
+	RiskScore       int            `json:"risk_score"`
+	ThreatLevel     string         `json:"threat_level"`
+	Coverage        string         `json:"coverage"`
+	CoverageSummary string         `json:"coverage_summary"`
+	Sources         []SourceResult `json:"sources"`
+	RedFlags        []RedFlag      `json:"red_flags"`
+	Recommendations []string       `json:"recommendations"`
+	BlacklistEntry  any            `json:"blacklist_entry,omitempty"`
 }
 
 // FileScanResult holds forensic details for an uploaded or inspected file.
 type FileScanResult struct {
-	FileName         string    `json:"file_name"`
-	Extension        string    `json:"extension"`
-	FileSize         int64     `json:"file_size"`
-	SHA256           string    `json:"sha256"`
-	MD5              string    `json:"md5"`
-	FileTypeCategory string    `json:"file_type_category"` // "APK_TROJAN", "DOKUMEN_MALICIOUS", "IMAGE_SCREENSHOT", "BERKAS_LAIN"
-	RiskScore        int       `json:"risk_score"`
-	ThreatLevel      string    `json:"threat_level"`
-	DangerousPerms   []string  `json:"dangerous_perms,omitempty"`
-	RedFlags         []RedFlag `json:"red_flags"`
-	Recommendations  []string  `json:"recommendations"`
-	BlacklistEntry   any       `json:"blacklist_entry,omitempty"`
+	FileName         string         `json:"file_name"`
+	Extension        string         `json:"extension"`
+	FileSize         int64          `json:"file_size"`
+	DetectedMIME     string         `json:"detected_mime"`
+	SHA256           string         `json:"sha256"`
+	MD5              string         `json:"md5"`
+	FileTypeCategory string         `json:"file_type_category"`
+	RiskScore        int            `json:"risk_score"`
+	ThreatLevel      string         `json:"threat_level"`
+	Coverage         string         `json:"coverage"`
+	CoverageSummary  string         `json:"coverage_summary"`
+	Sources          []SourceResult `json:"sources"`
+	DangerousPerms   []string       `json:"dangerous_perms,omitempty"`
+	RedFlags         []RedFlag      `json:"red_flags"`
+	Recommendations  []string       `json:"recommendations"`
+	BlacklistEntry   any            `json:"blacklist_entry,omitempty"`
 }
 
 // Detailed Indonesian mobile phone prefixes mapping with HLR regional info
@@ -149,15 +170,15 @@ var disposableEmailDomains = map[string]bool{
 
 // Free webmail providers
 var freeEmailDomains = map[string]bool{
-	"gmail.com":   true,
-	"yahoo.com":   true,
-	"ymail.com":   true,
-	"hotmail.com": true,
-	"outlook.com": true,
-	"icloud.com":  true,
-	"aol.com":     true,
-	"zoho.com":    true,
-	"proton.me":   true,
+	"gmail.com":      true,
+	"yahoo.com":      true,
+	"ymail.com":      true,
+	"hotmail.com":    true,
+	"outlook.com":    true,
+	"icloud.com":     true,
+	"aol.com":        true,
+	"zoho.com":       true,
+	"proton.me":      true,
 	"protonmail.com": true,
 }
 
@@ -172,125 +193,58 @@ type bankSpec struct {
 }
 
 var indonesianBankSpecs = map[string]bankSpec{
-	"bca": {Name: "Bank Central Asia (BCA)", Type: "Bank Swasta", RoutingCode: "014", MinDig: 10, MaxDig: 10, Example: "10 digit (misal: 8271039481)"},
-	"bri": {Name: "Bank Rakyat Indonesia (BRI)", Type: "Bank BUMN", RoutingCode: "002", MinDig: 15, MaxDig: 15, Example: "15 digit (4 unit + 6 rek + 1 tipe + 4 kontrol)"},
-	"mandiri": {Name: "Bank Mandiri", Type: "Bank BUMN", RoutingCode: "008", MinDig: 13, MaxDig: 13, Example: "13 digit (3 cabang + 2 produk + 7 rek + 1 kontrol)"},
-	"bni": {Name: "Bank Negara Indonesia (BNI)", Type: "Bank BUMN", RoutingCode: "009", MinDig: 10, MaxDig: 10, Example: "10 digit (9 pokok + 1 kontrol)"},
-	"bsi": {Name: "Bank Syariah Indonesia (BSI)", Type: "Bank Syariah", RoutingCode: "451", MinDig: 10, MaxDig: 10, Example: "10 digit"},
-	"cimb": {Name: "CIMB Niaga", Type: "Bank Swasta", RoutingCode: "022", MinDig: 12, MaxDig: 14, Example: "12-14 digit"},
-	"permata": {Name: "Bank Permata", Type: "Bank Swasta", RoutingCode: "013", MinDig: 10, MaxDig: 12, Example: "10-12 digit"},
-	"danamon": {Name: "Bank Danamon", Type: "Bank Swasta", RoutingCode: "011", MinDig: 10, MaxDig: 10, Example: "10 digit"},
-	"btn": {Name: "Bank Tabungan Negara (BTN)", Type: "Bank BUMN", RoutingCode: "200", MinDig: 16, MaxDig: 16, Example: "16 digit"},
-	"jago": {Name: "Bank Jago", Type: "Bank Digital", RoutingCode: "542", MinDig: 10, MaxDig: 12, Example: "10-12 digit"},
-	"seabank": {Name: "SeaBank Indonesia", Type: "Bank Digital", RoutingCode: "535", MinDig: 12, MaxDig: 12, Example: "12 digit"},
-	"dana": {Name: "DANA (E-Wallet)", Type: "E-Wallet", RoutingCode: "014 / 002 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP terdaftar (10-13 digit)"},
-	"gopay": {Name: "GoPay (E-Wallet)", Type: "E-Wallet", RoutingCode: "70001 / 008 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP atau Virtual Account"},
-	"ovo": {Name: "OVO (E-Wallet)", Type: "E-Wallet", RoutingCode: "39358 / 009 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP terdaftar (10-13 digit)"},
+	"bca":       {Name: "Bank Central Asia (BCA)", Type: "Bank Swasta", RoutingCode: "014", MinDig: 10, MaxDig: 10, Example: "10 digit (misal: 8271039481)"},
+	"bri":       {Name: "Bank Rakyat Indonesia (BRI)", Type: "Bank BUMN", RoutingCode: "002", MinDig: 15, MaxDig: 15, Example: "15 digit (4 unit + 6 rek + 1 tipe + 4 kontrol)"},
+	"mandiri":   {Name: "Bank Mandiri", Type: "Bank BUMN", RoutingCode: "008", MinDig: 13, MaxDig: 13, Example: "13 digit (3 cabang + 2 produk + 7 rek + 1 kontrol)"},
+	"bni":       {Name: "Bank Negara Indonesia (BNI)", Type: "Bank BUMN", RoutingCode: "009", MinDig: 10, MaxDig: 10, Example: "10 digit (9 pokok + 1 kontrol)"},
+	"bsi":       {Name: "Bank Syariah Indonesia (BSI)", Type: "Bank Syariah", RoutingCode: "451", MinDig: 10, MaxDig: 10, Example: "10 digit"},
+	"cimb":      {Name: "CIMB Niaga", Type: "Bank Swasta", RoutingCode: "022", MinDig: 12, MaxDig: 14, Example: "12-14 digit"},
+	"permata":   {Name: "Bank Permata", Type: "Bank Swasta", RoutingCode: "013", MinDig: 10, MaxDig: 12, Example: "10-12 digit"},
+	"danamon":   {Name: "Bank Danamon", Type: "Bank Swasta", RoutingCode: "011", MinDig: 10, MaxDig: 10, Example: "10 digit"},
+	"btn":       {Name: "Bank Tabungan Negara (BTN)", Type: "Bank BUMN", RoutingCode: "200", MinDig: 16, MaxDig: 16, Example: "16 digit"},
+	"jago":      {Name: "Bank Jago", Type: "Bank Digital", RoutingCode: "542", MinDig: 10, MaxDig: 12, Example: "10-12 digit"},
+	"seabank":   {Name: "SeaBank Indonesia", Type: "Bank Digital", RoutingCode: "535", MinDig: 12, MaxDig: 12, Example: "12 digit"},
+	"dana":      {Name: "DANA (E-Wallet)", Type: "E-Wallet", RoutingCode: "014 / 002 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP terdaftar (10-13 digit)"},
+	"gopay":     {Name: "GoPay (E-Wallet)", Type: "E-Wallet", RoutingCode: "70001 / 008 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP atau Virtual Account"},
+	"ovo":       {Name: "OVO (E-Wallet)", Type: "E-Wallet", RoutingCode: "39358 / 009 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP terdaftar (10-13 digit)"},
 	"shopeepay": {Name: "ShopeePay (E-Wallet)", Type: "E-Wallet", RoutingCode: "122 / 014 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP atau kode 122..."},
 }
 
-// AnalyzePhone inspects an input phone number with real regional HLR registers and virtual risk analysis.
+// AnalyzePhone normalizes phone metadata. Prefix and country data are context, not fraud evidence.
 func AnalyzePhone(rawPhone string) PhoneScanResult {
 	input := strings.TrimSpace(rawPhone)
-	numOnly := regexp.MustCompile(`[^0-9+]`).ReplaceAllString(input, "")
-
-	clean := numOnly
-	countryCode := "+62"
-	countryName := "Indonesia"
-
+	clean := regexp.MustCompile(`[^0-9+]`).ReplaceAllString(input, "")
+	countryCode, countryName := "+62", "Indonesia"
 	if strings.HasPrefix(clean, "+62") {
 		clean = "0" + clean[3:]
 	} else if strings.HasPrefix(clean, "62") && len(clean) > 8 {
 		clean = "0" + clean[2:]
 	} else if strings.HasPrefix(clean, "+") {
-		// Foreign number
-		countryCode = clean[:3]
-		countryName = "Luar Negeri / Internasional"
+		countryCode, countryName = "Internasional", "Luar Indonesia"
 	}
 
 	result := PhoneScanResult{
-		OriginalInput:   rawPhone,
-		CleanNumber:     clean,
-		CountryCode:     countryCode,
-		CountryName:     countryName,
-		Operator:        "Tidak Terdaftar di HLR Seluler Resmi",
-		HLRRegion:       "Wilayah Distribusi Tidak Teridentifikasi",
-		NumberType:      "Prabayar / Seluler",
-		VirtualRisk:     false,
-		RiskScore:       15,
-		ThreatLevel:     "WASPADA / BUTUH VERIFIKASI",
-		RedFlags:        []RedFlag{},
-		Recommendations: []string{},
+		OriginalInput: rawPhone, CleanNumber: clean, CountryCode: countryCode, CountryName: countryName,
+		Operator: "Tidak teridentifikasi dari katalog prefix", HLRRegion: "Tidak tersedia",
+		NumberType: "Metadata nomor", RiskScore: 15, ThreatLevel: "BELUM DAPAT DISIMPULKAN",
+		Coverage: CoverageUnavailable, Sources: []SourceResult{}, RedFlags: []RedFlag{}, Recommendations: []string{
+			"Prefix, operator, negara, dan format nomor bukan bukti bahwa suatu nomor aman atau melakukan penipuan.",
+			"Jangan berikan OTP, PIN, kata sandi, atau mentransfer uang sebelum memverifikasi identitas melalui saluran lain.",
+		},
 	}
-
 	if len(clean) < 8 {
-		result.RiskScore = 65
-		result.ThreatLevel = "WASPADA / ANOMALI NOMOR"
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "HIGH",
-			Title:       "Panjang Digit Terlalu Pendek (Anomali Format)",
-			Explanation: "Panjang nomor tidak memenuhi standar nomor seluler resmi (minimal 10 digit). Berpotensi nomor palsu atau hasil manipulasi Caller ID (Spoofing).",
-			Snippet:     clean,
-		})
-		result.Recommendations = append(result.Recommendations, "Pastikan nomor dimasukkan secara lengkap dengan kode area atau awalan 08.")
-		return result
+		result.RiskScore = 35
+		result.ThreatLevel = "INPUT NOMOR TIDAK LENGKAP"
+		result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Nomor tidak lengkap", Explanation: "Nomor terlalu pendek untuk dikorelasikan secara andal.", Snippet: clean})
 	}
-
-	// Check foreign number
-	if countryName == "Luar Negeri / Internasional" {
-		result.RiskScore = 80
-		result.ThreatLevel = "BAHAYA / NOMOR INTERNASIONAL"
-		result.NumberType = "Nomor Virtual / VoIP Luar Negeri"
-		result.VirtualRisk = true
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "CRITICAL",
-			Title:       "Kontak Menggunakan Kode Negara Asing",
-			Explanation: "Banyak sindikat penipuan freelance like video dan investasi bodong menggunakan nomor virtual luar negeri (+1, +44, +234, +60, +91) untuk menyembunyikan identitas asli dan menghindari jerat hukum lokal.",
-			Snippet:     rawPhone,
-		})
-		result.Recommendations = append(result.Recommendations, "Waspadai pesan WhatsApp dari nomor luar negeri yang mengaku berasal dari instansi lokal Indonesia.")
-		return result
-	}
-
-	// Identify Indonesian Telco Operator & HLR Region
-	if len(clean) >= 4 {
-		prefix := clean[:4]
-		if info, ok := telcoPrefixCatalog[prefix]; ok {
+	if countryName == "Indonesia" && len(clean) >= 4 {
+		if info, ok := telcoPrefixCatalog[clean[:4]]; ok {
 			result.Operator = info.Operator
 			result.HLRRegion = info.Region
-			result.VirtualRisk = info.IsVirtual
-
-			if info.IsVirtual {
-				result.NumberType = "Nomor Prabayar Digital / Virtual eSIM"
-				result.RiskScore = 30
-				result.ThreatLevel = "WASPADA / NOMOR VIRTUAL DIGITAL"
-				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "MEDIUM",
-					Title:       "Nomor Seluler Digital / Virtual eSIM",
-					Explanation: fmt.Sprintf("Nomor ini menggunakan layanan seluler digital (%s). Kartu SIM digital dapat dibeli secara online tanpa verifikasi fisik konter, sehingga kerap dieksploitasi oleh bot spammer.", info.Operator),
-					Snippet:     prefix,
-				})
-			}
+			result.NumberType = "Prefix seluler Indonesia"
 		}
 	}
-
-	// Digit length check for Indonesia (10-13 digits)
-	if len(clean) < 10 || len(clean) > 13 {
-		result.RiskScore = 40
-		result.ThreatLevel = "WASPADA / ANOMALI PANJANG DIGIT"
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "MEDIUM",
-			Title:       "Panjang Digit di Luar Standar Seluler",
-			Explanation: fmt.Sprintf("Nomor memiliki %d digit. Rentang nomor telepon seluler normal di Indonesia adalah 10 hingga 13 digit.", len(clean)),
-			Snippet:     clean,
-		})
-	} else if !result.VirtualRisk {
-		result.RiskScore = 0
-		result.ThreatLevel = "AMAN / NOMOR SELULER VALID"
-		result.Recommendations = append(result.Recommendations, "Format nomor seluler valid dan tidak terdaftar dalam catatan blacklist kejahatan PANDU.")
-		result.Recommendations = append(result.Recommendations, "Tetap jaga kerahasiaan kode OTP, PIN m-banking, dan password pribadi Anda.")
-	}
-
+	result.CoverageSummary = "Metadata nomor tersedia. Pemeriksaan riwayat laporan eksternal Indonesia memerlukan akses resmi AduanNomor; PANDU tidak menganggap ketiadaan data sebagai aman."
 	return result
 }
 
@@ -300,18 +254,12 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 	accOnly := regexp.MustCompile(`[^0-9]`).ReplaceAllString(rawAcc, "")
 
 	result := BankScanResult{
-		OriginalBank:    rawBank,
-		AccountNumber:   rawAcc,
-		CleanNumber:     accOnly,
-		BankRoutingCode: "Tidak Terdaftar di BI Fast",
-		InstitutionType: "Bank / Layanan Keuangan",
-		ReportStatus:    "Belum Ada Catatan Laporan Kejahatan",
-		TotalReports:    0,
-		MuleRiskSummary: "Waspadai modus rekening perorangan sewaan (mule account) jika bertransaksi dengan instansi resmi.",
-		RiskScore:       0,
-		ThreatLevel:     "BERSIH / BELUM PERNAH DILAPORKAN",
-		RedFlags:        []RedFlag{},
-		Recommendations: []string{},
+		OriginalBank: rawBank, AccountNumber: rawAcc, CleanNumber: accOnly,
+		BankRoutingCode: "Tidak teridentifikasi", InstitutionType: "Bank / Layanan Keuangan",
+		ReportStatus: "Belum diperiksa pada registri resmi eksternal", TotalReports: 0,
+		MuleRiskSummary: "Rekening yang valid tetap dapat menjadi rekening penampung. Format dan jumlah digit tidak menentukan keamanan.",
+		RiskScore:       15, ThreatLevel: "BELUM DAPAT DISIMPULKAN",
+		Coverage: CoverageUnavailable, Sources: []SourceResult{}, RedFlags: []RedFlag{}, Recommendations: []string{},
 	}
 
 	if accOnly == "" {
@@ -381,10 +329,11 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 		result.BankRoutingCode = matchedSpec.RoutingCode
 	}
 
+	result.CoverageSummary = "PANDU memeriksa registri internal terverifikasi bila tersedia. CekRekening.id belum menyediakan API publik yang dapat diintegrasikan secara sah, sehingga tidak ada klaim pemeriksaan resmi Komdigi pada hasil ini."
 	result.Recommendations = append(result.Recommendations,
-		"Verifikasi Nama Pemilik Rekening: Saat di layar konfirmasi transfer ATM/m-banking, pastikan nama penerima adalah nama instansi resmi jika Anda bertransaksi dengan perusahaan. Waspadai jika nama yang muncul adalah nama perorangan.",
-		"Waspadai Modus Rekening Sewaan (Mule Account): Penipu profesional selalu menggunakan rekening bank asli milik orang lain yang dibeli/disewa untuk menyamarkan identitas sebenarnya.",
-		"Prosedur Darurat Pembekuan: Jika Anda terlanjur mentransfer uang ke rekening penipu, segera hubungi Call Center resmi bank Anda dalam kurun waktu < 24 jam untuk mengajukan pemblokiran rekening penampung.",
+		"Verifikasi nama penerima pada layar konfirmasi transfer dan cocokkan dengan identitas pihak yang bertransaksi.",
+		"Rekening penampung dapat memakai rekening asli milik orang lain; status rekening valid bukan bukti keamanan.",
+		"Jika sudah terlanjur mentransfer, segera hubungi kanal resmi bank untuk meminta penanganan transaksi dan siapkan bukti komunikasi.",
 	)
 
 	return result
@@ -402,8 +351,10 @@ func AnalyzeEmail(rawEmail string) EmailScanResult {
 		IsDisposable:    false,
 		IsFreeProvider:  false,
 		MXRecords:       []string{},
-		RiskScore:       10,
-		ThreatLevel:     "AMAN / STANDAR",
+		RiskScore:       15,
+		ThreatLevel:     "BELUM DAPAT DISIMPULKAN",
+		Coverage:        CoverageUnavailable,
+		Sources:         []SourceResult{},
 		RedFlags:        []RedFlag{},
 		Recommendations: []string{},
 	}
@@ -425,34 +376,40 @@ func AnalyzeEmail(rawEmail string) EmailScanResult {
 	result.Username = username
 	result.Domain = domain
 
-	// 1. Live Query to StopForumSpam Global Intelligence Network
-	intel := QueryStopForumSpamEmail(email)
-	result.GlobalIntel = &intel
-	if intel.Found {
-		result.RiskScore = 98
-		result.ThreatLevel = "KRITIS / TERDAFTAR KEJAHATAN GLOBAL"
+	// 1. Live, attributed StopForumSpam lookup using the email hash.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	intel := QueryStopForumSpamEmail(ctx, email)
+	cancel()
+	result.Sources = append(result.Sources, intel)
+	if intel.Outcome == OutcomeMatch {
+		result.RiskScore = 85
+		result.ThreatLevel = "TERCATAT PADA SUMBER REPUTASI SPAM"
 		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "CRITICAL",
-			Title:       "Terdaftar dalam Basis Data Intelijen Global (StopForumSpam)",
-			Explanation: fmt.Sprintf("Email ini telah dilaporkan %d kali di jaringan intelijen kejahatan siber global (Terakhir aktif: %s, Indeks Keyakinan: %.1f%%). Alamat ini terbukti terlibat dalam aksi botnet, spam massal, atau phishing.", intel.Frequency, intel.LastSeen, intel.Confidence),
+			Level: "HIGH", Title: "Kecocokan pada StopForumSpam",
+			Explanation: fmt.Sprintf("StopForumSpam memuat %d catatan untuk hash email ini. Temuan tersebut adalah sinyal laporan spam dari sumber itu, bukan pembuktian identitas atau tindak pidana.", intel.Matches),
 			Snippet:     email,
 		})
 	}
 
-	// 2. Live DNS MX Record Lookup
+	// 2. Live DNS MX lookup with explicit source status.
+	dnsSource := NewSourceResult("dns_mx", "DNS Mail Exchange")
+	dnsSource.Limitation = "MX membuktikan domain memiliki konfigurasi penerimaan email; bukan bukti reputasi pengirim."
 	_, mxList, err := LiveDNSLookup(domain)
-	if err == nil && len(mxList) > 0 {
-		result.MXRecords = mxList
-	} else if !freeEmailDomains[domain] && !disposableEmailDomains[domain] {
-		// Domain has no MX records and is not a known public webmail
-		result.RiskScore += 35
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "HIGH",
-			Title:       "Domain Tidak Memiliki Server Email Aktif (No MX Record)",
-			Explanation: fmt.Sprintf("Domain @%s tidak memiliki DNS Mail Exchange (MX) aktif. Email pengirim kemungkinan besar hasil manipulasi identitas (sender address spoofing) yang tidak dapat menerima balasan.", domain),
-			Snippet:     domain,
-		})
+	if err == nil {
+		dnsSource.Status = SourceQueried
+		dnsSource.Outcome = OutcomeNoMatch
+		if len(mxList) > 0 {
+			result.MXRecords = mxList
+			dnsSource.Outcome = OutcomeContext
+			dnsSource.Evidence = append(dnsSource.Evidence, EvidenceItem{Label: "MX aktif", Value: strings.Join(mxList, ", ")})
+		} else if !freeEmailDomains[domain] && !disposableEmailDomains[domain] {
+			result.RiskScore += 25
+			result.RedFlags = append(result.RedFlags, RedFlag{Level: "HIGH", Title: "Domain tidak memiliki MX aktif", Explanation: "Domain tidak menampilkan server penerima email pada DNS saat diperiksa. Ini adalah anomali teknis, bukan bukti identitas pengirim.", Snippet: domain})
+		}
+	} else {
+		dnsSource.ErrorCategory = "dns_lookup_failed"
 	}
+	result.Sources = append(result.Sources, dnsSource)
 
 	// 3. Check Disposable / Temporary Email
 	if disposableEmailDomains[domain] {
@@ -507,116 +464,140 @@ func AnalyzeEmail(rawEmail string) EmailScanResult {
 		})
 	}
 
-	result.Recommendations = append(result.Recommendations, "Selalu periksa domain pengirim di balik simbol @ untuk memastikan email benar-benar berasal dari organisasi resmi.")
+	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
+	if result.RiskScore < 35 && len(result.RedFlags) == 0 {
+		result.ThreatLevel = "TIDAK DITEMUKAN PADA SUMBER YANG BERHASIL DIPERIKSA"
+	}
+	result.Recommendations = append(result.Recommendations, "Selalu periksa domain pengirim di balik simbol @. Tidak ditemukannya laporan pada sumber yang diperiksa bukan jaminan bahwa pengirim aman.")
 	return result
 }
 
-// AnalyzeFile inspects file parameters, byte signatures, and APK manifest permission indicators.
+// AnalyzeFile performs bounded static analysis on actual uploaded bytes. It never executes the artifact.
 func AnalyzeFile(filename string, filesize int64, content []byte) FileScanResult {
-	cleanName := strings.TrimSpace(filename)
+	cleanName := filepath.Base(strings.TrimSpace(filename))
 	ext := strings.ToLower(filepath.Ext(cleanName))
-	lowerName := strings.ToLower(cleanName)
-
-	hasherSha := sha256.New()
-	hasherMd5 := md5.New()
+	shaSum := sha256.Sum256(content)
+	md5Sum := md5.Sum(content)
+	mimeType := "application/octet-stream"
 	if len(content) > 0 {
-		hasherSha.Write(content)
-		hasherMd5.Write(content)
-	} else {
-		hasherSha.Write([]byte(cleanName))
-		hasherMd5.Write([]byte(cleanName))
+		mimeType = http.DetectContentType(content[:min(len(content), 512)])
 	}
-	shaStr := hex.EncodeToString(hasherSha.Sum(nil))
-	md5Str := hex.EncodeToString(hasherMd5.Sum(nil))
-
 	result := FileScanResult{
-		FileName:         cleanName,
-		Extension:        ext,
-		FileSize:         filesize,
-		SHA256:           shaStr,
-		MD5:              md5Str,
-		FileTypeCategory: "BERKAS_LAIN",
-		RiskScore:        15,
-		ThreatLevel:      "AMAN / BUTUH PERIKSA",
-		DangerousPerms:   []string{},
-		RedFlags:         []RedFlag{},
-		Recommendations:  []string{},
+		FileName: cleanName, Extension: ext, FileSize: int64(len(content)), DetectedMIME: mimeType,
+		SHA256: hex.EncodeToString(shaSum[:]), MD5: hex.EncodeToString(md5Sum[:]),
+		FileTypeCategory: "BERKAS_LAIN", RiskScore: 15, ThreatLevel: "BELUM DAPAT DISIMPULKAN",
+		Coverage: CoverageUnavailable, Sources: []SourceResult{}, DangerousPerms: []string{}, RedFlags: []RedFlag{}, Recommendations: []string{},
+	}
+	if len(content) == 0 {
+		result.RiskScore = 35
+		result.ThreatLevel = "BERKAS KOSONG / TIDAK DAPAT DIANALISIS"
+		result.CoverageSummary = "Tidak ada byte berkas yang diterima."
+		return result
+	}
+	if filesize != int64(len(content)) && filesize > 0 {
+		result.RedFlags = append(result.RedFlags, RedFlag{Level: "INFO", Title: "Ukuran metadata berbeda", Explanation: "PANDU menggunakan ukuran byte yang benar-benar diterima, bukan ukuran yang dikirim klien.", Snippet: fmt.Sprintf("%d byte", len(content))})
 	}
 
-	// 1. Android Package (.APK) - Critical Trojan Vector
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	hashIntel := QueryCIRCLHash(ctx, result.SHA256)
+	cancel()
+	result.Sources = append(result.Sources, hashIntel)
+
 	if ext == ".apk" {
-		result.FileTypeCategory = "APK_TROJAN"
-		result.RiskScore = 95
-		result.ThreatLevel = "KRITIS / MALWARE ANDROID"
-		result.DangerousPerms = []string{
-			"android.permission.RECEIVE_SMS (Menyadap SMS masuk)",
-			"android.permission.READ_SMS (Membaca kode OTP bank)",
-			"android.permission.SEND_SMS (Mengirim SMS ke luar)",
-			"android.permission.BIND_ACCESSIBILITY_SERVICE (Membajak layar & klik tombol)",
-			"android.permission.SYSTEM_ALERT_WINDOW (Menampilkan overlay login palsu)",
-		}
-
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "CRITICAL",
-			Title:       "Berkas Berbahaya Format Android Package (.APK)",
-			Explanation: "Berkas .APK yang dikirim lewat WhatsApp/Telegram merupakan modus utama trojan perbankan. Setelah terpasang, trojan ini menyadap seluruh SMS OTP verifikasi bank dan menguras saldo rekening secara senyap.",
-			Snippet:     cleanName,
-		})
-
-		// Detect disguises
-		disguises := []string{"foto_paket", "resi", "undangan", "tilang", "etle", "dokumen", "pajak", "tagihan"}
-		for _, d := range disguises {
-			if strings.Contains(lowerName, d) {
-				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "CRITICAL",
-					Title:       "Penyamaran Modus Populer: Berkedok " + strings.ToUpper(d),
-					Explanation: "File APK sengaja dinamai menyerupai dokumen atau foto paket pengiriman untuk mengelabui korban agar mengklik dan menginstalnya.",
-					Snippet:     cleanName,
-				})
-				break
+		result.FileTypeCategory = "APK_ANDROID"
+		if !bytes.HasPrefix(content, []byte("PK")) {
+			result.RiskScore = 55
+			result.ThreatLevel = "EKSTENSI APK TIDAK SESUAI ISI"
+			result.RedFlags = append(result.RedFlags, RedFlag{Level: "HIGH", Title: "Bukan arsip APK yang valid", Explanation: "Nama berkas berakhiran .apk tetapi signature byte tidak menunjukkan paket ZIP/APK.", Snippet: cleanName})
+		} else {
+			perms, manifestFound, err := inspectAPKArchive(content)
+			if err != nil {
+				result.RiskScore = 40
+				result.ThreatLevel = "APK TIDAK DAPAT DIPARSA SECARA LENGKAP"
+				result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Struktur APK tidak dapat dianalisis penuh", Explanation: err.Error(), Snippet: cleanName})
+			} else {
+				result.DangerousPerms = perms
+				if len(perms) > 0 {
+					result.RiskScore = 80
+					result.ThreatLevel = "APK MEMUAT INDIKATOR IZIN BERISIKO"
+					result.RedFlags = append(result.RedFlags, RedFlag{Level: "HIGH", Title: "Izin berisiko ditemukan pada muatan APK", Explanation: "Daftar ini berasal dari string izin yang benar-benar ditemukan di AndroidManifest.xml; keberadaannya tetap perlu dianalisis bersama perilaku aplikasi.", Snippet: strings.Join(perms, ", ")})
+				} else if manifestFound {
+					result.ThreatLevel = "TIDAK DITEMUKAN IZIN BERISIKO PADA PEMERIKSAAN STATIS"
+				}
 			}
 		}
-
-		result.Recommendations = append(result.Recommendations, "JANGAN PERNAH MENGKLIK ATAU MENGINSTAL file ini di ponsel Android Anda!")
-		result.Recommendations = append(result.Recommendations, "Jika sudah terlanjur dipasang, segera nyalakan MODE PESAWAT, copot aplikasi mencurigakan, dan segera hubungi bank Anda untuk membekukan rekening.")
-		return result
+		result.Recommendations = append(result.Recommendations, "Jangan memasang APK dari chat atau sumber yang tidak dipercaya. Pemeriksaan statis tidak menggantikan sandbox malware profesional.")
+	} else if strings.HasPrefix(mimeType, "image/") {
+		result.FileTypeCategory = "IMAGE"
+		if cfg, format, err := image.DecodeConfig(bytes.NewReader(content)); err == nil {
+			result.ThreatLevel = "METADATA GAMBAR BERHASIL DIBACA"
+			result.Recommendations = append(result.Recommendations, fmt.Sprintf("Gambar terdeteksi sebagai %s berukuran %dx%d piksel. Metadata saja tidak membuktikan gambar asli atau palsu.", format, cfg.Width, cfg.Height))
+		} else {
+			result.RiskScore = 40
+			result.ThreatLevel = "ISI GAMBAR TIDAK VALID"
+			result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Berkas gambar tidak dapat didekode", Explanation: "Signature atau struktur gambar rusak/tidak sesuai.", Snippet: cleanName})
+		}
+		result.Recommendations = append(result.Recommendations, "Untuk bukti transfer, pastikan dana masuk melalui mutasi rekening Anda sendiri; screenshot bukan bukti penerimaan dana.")
+	} else {
+		dangerousExts := map[string]string{".exe": "eksekutabel Windows", ".scr": "screensaver executable", ".bat": "skrip batch", ".vbs": "skrip Visual Basic", ".js": "skrip JavaScript"}
+		if desc, ok := dangerousExts[ext]; ok {
+			result.FileTypeCategory = "EXECUTABLE_OR_SCRIPT"
+			result.RiskScore = 60
+			result.ThreatLevel = "FORMAT DAPAT MENJALANKAN KODE"
+			result.RedFlags = append(result.RedFlags, RedFlag{Level: "HIGH", Title: "Format berkas berisiko", Explanation: desc + " dapat menjalankan instruksi saat dibuka. PANDU tidak mengeksekusi berkas ini.", Snippet: cleanName})
+		}
 	}
-
-	// 2. Executable & Script Malware (.exe, .bat, .vbs, .scr, .iso)
-	dangerousExts := map[string]string{
-		".exe": "Program eksekutabel Windows",
-		".scr": "Screensaver binary (sering disalahgunakan trojan)",
-		".bat": "Skrip batch berbahaya",
-		".vbs": "Skrip visual basic penyusup",
-		".iso": "File disk image yang menyembunyikan payload",
-		".js":  "Skrip Javascript eksternal",
-	}
-
-	if desc, isDanger := dangerousExts[ext]; isDanger {
-		result.FileTypeCategory = "DOKUMEN_MALICIOUS"
-		result.RiskScore = 90
-		result.ThreatLevel = "BAHAYA / PROGRAM BERBAHAYA"
-		result.RedFlags = append(result.RedFlags, RedFlag{
-			Level:       "CRITICAL",
-			Title:       "Format File Berisiko Tinggi: " + desc,
-			Explanation: "Format file ini dapat mengeksekusi kode perintah otomatis di komputer atau sistem operasi Anda tanpa izin.",
-			Snippet:     cleanName,
-		})
-		result.Recommendations = append(result.Recommendations, "Hapus berkas ini segera dan jangan membukanya di perangkat komputer Anda.")
-		return result
-	}
-
-	// 3. Image Screenshot Analysis (Bukti Transfer / Chat)
-	imageExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".webp": true}
-	if imageExts[ext] {
-		result.FileTypeCategory = "IMAGE_SCREENSHOT"
-		result.RiskScore = 25
-		result.ThreatLevel = "DOKUMEN GAMBAR / PERIKSA KEASLIAN"
-		result.Recommendations = append(result.Recommendations, "Periksa keselarasan font, tanggal, dan nomor referensi pada gambar bukti transfer. Bukti transfer palsu sering memiliki perataan teks yang miring atau jenis font yang tidak konsisten dengan aplikasi perbankan resmi.")
-		result.Recommendations = append(result.Recommendations, "Selalu cek mutasi rekening langsung di aplikasi m-banking Anda sendiri untuk memastikan dana benar-benar sudah masuk.")
-		return result
-	}
-
-	result.Recommendations = append(result.Recommendations, "Selalu berhati-hati saat menerima berkas dari pengirim yang tidak dikenal.")
+	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
 	return result
+}
+
+func inspectAPKArchive(content []byte) ([]string, bool, error) {
+	zr, err := zip.NewReader(bytes.NewReader(content), int64(len(content)))
+	if err != nil {
+		return nil, false, fmt.Errorf("arsip APK tidak valid")
+	}
+	if len(zr.File) > 2048 {
+		return nil, false, fmt.Errorf("jumlah entri APK melampaui batas")
+	}
+	wanted := []string{"android.permission.RECEIVE_SMS", "android.permission.READ_SMS", "android.permission.SEND_SMS", "android.permission.BIND_ACCESSIBILITY_SERVICE", "android.permission.SYSTEM_ALERT_WINDOW"}
+	found := map[string]bool{}
+	manifestFound := false
+	var total uint64
+	for _, file := range zr.File {
+		if file.UncompressedSize64 > 8*1024*1024 {
+			return nil, manifestFound, fmt.Errorf("entri APK terlalu besar")
+		}
+		total += file.UncompressedSize64
+		if total > 32*1024*1024 {
+			return nil, manifestFound, fmt.Errorf("muatan APK melampaui batas ekstraksi")
+		}
+		if filepath.Clean(file.Name) != file.Name || strings.Contains(file.Name, "..") {
+			return nil, manifestFound, fmt.Errorf("jalur arsip APK tidak aman")
+		}
+		if file.Name != "AndroidManifest.xml" {
+			continue
+		}
+		manifestFound = true
+		rc, err := file.Open()
+		if err != nil {
+			return nil, manifestFound, err
+		}
+		data, err := io.ReadAll(io.LimitReader(rc, 8*1024*1024))
+		rc.Close()
+		if err != nil {
+			return nil, manifestFound, err
+		}
+		for _, permission := range wanted {
+			if bytes.Contains(data, []byte(permission)) {
+				found[permission] = true
+			}
+		}
+	}
+	perms := make([]string, 0, len(found))
+	for _, permission := range wanted {
+		if found[permission] {
+			perms = append(perms, permission)
+		}
+	}
+	return perms, manifestFound, nil
 }

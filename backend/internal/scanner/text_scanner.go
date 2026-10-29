@@ -8,11 +8,11 @@ import (
 
 // CognitiveBias represents a psychological manipulation vector exploited by scammers.
 type CognitiveBias struct {
-	Category    string   `json:"category"`     // e.g. "URGENCY", "AUTHORITY", "GREED", "SCARCITY", "FEAR"
-	Label       string   `json:"label"`        // Indonesian human-readable label
-	Description string   `json:"description"`  // Explanation of how the victim is manipulated
-	TriggerWords []string `json:"trigger_words"`// Matched keywords
-	Weight      int      `json:"weight"`       // Risk score impact
+	Category     string   `json:"category"`      // e.g. "URGENCY", "AUTHORITY", "GREED", "SCARCITY", "FEAR"
+	Label        string   `json:"label"`         // Indonesian human-readable label
+	Description  string   `json:"description"`   // Explanation of how the victim is manipulated
+	TriggerWords []string `json:"trigger_words"` // Matched keywords
+	Weight       int      `json:"weight"`        // Risk score impact
 }
 
 // RedFlag represents an identified indicator of deception with explainable reasoning.
@@ -25,15 +25,18 @@ type RedFlag struct {
 
 // TextScanResult holds the complete diagnostic result for a message text.
 type TextScanResult struct {
-	RiskScore        int             `json:"risk_score"`         // 0 - 100
-	ThreatLevel      string          `json:"threat_level"`       // "AMAN / RENDAH", "WASPADA / SEDANG", "BAHAYA / TINGGI", "KRITIS / PENIPUAN"
-	DetectedCategory string          `json:"detected_category"`  // e.g. "Loker Bodong / Freelance Like Video", "Kurir Paket APK", "Giveaway Palsu", dll
+	RiskScore        int             `json:"risk_score"`
+	ThreatLevel      string          `json:"threat_level"`
+	DetectedCategory string          `json:"detected_category"`
+	Coverage         string          `json:"coverage"`
+	CoverageSummary  string          `json:"coverage_summary"`
+	Sources          []SourceResult  `json:"sources"`
 	CognitiveBiases  []CognitiveBias `json:"cognitive_biases"`
 	RedFlags         []RedFlag       `json:"red_flags"`
 	Recommendations  []string        `json:"recommendations"`
 	ExtractedURLs    []string        `json:"extracted_urls"`
 	ExtractedPhones  []string        `json:"extracted_phones"`
-	ExtractedFiles   []string        `json:"extracted_files"` // e.g. .apk, .exe, .scr
+	ExtractedFiles   []string        `json:"extracted_files"`
 }
 
 // AnalyzeText performs deep explainable inspection on message text.
@@ -42,7 +45,10 @@ func AnalyzeText(rawText string) TextScanResult {
 	lower := strings.ToLower(text)
 
 	result := TextScanResult{
-		RiskScore:       0,
+		RiskScore:       15,
+		Coverage:        CoverageUnavailable,
+		CoverageSummary: "Analisis pesan menggunakan indikator lokal. URL dan nomor yang diekstrak diperiksa pada sumber terkait bila tersedia.",
+		Sources:         []SourceResult{},
 		CognitiveBiases: []CognitiveBias{},
 		RedFlags:        []RedFlag{},
 		Recommendations: []string{},
@@ -52,7 +58,7 @@ func AnalyzeText(rawText string) TextScanResult {
 	}
 
 	if text == "" {
-		result.ThreatLevel = "AMAN / RENDAH"
+		result.ThreatLevel = "INPUT KOSONG / TIDAK DAPAT DIANALISIS"
 		result.Recommendations = append(result.Recommendations, "Tidak ada teks yang dianalisis.")
 		return result
 	}
@@ -185,8 +191,8 @@ func AnalyzeText(rawText string) TextScanResult {
 		result.ThreatLevel = "WASPADA / PERLU PERHATIAN"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali identitas pengirim dan verifikasi tautan yang disertakan.")
 	default:
-		result.ThreatLevel = "AMAN / RISIKO RENDAH"
-		result.Recommendations = append(result.Recommendations, "Pesan tidak menunjukkan pola manipulasi siber yang mencolok, namun tetap jaga kerahasiaan OTP dan PIN Anda.")
+		result.ThreatLevel = "TIDAK DITEMUKAN POLA MANIPULASI KUAT"
+		result.Recommendations = append(result.Recommendations, "Tidak ditemukan pola manipulasi kuat pada pemeriksaan lokal. Hasil ini bukan jaminan bahwa pengirim atau isi pesan aman.")
 	}
 
 	if result.DetectedCategory == "" {

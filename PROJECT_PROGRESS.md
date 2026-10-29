@@ -41,3 +41,27 @@
   - Seluruh unit tests backend Go (`scanner`, `sandbox`, `dossier`) lulus 100% (PASS).
   - Next.js Turbopack build sukses 0 error.
   - Status working tree bersih (`working tree clean`).
+
+### 2. Hybrid Threat Correlation & Analisis Berkas Nyata [29 Oktober 2026]
+- **Kontrak Bukti Multi-Sumber**:
+  - Setiap sumber kini memiliki status `queried`, `unavailable`, atau `skipped`, serta hasil `match`, `no_match`, `context`, atau `unknown`.
+  - Hasil tidak lagi menyamakan provider gagal/tidak tersedia dengan target bersih.
+  - Label aman/bersih berdasarkan ketiadaan laporan dihapus; hasil tanpa kecocokan menyatakan keterbatasan sumber.
+- **Intelijen Terbuka Live**:
+  - Email menggunakan StopForumSpam melalui hash MD5 alamat untuk meminimalkan pengiriman data mentah, ditambah pemeriksaan DNS MX.
+  - URL/domain dikorelasikan dengan RDAP registry dan pencarian pemindaian publik urlscan.io, serta DNS/TLS yang dibatasi ke alamat IP publik.
+  - Hash file dikorelasikan dengan CIRCL hashlookup dan selalu menyertakan batasan bahwa kecocokan bukan vonis malware.
+  - AduanNomor.id dan CekRekening.id ditampilkan sebagai sumber resmi yang belum tersedia untuk otomasi karena tidak memiliki API publik; tidak ada bypass CAPTCHA/Cloudflare.
+- **Unggah Berkas & Gambar Nyata**:
+  - Endpoint `/api/v1/scan/file` sekarang menerima `multipart/form-data`, membaca byte asli maksimal 5 MB, dan menghitung SHA-256/MD5 dari muatan asli.
+  - APK diperiksa sebagai arsip secara bounded dan hanya menampilkan permission yang benar-benar ditemukan dalam manifest; berkas tidak pernah dieksekusi.
+  - Gambar didekode untuk metadata tipe/dimensi dengan disclaimer bahwa metadata tidak membuktikan keaslian.
+- **Integritas Registri & Keamanan**:
+  - Pencocokan registri dibuat exact dan type-scoped untuk mencegah benturan nomor rekening/telepon.
+  - Laporan publik baru berstatus pending (`verified=false`) dan nama pemilik rekening dari input publik tidak dipublikasikan.
+  - Seed/demo tanpa provenance dihapus dari database produksi dan seeding otomatis dinonaktifkan.
+  - Resolusi URL/TLS menolak alamat non-publik untuk mengurangi SSRF; setiap redirect hop divalidasi.
+- **UI Radar Forensik**:
+  - Berkas dikirim sebagai byte asli melalui FormData.
+  - Hasil menampilkan cakupan pemeriksaan, status setiap sumber, bukti, waktu pemeriksaan, atribusi, dan keterbatasan sumber.
+  - Istilah `Tanda Bahaya Terverifikasi` diganti menjadi `Indikator & Temuan yang Dapat Dijelaskan` agar heuristik tidak disalahartikan sebagai bukti final.

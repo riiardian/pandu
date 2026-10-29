@@ -19,6 +19,7 @@ const (
 	TypePhone   ThreatType = "phone"
 	TypeBank    ThreatType = "bank_account"
 	TypeURL     ThreatType = "url"
+	TypeEmail   ThreatType = "email"
 	TypeAPKHash ThreatType = "apk_hash"
 )
 
@@ -123,7 +124,6 @@ func InitRegistry(dbURL string) *PostgresRegistry {
 
 		globalRegistry = &PostgresRegistry{db: db}
 		globalRegistry.ensureSchema()
-		globalRegistry.seedIfEmpty()
 		log.Println("PANDU PostgreSQL Threat Registry successfully initialized")
 	})
 	return globalRegistry
@@ -181,44 +181,44 @@ func (r *PostgresRegistry) seedIfEmpty() {
 		tags                                        []string
 	}{
 		{
-			id:     "THREAT-085819238491",
-			t:      string(TypePhone),
-			ident:  "085819238491",
-			cat:    string(CatLokerFreelance),
-			risk:   "CRITICAL",
-			count:  24,
-			desc:   "Perekrut palsu tugas like video YouTube & TikTok. Meminta deposit bertahap hingga puluhan juta rupiah.",
-			tags:   []string{"deposit_tugas_vip", "loker_freelance", "grup_telegram_palsu"},
+			id:    "THREAT-085819238491",
+			t:     string(TypePhone),
+			ident: "085819238491",
+			cat:   string(CatLokerFreelance),
+			risk:  "CRITICAL",
+			count: 24,
+			desc:  "Perekrut palsu tugas like video YouTube & TikTok. Meminta deposit bertahap hingga puluhan juta rupiah.",
+			tags:  []string{"deposit_tugas_vip", "loker_freelance", "grup_telegram_palsu"},
 		},
 		{
-			id:     "THREAT-082194810293",
-			t:      string(TypePhone),
-			ident:  "082194810293",
-			cat:    string(CatKurirAPK),
-			risk:   "CRITICAL",
-			count:  41,
-			desc:   "Mengaku kurir ekspedisi J&T mengirimkan file paket berkedok resi_paket.apk untuk membajak SMS OTP m-banking.",
-			tags:   []string{"kirim_apk_resi", "sadap_sms_otp", "kurir_gadungan"},
+			id:    "THREAT-082194810293",
+			t:     string(TypePhone),
+			ident: "082194810293",
+			cat:   string(CatKurirAPK),
+			risk:  "CRITICAL",
+			count: 41,
+			desc:  "Mengaku kurir ekspedisi J&T mengirimkan file paket berkedok resi_paket.apk untuk membajak SMS OTP m-banking.",
+			tags:  []string{"kirim_apk_resi", "sadap_sms_otp", "kurir_gadungan"},
 		},
 		{
-			id:     "THREAT-087819382019",
-			t:      string(TypePhone),
-			ident:  "087819382019",
-			cat:    string(CatImpersonasi),
-			risk:   "HIGH",
-			count:  12,
-			desc:   "Impersonasi kontak kerabat/teman di WhatsApp, mengaku ganti nomor dan meminta transfer talangan mendesak.",
-			tags:   []string{"ganti_nomor_wa", "pinjam_dana_darurat", "foto_profil_curian"},
+			id:    "THREAT-087819382019",
+			t:     string(TypePhone),
+			ident: "087819382019",
+			cat:   string(CatImpersonasi),
+			risk:  "HIGH",
+			count: 12,
+			desc:  "Impersonasi kontak kerabat/teman di WhatsApp, mengaku ganti nomor dan meminta transfer talangan mendesak.",
+			tags:  []string{"ganti_nomor_wa", "pinjam_dana_darurat", "foto_profil_curian"},
 		},
 		{
-			id:     "THREAT-081293847102",
-			t:      string(TypePhone),
-			ident:  "081293847102",
-			cat:    string(CatPhishingBank),
-			risk:   "CRITICAL",
-			count:  33,
-			desc:   "Mengatasnamakan CS Bank BRI, menyebarkan ancaman perubahan tarif transaksi Rp 150.000/bulan.",
-			tags:   []string{"cs_bank_palsu", "ancaman_kenaikan_tarif", "link_phishing_bri"},
+			id:    "THREAT-081293847102",
+			t:     string(TypePhone),
+			ident: "081293847102",
+			cat:   string(CatPhishingBank),
+			risk:  "CRITICAL",
+			count: 33,
+			desc:  "Mengatasnamakan CS Bank BRI, menyebarkan ancaman perubahan tarif transaksi Rp 150.000/bulan.",
+			tags:  []string{"cs_bank_palsu", "ancaman_kenaikan_tarif", "link_phishing_bri"},
 		},
 		{
 			id:     "THREAT-BCA-8271039481",
@@ -257,34 +257,34 @@ func (r *PostgresRegistry) seedIfEmpty() {
 			tags:   []string{"ewallet_penampung", "tebusan_paket", "kurir_gadungan"},
 		},
 		{
-			id:     "THREAT-URL-SHOPEE-VIP",
-			t:      string(TypeURL),
-			ident:  "shopee-vip-toko.site",
-			cat:    string(CatPhishingBank),
-			risk:   "CRITICAL",
-			count:  38,
-			desc:   "Domain phishing meniru portal e-commerce Shopee untuk pendaftaran akun tugas deposit berbayar.",
-			tags:   []string{"typosquatting", "phishing_ecommerce", "domain_site"},
+			id:    "THREAT-URL-SHOPEE-VIP",
+			t:     string(TypeURL),
+			ident: "shopee-vip-toko.site",
+			cat:   string(CatPhishingBank),
+			risk:  "CRITICAL",
+			count: 38,
+			desc:  "Domain phishing meniru portal e-commerce Shopee untuk pendaftaran akun tugas deposit berbayar.",
+			tags:  []string{"typosquatting", "phishing_ecommerce", "domain_site"},
 		},
 		{
-			id:     "THREAT-URL-RESI-PAKET",
-			t:      string(TypeURL),
-			ident:  "resi-paket-jne-expedisi.com",
-			cat:    string(CatKurirAPK),
-			risk:   "CRITICAL",
-			count:  45,
-			desc:   "Situs palsu penyedia unduhan malware Android berkedok tracking resi JNE.",
-			tags:   []string{"drive_by_download", "malware_apk", "typosquat_jne"},
+			id:    "THREAT-URL-RESI-PAKET",
+			t:     string(TypeURL),
+			ident: "resi-paket-jne-expedisi.com",
+			cat:   string(CatKurirAPK),
+			risk:  "CRITICAL",
+			count: 45,
+			desc:  "Situs palsu penyedia unduhan malware Android berkedok tracking resi JNE.",
+			tags:  []string{"drive_by_download", "malware_apk", "typosquat_jne"},
 		},
 		{
-			id:     "THREAT-URL-BCA-XYZ",
-			t:      string(TypeURL),
-			ident:  "bca-tarif-transaksi.xyz",
-			cat:    string(CatPhishingBank),
-			risk:   "CRITICAL",
-			count:  52,
-			desc:   "Situs phishing formulir perubahan tarif BCA palsu yang mencuri nomor kartu debit dan OTP.",
-			tags:   []string{"phishing_bca", "curi_otp_perbankan", "domain_xyz"},
+			id:    "THREAT-URL-BCA-XYZ",
+			t:     string(TypeURL),
+			ident: "bca-tarif-transaksi.xyz",
+			cat:   string(CatPhishingBank),
+			risk:  "CRITICAL",
+			count: 52,
+			desc:  "Situs phishing formulir perubahan tarif BCA palsu yang mencuri nomor kartu debit dan OTP.",
+			tags:  []string{"phishing_bca", "curi_otp_perbankan", "domain_xyz"},
 		},
 	}
 
@@ -309,8 +309,8 @@ func (r *PostgresRegistry) seedIfEmpty() {
 	}
 }
 
-// CheckBlacklist searches if an identifier matches any blacklisted threat in PostgreSQL
-func (r *PostgresRegistry) CheckBlacklist(query string) (*BlacklistEntry, bool) {
+// CheckBlacklistByType performs exact, type-scoped matching.
+func (r *PostgresRegistry) CheckBlacklistByType(threatType ThreatType, query string) (*BlacklistEntry, bool) {
 	clean := normalizeKey(query)
 	if clean == "" {
 		return nil, false
@@ -323,14 +323,14 @@ func (r *PostgresRegistry) CheckBlacklist(query string) (*BlacklistEntry, bool) 
 		       to_char(last_reported, 'YYYY-MM-DD HH24:MI:SS'),
 		       verified, chronology_tags
 		FROM threat_blacklist
-		WHERE clean_key = $1 OR clean_key LIKE '%' || $1 || '%' OR $1 LIKE '%' || clean_key || '%'
-		ORDER BY report_count DESC
+		WHERE type = $1 AND clean_key = $2
+		ORDER BY verified DESC, report_count DESC
 		LIMIT 1
 	`
 
 	var entry BlacklistEntry
 	var tags []string
-	err := r.db.QueryRow(querySQL, clean).Scan(
+	err := r.db.QueryRow(querySQL, threatType, clean).Scan(
 		&entry.ID,
 		&entry.Type,
 		&entry.Identifier,
@@ -355,7 +355,21 @@ func (r *PostgresRegistry) CheckBlacklist(query string) (*BlacklistEntry, bool) 
 	return &entry, true
 }
 
-// ReportThreat adds a new report or updates existing entry in PostgreSQL
+// CheckBlacklist is retained for the generic lookup endpoint, but only exact canonical keys match.
+func (r *PostgresRegistry) CheckBlacklist(query string) (*BlacklistEntry, bool) {
+	clean := normalizeKey(query)
+	if clean == "" {
+		return nil, false
+	}
+	for _, threatType := range []ThreatType{TypePhone, TypeBank, TypeURL, TypeEmail, TypeAPKHash} {
+		if entry, found := r.CheckBlacklistByType(threatType, query); found {
+			return entry, true
+		}
+	}
+	return nil, false
+}
+
+// ReportThreat adds a pending community report or updates an existing pending entry.
 func (r *PostgresRegistry) ReportThreat(req ReportRequest) (*BlacklistEntry, bool) {
 	clean := normalizeKey(req.Identifier)
 	if clean == "" {
@@ -413,7 +427,7 @@ func (r *PostgresRegistry) ReportThreat(req ReportRequest) (*BlacklistEntry, boo
 		INSERT INTO threat_blacklist (
 			id, type, identifier, clean_key, category, risk_level, report_count,
 			description, reported_bank, account_holder, verified, chronology_tags
-		) VALUES ($1, $2, $3, $4, $5, $6, 1, $7, $8, $9, TRUE, $10)
+		) VALUES ($1, $2, $3, $4, $5, $6, 1, $7, $8, '', FALSE, $9)
 		RETURNING id, type, identifier, clean_key, category, risk_level, report_count,
 		          COALESCE(description, ''), COALESCE(reported_bank, ''), COALESCE(account_holder, ''),
 		          to_char(first_reported, 'YYYY-MM-DD HH24:MI:SS'),
@@ -424,7 +438,7 @@ func (r *PostgresRegistry) ReportThreat(req ReportRequest) (*BlacklistEntry, boo
 	err = r.db.QueryRow(
 		insertSQL,
 		id, req.Type, req.Identifier, clean, req.Category, risk,
-		req.Chronology, req.ReportedBank, req.AccountHolder, pq.Array(initialTags),
+		req.Chronology, req.ReportedBank, pq.Array(initialTags),
 	).Scan(
 		&entry.ID,
 		&entry.Type,

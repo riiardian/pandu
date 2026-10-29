@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net"
@@ -52,22 +53,25 @@ var suspiciousTLDs = map[string]string{
 
 // URLScanResult holds diagnostic analysis for a URL.
 type URLScanResult struct {
-	OriginalURL        string        `json:"original_url"`
-	NormalizedURL      string        `json:"normalized_url"`
-	Hostname           string        `json:"hostname"`
-	TLD                string        `json:"tld"`
-	IsIPAddress        bool          `json:"is_ip_address"`
-	RiskScore          int           `json:"risk_score"`         // 0 - 100
-	ThreatLevel        string        `json:"threat_level"`       // "AMAN / RESMI", "WASPADA / MENCURIGAKAN", "BAHAYA / PHISHING"
-	ImpersonatedBrand  string        `json:"impersonated_brand"` // Name of brand being spoofed (if any)
-	ResolvedIPs        []string      `json:"resolved_ips,omitempty"`
-	GeoLocation        *IPGeoIntel   `json:"geolocation,omitempty"`
-	TLSCert            *TLSCertIntel `json:"tls_cert,omitempty"`
-	RedFlags           []RedFlag     `json:"red_flags"`
-	RedirectChain      []string      `json:"redirect_chain"`
-	FinalDestination   string        `json:"final_destination"`
-	IsShortlink        bool          `json:"is_shortlink"`
-	Recommendations    []string      `json:"recommendations"`
+	OriginalURL       string         `json:"original_url"`
+	NormalizedURL     string         `json:"normalized_url"`
+	Hostname          string         `json:"hostname"`
+	TLD               string         `json:"tld"`
+	IsIPAddress       bool           `json:"is_ip_address"`
+	RiskScore         int            `json:"risk_score"`
+	ThreatLevel       string         `json:"threat_level"`
+	Coverage          string         `json:"coverage"`
+	CoverageSummary   string         `json:"coverage_summary"`
+	Sources           []SourceResult `json:"sources"`
+	ImpersonatedBrand string         `json:"impersonated_brand"`
+	ResolvedIPs       []string       `json:"resolved_ips,omitempty"`
+	GeoLocation       *IPGeoIntel    `json:"geolocation,omitempty"`
+	TLSCert           *TLSCertIntel  `json:"tls_cert,omitempty"`
+	RedFlags          []RedFlag      `json:"red_flags"`
+	RedirectChain     []string       `json:"redirect_chain"`
+	FinalDestination  string         `json:"final_destination"`
+	IsShortlink       bool           `json:"is_shortlink"`
+	Recommendations   []string       `json:"recommendations"`
 }
 
 // AnalyzeURL evaluates a web URL against heuristic deception rules.
@@ -78,11 +82,9 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 	}
 
 	result := URLScanResult{
-		OriginalURL:     rawInput,
-		NormalizedURL:   input,
-		RedFlags:        []RedFlag{},
-		RedirectChain:   []string{input},
-		Recommendations: []string{},
+		OriginalURL: rawInput, NormalizedURL: input,
+		Coverage: CoverageUnavailable, Sources: []SourceResult{},
+		RedFlags: []RedFlag{}, RedirectChain: []string{input}, Recommendations: []string{},
 	}
 
 	parsed, err := url.Parse(input)
@@ -220,30 +222,49 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.FinalDestination = input
 	}
 
-	// 7. Live DNS Resolution & Host Geolocation Intelligence
-	ips, _, _ := LiveDNSLookup(host)
-	if len(ips) > 0 {
-		result.ResolvedIPs = ips
-		geo := QueryIPGeolocation(ips[0])
-		if geo != nil {
-			result.GeoLocation = geo
+	// 7. Query public registration and scan context in parallel.
+	if net.ParseIP(host) == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+		type sourceResponse struct{ source SourceResult }
+		ch := make(chan sourceResponse, 2)
+		go func() { ch <- sourceResponse{QueryRDAPDomain(ctx, host)} }()
+		go func() { ch <- sourceResponse{QueryURLScan(ctx, host)} }()
+		for i := 0; i < 2; i++ {
+			result.Sources = append(result.Sources, (<-ch).source)
 		}
+		cancel()
+		sortSources(result.Sources)
 	}
 
-	// 8. Live TLS / SSL Certificate Inspection
+	// 8. Resolve only public addresses before geolocation or TLS connections.
+	dnsSource := NewSourceResult("dns", "DNS Publik")
+	ips, _, dnsErr := LiveDNSLookup(host)
+	if dnsErr == nil {
+		dnsSource.Status, dnsSource.Outcome = SourceQueried, OutcomeContext
+		dnsSource.Evidence = append(dnsSource.Evidence, EvidenceItem{Label: "Alamat IP publik", Value: strings.Join(ips, ", ")})
+		result.ResolvedIPs = ips
+		if len(ips) > 0 {
+			result.GeoLocation = QueryIPGeolocation(ips[0])
+		}
+	} else {
+		dnsSource.ErrorCategory = "dns_or_non_public_target"
+	}
+	result.Sources = append(result.Sources, dnsSource)
+
+	tlsSource := NewSourceResult("tls", "Sertifikat TLS")
 	cert := InspectTLSCertificate(host)
 	if cert != nil {
+		tlsSource.Status, tlsSource.Outcome = SourceQueried, OutcomeContext
+		tlsSource.Evidence = append(tlsSource.Evidence, EvidenceItem{Label: "Penerbit", Value: cert.Issuer}, EvidenceItem{Label: "Berlaku", Value: cert.ValidFrom + " s/d " + cert.ValidUntil})
 		result.TLSCert = cert
 		if cert.IsRecent {
-			score += 25
-			result.RedFlags = append(result.RedFlags, RedFlag{
-				Level:       "HIGH",
-				Title:       "Sertifikat SSL Sangat Baru (< 14 Hari)",
-				Explanation: fmt.Sprintf("Sertifikat SSL untuk host ini baru diterbitkan pada %s oleh '%s'. Domain phishing umumnya berumur sangat pendek dan baru dibuat.", cert.ValidFrom, cert.Issuer),
-				Snippet:     cert.Issuer,
-			})
+			score += 10
+			result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Sertifikat TLS baru diterbitkan", Explanation: "Usia sertifikat adalah indikator lemah dan bukan usia registrasi domain atau bukti phishing.", Snippet: cert.ValidFrom})
 		}
+	} else {
+		tlsSource.ErrorCategory = "tls_unavailable"
 	}
+	result.Sources = append(result.Sources, tlsSource)
 
 	// Cap score
 	if score > 100 {
@@ -259,10 +280,10 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.ThreatLevel = "WASPADA / MENCURIGAKAN"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Pastikan Anda hanya mengakses situs resmi instansi terkait.")
 	default:
-		result.ThreatLevel = "AMAN / RISIKO RENDAH"
-		result.Recommendations = append(result.Recommendations, "Domain tidak menunjukkan anomali phishing yang mencolok. Tetap pastikan alamat diawali https:// dan gembok keamanan valid.")
+		result.ThreatLevel = "TIDAK DITEMUKAN INDIKATOR KUAT"
+		result.Recommendations = append(result.Recommendations, "Tidak ditemukan indikator kuat pada pemeriksaan yang berhasil dijalankan. Hasil ini bukan jaminan bahwa tautan aman.")
 	}
-
+	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
 	return result
 }
 
@@ -270,6 +291,17 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 func safeTraceRedirect(startURL string) ([]string, string) {
 	chain := []string{startURL}
 	current := startURL
+
+	startParsed, err := url.Parse(startURL)
+	if err != nil || (startParsed.Scheme != "http" && startParsed.Scheme != "https") || startParsed.User != nil {
+		return chain, current
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err = publicIPs(ctx, startParsed.Hostname())
+	cancel()
+	if err != nil {
+		return chain, current
+	}
 
 	client := &http.Client{
 		Timeout: 3 * time.Second,
@@ -294,14 +326,19 @@ func safeTraceRedirect(startURL string) ([]string, string) {
 		}
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 PanduSecurityScanner/1.0")
 
-		// Prevent Private IP SSRF
+		// Validate every redirect hop before making an outbound request.
 		parsed, err := url.Parse(current)
-		if err != nil {
+		if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.User != nil {
 			break
 		}
-		h := parsed.Hostname()
-		if isPrivateIP(h) {
-			break // Guard: Stop if redirected to private / internal network
+		if parsed.Port() != "" && parsed.Port() != "80" && parsed.Port() != "443" {
+			break
+		}
+		hopCtx, hopCancel := context.WithTimeout(context.Background(), 2*time.Second)
+		_, resolveErr := publicIPs(hopCtx, parsed.Hostname())
+		hopCancel()
+		if resolveErr != nil {
+			break
 		}
 
 		resp, err := client.Do(req)
@@ -329,12 +366,4 @@ func safeTraceRedirect(startURL string) ([]string, string) {
 	}
 
 	return chain, current
-}
-
-func isPrivateIP(host string) bool {
-	ip := net.ParseIP(host)
-	if ip == nil {
-		return false
-	}
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast()
 }

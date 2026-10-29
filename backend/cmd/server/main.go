@@ -26,7 +26,7 @@ func main() {
 		ReadTimeout:           15 * time.Second,
 		WriteTimeout:          15 * time.Second,
 		IdleTimeout:           60 * time.Second,
-		BodyLimit:             2 * 1024 * 1024, // 2MB safe payload limit
+		BodyLimit:             6 * 1024 * 1024, // 5 MB artifact plus multipart overhead
 		DisableStartupMessage: false,
 	})
 

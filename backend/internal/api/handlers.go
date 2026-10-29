@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -44,6 +45,33 @@ type ScanEmailRequest struct {
 type ScanFileRequest struct {
 	FileName string `json:"file_name"`
 	FileSize int64  `json:"file_size"`
+}
+
+func registrySource(name, attributionURL string, entry *blacklist.BlacklistEntry, found bool) scanner.SourceResult {
+	result := scanner.NewSourceResult("pandu_registry", name)
+	result.Status = scanner.SourceQueried
+	result.Outcome = scanner.OutcomeNoMatch
+	result.AttributionURL = attributionURL
+	result.Limitation = "Registri internal hanya memuat laporan yang sudah diverifikasi. Tidak ditemukannya catatan bukan jaminan keamanan."
+	if found && entry != nil && entry.Verified {
+		result.Outcome = scanner.OutcomeMatch
+		result.Matches = entry.ReportCount
+		result.Evidence = append(result.Evidence,
+			scanner.EvidenceItem{Label: "Kategori", Value: string(entry.Category)},
+			scanner.EvidenceItem{Label: "Laporan terverifikasi", Value: fmt.Sprintf("%d", entry.ReportCount), ObservedAt: entry.LastReported},
+		)
+	}
+	return result
+}
+
+func unavailableOfficialSource(id, name, sourceURL, limitation string) scanner.SourceResult {
+	result := scanner.NewSourceResult(id, name)
+	result.Status = scanner.SourceUnavailable
+	result.Outcome = scanner.OutcomeUnknown
+	result.AttributionURL = sourceURL
+	result.ErrorCategory = "no_public_api"
+	result.Limitation = limitation
+	return result
 }
 
 // RegisterRoutes registers all API routes for Pandu Engine.
@@ -129,7 +157,7 @@ func handleScanURL(c *fiber.Ctx) error {
 
 	// Cross-check URL against Blacklist Registry
 	reg := blacklist.GetRegistry()
-	if matchedEntry, found := reg.CheckBlacklist(req.URL); found {
+	if matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeURL, req.URL); found && matchedEntry.Verified {
 		result.RiskScore = 99
 		result.ThreatLevel = "BAHAYA / PHISHING"
 		result.RedFlags = append([]scanner.RedFlag{
@@ -159,9 +187,12 @@ func handleScanPhone(c *fiber.Ctx) error {
 
 	result := scanner.AnalyzePhone(req.Phone)
 
-	// Cross-check against PostgreSQL Blacklist Registry
 	reg := blacklist.GetRegistry()
-	if matchedEntry, found := reg.CheckBlacklist(req.Phone); found {
+	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypePhone, req.Phone)
+	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Sources = append(result.Sources, unavailableOfficialSource("aduannomor", "AduanNomor.id Komdigi", "https://aduannomor.id/cek-nomor-seluler", "AduanNomor.id belum menyediakan API publik untuk integrasi server-to-server. PANDU tidak melewati kontrol akses layanan resmi."))
+	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+	if found && matchedEntry.Verified {
 		result.RiskScore = 98
 		result.ThreatLevel = "KRITIS / PENIPUAN TERVERIFIKASI"
 		result.BlacklistEntry = matchedEntry
@@ -192,10 +223,13 @@ func handleScanBank(c *fiber.Ctx) error {
 
 	result := scanner.AnalyzeBank(req.BankName, req.AccountNumber)
 
-	// Cross-check against PostgreSQL CekRekening & Blacklist Registry
 	reg := blacklist.GetRegistry()
 	checkKey := req.AccountNumber
-	if matchedEntry, found := reg.CheckBlacklist(checkKey); found {
+	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeBank, checkKey)
+	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Sources = append(result.Sources, unavailableOfficialSource("cekrekening", "CekRekening.id Komdigi", "https://cekrekening.id/cek-rekening", "CekRekening.id belum menyediakan API publik untuk integrasi server-to-server. PANDU tidak mengklaim telah memeriksa registri resmi Komdigi."))
+	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+	if found && matchedEntry.Verified {
 		result.RiskScore = 99
 		result.ThreatLevel = "KRITIS / REKENING PENAMPUNG TERDAFTAR"
 		result.ReportStatus = fmt.Sprintf("Terdaftar %d Laporan Kejahatan", matchedEntry.ReportCount)
@@ -205,16 +239,16 @@ func handleScanBank(c *fiber.Ctx) error {
 		result.RedFlags = append([]scanner.RedFlag{
 			{
 				Level:       "CRITICAL",
-				Title:       "Rekening Masuk Daftar Hitam Laporan Penipuan (Cek Rekening)",
-				Explanation: fmt.Sprintf("Nomor rekening ini telah dilaporkan %d kali oleh korban tindak pidana penipuan atas nama '%s' (%s): %s", matchedEntry.ReportCount, matchedEntry.AccountHolder, matchedEntry.ReportedBank, matchedEntry.Description),
+				Title:       "Rekening cocok dengan registri internal terverifikasi PANDU",
+				Explanation: fmt.Sprintf("Registri internal PANDU memuat %d laporan terverifikasi untuk rekening ini (%s): %s", matchedEntry.ReportCount, matchedEntry.ReportedBank, matchedEntry.Description),
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)
 	} else {
-		result.ReportStatus = "Belum Ada Catatan Laporan Kejahatan"
+		result.ReportStatus = "Tidak ditemukan pada registri internal yang berhasil diperiksa"
 		result.TotalReports = 0
-		result.RiskScore = 0
-		result.ThreatLevel = "BERSIH / BELUM PERNAH DILAPORKAN"
+		result.RiskScore = 15
+		result.ThreatLevel = "BELUM DAPAT DISIMPULKAN"
 	}
 
 	return c.JSON(fiber.Map{
@@ -236,7 +270,10 @@ func handleScanEmail(c *fiber.Ctx) error {
 
 	// Cross-check against PostgreSQL Blacklist Registry
 	reg := blacklist.GetRegistry()
-	if matchedEntry, found := reg.CheckBlacklist(req.Email); found {
+	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeEmail, req.Email)
+	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+	if found && matchedEntry.Verified {
 		result.RiskScore = 98
 		result.ThreatLevel = "KRITIS / EMAIL SPAM TERDAFTAR"
 		result.BlacklistEntry = matchedEntry
@@ -257,36 +294,46 @@ func handleScanEmail(c *fiber.Ctx) error {
 }
 
 func handleScanFile(c *fiber.Ctx) error {
-	var req ScanFileRequest
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if !strings.HasPrefix(strings.ToLower(c.Get("Content-Type")), "multipart/form-data") {
+		return c.Status(fiber.StatusUnsupportedMediaType).JSON(fiber.Map{
 			"success": false,
-			"message": "Format body JSON tidak valid",
+			"message": "Unggah byte berkas asli menggunakan multipart/form-data.",
 		})
 	}
-
-	result := scanner.AnalyzeFile(req.FileName, req.FileSize, nil)
-
-	// Cross-check against PostgreSQL Blacklist Registry
-	reg := blacklist.GetRegistry()
-	if matchedEntry, found := reg.CheckBlacklist(req.FileName); found {
-		result.RiskScore = 99
-		result.ThreatLevel = "KRITIS / MALWARE TERDAFTAR"
-		result.BlacklistEntry = matchedEntry
-		result.RedFlags = append([]scanner.RedFlag{
-			{
-				Level:       "CRITICAL",
-				Title:       "Berkas Masuk Daftar Hitam Malware",
-				Explanation: fmt.Sprintf("Berkas dengan nama/hash ini telah dilaporkan %d kali: %s", matchedEntry.ReportCount, matchedEntry.Description),
-				Snippet:     matchedEntry.Identifier,
-			},
-		}, result.RedFlags...)
+	fileHeader, err := c.FormFile("file")
+	if err != nil || fileHeader == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Berkas wajib dipilih."})
+	}
+	const maxFileBytes = 5 * 1024 * 1024
+	if fileHeader.Size <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Berkas kosong tidak dapat dianalisis."})
+	}
+	if fileHeader.Size > maxFileBytes {
+		return c.Status(fiber.StatusRequestEntityTooLarge).JSON(fiber.Map{"success": false, "message": "Ukuran berkas maksimal 5 MB."})
+	}
+	file, err := fileHeader.Open()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Berkas tidak dapat dibuka."})
+	}
+	defer file.Close()
+	content, err := io.ReadAll(io.LimitReader(file, maxFileBytes+1))
+	if err != nil || len(content) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Byte berkas tidak dapat dibaca."})
+	}
+	if len(content) > maxFileBytes {
+		return c.Status(fiber.StatusRequestEntityTooLarge).JSON(fiber.Map{"success": false, "message": "Ukuran berkas maksimal 5 MB."})
 	}
 
-	return c.JSON(fiber.Map{
-		"success": true,
-		"data":    result,
-	})
+	result := scanner.AnalyzeFile(fileHeader.Filename, int64(len(content)), content)
+	reg := blacklist.GetRegistry()
+	if matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeAPKHash, result.SHA256); found && matchedEntry.Verified {
+		result.RiskScore = 99
+		result.ThreatLevel = "HASH TERCATAT PADA REGISTRI TERVERIFIKASI"
+		result.BlacklistEntry = matchedEntry
+		result.RedFlags = append([]scanner.RedFlag{{Level: "CRITICAL", Title: "Hash berkas cocok dengan registri PANDU", Explanation: matchedEntry.Description, Snippet: result.SHA256}}, result.RedFlags...)
+	}
+
+	return c.JSON(fiber.Map{"success": true, "data": result})
 }
 
 func handleCheckBlacklist(c *fiber.Ctx) error {
