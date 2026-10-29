@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -18,6 +19,11 @@ import {
   Mail,
   Upload,
   FileText,
+  ChevronDown,
+  Check,
+  X,
+  Building2,
+  Wallet,
 } from "lucide-react";
 
 interface ScannerTabProps {
@@ -29,6 +35,34 @@ interface ScannerTabProps {
 }
 
 type ScanCategory = "text" | "url" | "phone" | "bank" | "email" | "file";
+
+interface BankOption {
+  id: string;
+  code: string;
+  name: string;
+  fullName: string;
+  type: string;
+  category: "bank" | "ewallet";
+  routingCode: string;
+}
+
+const BANK_CATALOG: BankOption[] = [
+  { id: "BCA", code: "BCA", name: "BCA", fullName: "Bank Central Asia (BCA)", type: "Bank Swasta", category: "bank", routingCode: "014" },
+  { id: "BRI", code: "BRI", name: "BRI", fullName: "Bank Rakyat Indonesia (BRI)", type: "Bank BUMN", category: "bank", routingCode: "002" },
+  { id: "Mandiri", code: "MANDIRI", name: "Bank Mandiri", fullName: "Bank Mandiri (Persero)", type: "Bank BUMN", category: "bank", routingCode: "008" },
+  { id: "BNI", code: "BNI", name: "BNI", fullName: "Bank Negara Indonesia (BNI)", type: "Bank BUMN", category: "bank", routingCode: "009" },
+  { id: "BSI", code: "BSI", name: "BSI", fullName: "Bank Syariah Indonesia (BSI)", type: "Bank Syariah", category: "bank", routingCode: "451" },
+  { id: "CIMB", code: "CIMB", name: "CIMB Niaga", fullName: "Bank CIMB Niaga", type: "Bank Swasta", category: "bank", routingCode: "022" },
+  { id: "Danamon", code: "DANAMON", name: "Bank Danamon", fullName: "Bank Danamon Indonesia", type: "Bank Swasta", category: "bank", routingCode: "011" },
+  { id: "Permata", code: "PERMATA", name: "Bank Permata", fullName: "Bank Permata", type: "Bank Swasta", category: "bank", routingCode: "013" },
+  { id: "BTN", code: "BTN", name: "BTN", fullName: "Bank Tabungan Negara (BTN)", type: "Bank BUMN", category: "bank", routingCode: "200" },
+  { id: "Jago", code: "JAGO", name: "Bank Jago", fullName: "Bank Jago Digital", type: "Bank Digital", category: "bank", routingCode: "542" },
+  { id: "SeaBank", code: "SEABANK", name: "SeaBank", fullName: "SeaBank Indonesia", type: "Bank Digital", category: "bank", routingCode: "535" },
+  { id: "DANA", code: "DANA", name: "DANA", fullName: "DANA (Dompet Digital)", type: "E-Wallet", category: "ewallet", routingCode: "014 / 002 (VA)" },
+  { id: "GoPay", code: "GOPAY", name: "GoPay", fullName: "GoPay (Gojek Ecosystem)", type: "E-Wallet", category: "ewallet", routingCode: "70001 (VA)" },
+  { id: "OVO", code: "OVO", name: "OVO", fullName: "OVO (Payment)", type: "E-Wallet", category: "ewallet", routingCode: "39358 (VA)" },
+  { id: "ShopeePay", code: "SHOPEEPAY", name: "ShopeePay", fullName: "ShopeePay Indonesia", type: "E-Wallet", category: "ewallet", routingCode: "122 (VA)" },
+];
 
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
@@ -42,6 +76,25 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const [inputBankAcc, setInputBankAcc] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Bank selector modal state
+  const [mounted, setMounted] = useState(false);
+  const [isBankModalOpen, setIsBankModalOpen] = useState(false);
+  const [bankSearchQuery, setBankSearchQuery] = useState("");
+  const [bankCategoryFilter, setBankCategoryFilter] = useState<"all" | "bank" | "ewallet">("all");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const selectedBankObj = BANK_CATALOG.find((b) => b.id.toLowerCase() === inputBankName.toLowerCase()) || BANK_CATALOG[0];
+
+  const filteredBanks = BANK_CATALOG.filter((b) => {
+    if (bankCategoryFilter !== "all" && b.category !== bankCategoryFilter) return false;
+    if (!bankSearchQuery.trim()) return true;
+    const q = bankSearchQuery.toLowerCase();
+    return b.name.toLowerCase().includes(q) || b.fullName.toLowerCase().includes(q) || b.code.toLowerCase().includes(q) || b.type.toLowerCase().includes(q);
+  });
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -271,27 +324,34 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">
                   Pilih Bank atau Layanan E-Wallet:
                 </label>
-                <select
-                  value={inputBankName}
-                  onChange={(e) => setInputBankName(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white focus:border-blue-500 focus:outline-none"
+                <button
+                  type="button"
+                  onClick={() => setIsBankModalOpen(true)}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border border-white/10 bg-[#060a14] hover:border-blue-500/50 hover:bg-[#080d1a] transition-all text-left group cursor-pointer"
                 >
-                  <option value="BCA">BCA (Bank Central Asia)</option>
-                  <option value="BRI">BRI (Bank Rakyat Indonesia)</option>
-                  <option value="Mandiri">Bank Mandiri</option>
-                  <option value="BNI">BNI (Bank Negara Indonesia)</option>
-                  <option value="BSI">BSI (Bank Syariah Indonesia)</option>
-                  <option value="CIMB">CIMB Niaga</option>
-                  <option value="Danamon">Bank Danamon</option>
-                  <option value="Permata">Bank Permata</option>
-                  <option value="BTN">BTN (Bank Tabungan Negara)</option>
-                  <option value="Jago">Bank Jago</option>
-                  <option value="SeaBank">SeaBank Indonesia</option>
-                  <option value="DANA">DANA (E-Wallet)</option>
-                  <option value="GoPay">GoPay (E-Wallet)</option>
-                  <option value="OVO">OVO (E-Wallet)</option>
-                  <option value="ShopeePay">ShopeePay (E-Wallet)</option>
-                </select>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-10 w-12 rounded-lg bg-blue-950/70 border border-blue-500/30 flex items-center justify-center font-mono font-bold text-xs text-blue-300 shrink-0 shadow-sm">
+                      {selectedBankObj?.code}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors truncate">
+                          {selectedBankObj?.fullName}
+                        </span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400 shrink-0">
+                          {selectedBankObj?.type}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                        Kode Kliring / VA: {selectedBankObj?.routingCode}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-slate-400 group-hover:text-blue-400 shrink-0 pl-2">
+                    <span className="hidden sm:inline text-[11px]">Ubah</span>
+                    <ChevronDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                  </div>
+                </button>
               </div>
 
               <div>
@@ -856,6 +916,140 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </div>
           </section>
         </div>
+      )}
+
+      {/* Custom Modern Bank & E-Wallet Selection Modal */}
+      {mounted && isBankModalOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] w-screen h-[100dvh] min-h-screen bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => {
+            setIsBankModalOpen(false);
+            setBankSearchQuery("");
+          }}
+        >
+          <div
+            className="w-full sm:max-w-md bg-[#0d0e12] border border-white/10 rounded-t-3xl sm:rounded-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-2 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-5 pt-5 pb-3 border-b border-white/10 flex items-center justify-between shrink-0">
+              <div className="space-y-0.5">
+                <h3 className="text-base font-bold text-white">
+                  Pilih Bank atau E-Wallet
+                </h3>
+                <p className="text-[11px] text-slate-400">
+                  Tersedia 15 bank nasional dan penyedia dompet digital
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsBankModalOpen(false);
+                  setBankSearchQuery("");
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                aria-label="Tutup"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="p-4 pb-2 space-y-3 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={bankSearchQuery}
+                  onChange={(e) => setBankSearchQuery(e.target.value)}
+                  placeholder="Cari nama bank (BCA, BRI, Mandiri, DANA...)"
+                  className="w-full rounded-xl border border-white/10 bg-[#060a14] pl-9 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  autoFocus
+                />
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                {[
+                  { id: "all", label: "Semua (15)" },
+                  { id: "bank", label: "Bank Nasional (11)" },
+                  { id: "ewallet", label: "E-Wallet (4)" },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setBankCategoryFilter(cat.id as any)}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-colors ${
+                      bankCategoryFilter === cat.id
+                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* List of Banks */}
+            <div className="flex-1 overflow-y-auto px-4 py-2 divide-y divide-white/5">
+              {filteredBanks.length > 0 ? (
+                filteredBanks.map((bank) => {
+                  const isSelected = inputBankName.toLowerCase() === bank.id.toLowerCase();
+                  return (
+                    <button
+                      key={bank.id}
+                      type="button"
+                      onClick={() => {
+                        setInputBankName(bank.id);
+                        setIsBankModalOpen(false);
+                        setBankSearchQuery("");
+                      }}
+                      className={`w-full flex items-center justify-between py-3 px-2 rounded-xl transition-all text-left ${
+                        isSelected
+                          ? "bg-blue-950/40 border border-blue-500/40 text-blue-200"
+                          : "hover:bg-white/5 text-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`h-9 w-11 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
+                            isSelected
+                              ? "bg-blue-600 text-white"
+                              : "bg-white/5 border border-white/10 text-slate-300"
+                          }`}
+                        >
+                          {bank.code}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs sm:text-sm font-bold text-white truncate">
+                              {bank.fullName}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+                            {bank.type} · Kliring / VA: {bank.routingCode}
+                          </p>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 ml-2">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="py-8 text-center text-xs text-slate-500">
+                  Tidak ditemukan bank atau e-wallet dengan nama "{bankSearchQuery}".
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
