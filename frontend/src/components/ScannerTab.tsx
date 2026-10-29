@@ -255,13 +255,13 @@ function RiskGaugeDial({ score }: { score: number }) {
             </text>
           ))}
 
-          {/* SPEEDTEST RECTANGULAR BAR NEEDLE IN SOLID WHITE (Zero blur, zero shadow) */}
+          {/* SPEEDTEST RECTANGULAR BAR NEEDLE IN SOLID WHITE (Shortened for zero collision with numbers) */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Rectangular Solid White Bar */}
-            <rect x="146.5" y="61" width="7" height="74" rx="1.5" fill="#ffffff" />
+            {/* Rectangular Solid White Bar (Length 52px, ample clearance before numbers at r=78) */}
+            <rect x="146.75" y="83" width="6.5" height="52" rx="1.5" fill="#ffffff" />
           </g>
 
           {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
