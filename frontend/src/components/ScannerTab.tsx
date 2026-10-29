@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -19,11 +18,6 @@ import {
   Mail,
   Upload,
   FileText,
-  ChevronDown,
-  Check,
-  X,
-  Building2,
-  Wallet,
 } from "lucide-react";
 
 interface ScannerTabProps {
@@ -64,6 +58,9 @@ const BANK_CATALOG: BankOption[] = [
   { id: "ShopeePay", code: "SHOPEEPAY", name: "ShopeePay", fullName: "ShopeePay Indonesia", type: "E-Wallet", category: "ewallet", routingCode: "122 (VA)" },
 ];
 
+const BANK_LIST = BANK_CATALOG.filter((b) => b.category === "bank");
+const EWALLET_LIST = BANK_CATALOG.filter((b) => b.category === "ewallet");
+
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
   const [scanType, setScanType] = useState<ScanCategory>("text");
@@ -77,24 +74,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Bank selector modal state
-  const [mounted, setMounted] = useState(false);
-  const [isBankModalOpen, setIsBankModalOpen] = useState(false);
-  const [bankSearchQuery, setBankSearchQuery] = useState("");
-  const [bankCategoryFilter, setBankCategoryFilter] = useState<"all" | "bank" | "ewallet">("all");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const selectedBankObj = BANK_CATALOG.find((b) => b.id.toLowerCase() === inputBankName.toLowerCase()) || BANK_CATALOG[0];
-
-  const filteredBanks = BANK_CATALOG.filter((b) => {
-    if (bankCategoryFilter !== "all" && b.category !== bankCategoryFilter) return false;
-    if (!bankSearchQuery.trim()) return true;
-    const q = bankSearchQuery.toLowerCase();
-    return b.name.toLowerCase().includes(q) || b.fullName.toLowerCase().includes(q) || b.code.toLowerCase().includes(q) || b.type.toLowerCase().includes(q);
-  });
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -319,50 +299,79 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           )}
 
           {scanType === "bank" && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Pilih Bank atau Layanan E-Wallet:
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setIsBankModalOpen(true)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl border border-white/10 bg-[#060a14] hover:border-blue-500/50 hover:bg-[#080d1a] transition-all text-left group cursor-pointer"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-12 rounded-lg bg-blue-950/70 border border-blue-500/30 flex items-center justify-center font-mono font-bold text-xs text-blue-300 shrink-0 shadow-sm">
-                      {selectedBankObj?.code}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors truncate">
-                          {selectedBankObj?.fullName}
-                        </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400 shrink-0">
-                          {selectedBankObj?.type}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        Kode Kliring / VA: {selectedBankObj?.routingCode}
-                      </p>
-                    </div>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                    Pilih Bank atau E-Wallet:
+                  </label>
+                  <span className="text-[11px] font-mono text-blue-400 font-semibold truncate max-w-[200px]">
+                    {selectedBankObj?.fullName}
+                  </span>
+                </div>
+
+                {/* Bank Nasional Group */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                    Bank Nasional:
+                  </span>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                    {BANK_LIST.map((b) => {
+                      const isActive = inputBankName.toLowerCase() === b.id.toLowerCase();
+                      return (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setInputBankName(b.id)}
+                          className={`py-2 px-1.5 rounded-xl text-xs font-semibold transition-all text-center cursor-pointer ${
+                            isActive
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500 font-bold"
+                              : "bg-[#0a0d14] border border-white/5 text-slate-300 hover:text-white hover:border-white/15 hover:bg-[#0f1422]"
+                          }`}
+                        >
+                          <span className="block truncate">{b.code}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-slate-400 group-hover:text-blue-400 shrink-0 pl-2">
-                    <span className="hidden sm:inline text-[11px]">Ubah</span>
-                    <ChevronDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                </div>
+
+                {/* E-Wallet Group */}
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                    Dompet Digital (E-Wallet):
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {EWALLET_LIST.map((w) => {
+                      const isActive = inputBankName.toLowerCase() === w.id.toLowerCase();
+                      return (
+                        <button
+                          key={w.id}
+                          type="button"
+                          onClick={() => setInputBankName(w.id)}
+                          className={`py-2 px-1.5 rounded-xl text-xs font-semibold transition-all text-center cursor-pointer ${
+                            isActive
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500 font-bold"
+                              : "bg-[#0a0d14] border border-white/5 text-slate-300 hover:text-white hover:border-white/15 hover:bg-[#0f1422]"
+                          }`}
+                        >
+                          <span className="block truncate">{w.code}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                </button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Nomor Rekening / Akun Penerima Dana:
+                  Nomor Rekening / Akun {selectedBankObj?.code}:
                 </label>
                 <input
                   type="text"
                   value={inputBankAcc}
                   onChange={(e) => setInputBankAcc(e.target.value)}
-                  placeholder="Contoh: 8271039481"
+                  placeholder={`Masukkan nomor rekening / akun ${selectedBankObj?.code}`}
                   className="w-full rounded-xl border border-white/10 bg-[#060a14] p-3 text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
                 />
               </div>
@@ -916,140 +925,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             </div>
           </section>
         </div>
-      )}
-
-      {/* Custom Modern Bank & E-Wallet Selection Modal */}
-      {mounted && isBankModalOpen && createPortal(
-        <div
-          className="fixed inset-0 z-[9999] w-screen h-[100dvh] min-h-screen bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
-          onClick={() => {
-            setIsBankModalOpen(false);
-            setBankSearchQuery("");
-          }}
-        >
-          <div
-            className="w-full sm:max-w-md bg-[#0d0e12] border border-white/10 rounded-t-3xl sm:rounded-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-2 duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="px-5 pt-5 pb-3 border-b border-white/10 flex items-center justify-between shrink-0">
-              <div className="space-y-0.5">
-                <h3 className="text-base font-bold text-white">
-                  Pilih Bank atau E-Wallet
-                </h3>
-                <p className="text-[11px] text-slate-400">
-                  Tersedia 15 bank nasional dan penyedia dompet digital
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsBankModalOpen(false);
-                  setBankSearchQuery("");
-                }}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-                aria-label="Tutup"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Search Input */}
-            <div className="p-4 pb-2 space-y-3 shrink-0">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <input
-                  type="text"
-                  value={bankSearchQuery}
-                  onChange={(e) => setBankSearchQuery(e.target.value)}
-                  placeholder="Cari nama bank (BCA, BRI, Mandiri, DANA...)"
-                  className="w-full rounded-xl border border-white/10 bg-[#060a14] pl-9 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                  autoFocus
-                />
-              </div>
-
-              {/* Category Filter Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-                {[
-                  { id: "all", label: "Semua (15)" },
-                  { id: "bank", label: "Bank Nasional (11)" },
-                  { id: "ewallet", label: "E-Wallet (4)" },
-                ].map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setBankCategoryFilter(cat.id as any)}
-                    className={`px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-colors ${
-                      bankCategoryFilter === cat.id
-                        ? "bg-blue-600 text-white font-semibold shadow-sm"
-                        : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* List of Banks */}
-            <div className="flex-1 overflow-y-auto px-4 py-2 divide-y divide-white/5">
-              {filteredBanks.length > 0 ? (
-                filteredBanks.map((bank) => {
-                  const isSelected = inputBankName.toLowerCase() === bank.id.toLowerCase();
-                  return (
-                    <button
-                      key={bank.id}
-                      type="button"
-                      onClick={() => {
-                        setInputBankName(bank.id);
-                        setIsBankModalOpen(false);
-                        setBankSearchQuery("");
-                      }}
-                      className={`w-full flex items-center justify-between py-3 px-2 rounded-xl transition-all text-left ${
-                        isSelected
-                          ? "bg-blue-950/40 border border-blue-500/40 text-blue-200"
-                          : "hover:bg-white/5 text-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div
-                          className={`h-9 w-11 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
-                            isSelected
-                              ? "bg-blue-600 text-white"
-                              : "bg-white/5 border border-white/10 text-slate-300"
-                          }`}
-                        >
-                          {bank.code}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs sm:text-sm font-bold text-white truncate">
-                              {bank.fullName}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 font-mono mt-0.5">
-                            {bank.type} · Kliring / VA: {bank.routingCode}
-                          </p>
-                        </div>
-                      </div>
-
-                      {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 ml-2">
-                          <Check className="h-3 w-3 stroke-[3]" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="py-8 text-center text-xs text-slate-500">
-                  Tidak ditemukan bank atau e-wallet dengan nama "{bankSearchQuery}".
-                </div>
-              )}
-            </div>
-          </div>
-        </div>,
-        document.body
       )}
     </div>
   );
