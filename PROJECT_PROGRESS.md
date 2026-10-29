@@ -54,6 +54,9 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **Jarak & Proporsi Area Upload Berkas**:
+  - Menambahkan jarak pemisah tegas (`gap-3 sm:gap-4`) antara teks berkas di kiri dan tombol `Pilih File` di kanan.
+  - Memperpendek teks instruksi menjadi `Unggah APK, gambar, atau dokumen` agar tidak terpotong kaku atau bertumpuk dengan tombol di layar HP.
 - **Pembersihan Visual Icon Upload Berkas**:
   - Menghapus kotak latar belakang (`bg-blue-950/60 border border-blue-500/30`) pada ikon upload di tab Berkas / APK.
   - Ikon panah upload kini tampil bersih dan menyatu langsung dengan teks tanpa bingkai kotak.
