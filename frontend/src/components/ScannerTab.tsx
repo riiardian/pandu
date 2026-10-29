@@ -96,6 +96,122 @@ const COUNTRY_CATALOG: CountryOption[] = [
   { code: "BR", name: "Brasil", flag: "🇧🇷", dialCode: "+55" },
 ];
 
+interface PipelineStep {
+  title: string;
+  desc: string;
+}
+
+const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
+  text: [
+    {
+      title: "Normalisasi Muatan Teks & Konteks Pesan",
+      desc: "Mengurai teks, membersihkan karakter pengabur, dan memetakan struktur kalimat.",
+    },
+    {
+      title: "Analisis Psikologi Rekayasa Sosial & Bias Kognitif",
+      desc: "Membedah pemicu emosi (kepanikan, ketergesaan semu, desakan transfer dana, imbalan fiktif).",
+    },
+    {
+      title: "Pencocokan Taksonomi Kejahatan Siber Indonesia",
+      desc: "Mengkorelasikan pola dengan database modus (darurat kecelakaan, tilang, loker like video).",
+    },
+    {
+      title: "Evaluasi AI Forensik & Sintesis Rekomendasi",
+      desc: "Menyusun indikator temuan dan merumuskan panduan tindakan pengamanan pengguna.",
+    },
+  ],
+  url: [
+    {
+      title: "Inspeksi Pasif Alamat & Penelusuran Rantai Pengalihan",
+      desc: "Mengurai komponen host, memeriksa sanitasi port, dan melacak redirection chain.",
+    },
+    {
+      title: "Audit Postur Keamanan & Pertahanan Infrastruktur",
+      desc: "Memeriksa enkripsi HTTPS, proteksi HSTS, anti-clickjacking, CSP, dan sertifikat TLS.",
+    },
+    {
+      title: "Perayapan Pasif Formulir HTML & Jebakan Login",
+      desc: "Mendeteksi umpan hadiah/loker, formulir pencurian nomor e-wallet, OTP, atau aksi lintas domain.",
+    },
+    {
+      title: "Korelasi Registri Domain RDAP & Feed Phishing Global",
+      desc: "Menghitung umur registrasi resmi domain dan mencocokkan riwayat pada feed OpenPhish urlscan.io.",
+    },
+  ],
+  phone: [
+    {
+      title: "Validasi Prefix Seluler & Wilayah Distribusi HLR",
+      desc: "Mengidentifikasi kode negara panggil, operator telekomunikasi, dan jenis kartu prabayar/pascabayar.",
+    },
+    {
+      title: "Perayapan OSINT Jejak Digital & Forum Aduan Terbuka",
+      desc: "Merayapi mesin pencari publik dan forum diskusi mencari catatan laporan penipuan pada nomor.",
+    },
+    {
+      title: "Pencocokan Registri Laporan Masyarakat Terverifikasi",
+      desc: "Memeriksa basis data aduan komunitas PANDU untuk mendeteksi rekam jejak kriminal target.",
+    },
+    {
+      title: "Kalkulasi Profil Risiko & Sintesis Rekomendasi Kontak",
+      desc: "Menyimpulkan apakah nomor bersih atau terindikasi pernah dilaporkan dalam aksi kejahatan siber.",
+    },
+  ],
+  bank: [
+    {
+      title: "Identifikasi Institusi Perbankan & Klaster Kliring",
+      desc: "Memvalidasi lembaga perbankan penerima dana dan kode routing BI-Fast / SKNBI nasional.",
+    },
+    {
+      title: "Perayapan OSINT Rekam Jejak Transaksi Fiktif di Internet",
+      desc: "Menelusuri direktori terbuka atas nomor rekening pada riwayat laporan transaksi penipuan.",
+    },
+    {
+      title: "Audit Daftar Hitam & Deteksi Rekening Penampung (Mule)",
+      desc: "Mencocokkan nomor rekening dengan laporan aduan dan mengevaluasi indikator perantara penampung.",
+    },
+    {
+      title: "Penyusunan Hasil Uji & Langkah Proteksi Finansial",
+      desc: "Menyajikan status keabsahan rekening dan panduan konfirmasi sebelum mentransfer dana.",
+    },
+  ],
+  email: [
+    {
+      title: "Verifikasi Struktur RFC & Analisis Reputasi Domain",
+      desc: "Menguji validitas format email dan mendeteksi penggunaan domain burner/disposable sementara.",
+    },
+    {
+      title: "Penelusuran Hash Reputasi Global StopForumSpam",
+      desc: "Mencocokkan hash email pada jaringan pemantau spam dunia untuk melihat histori frekuensi laporan.",
+    },
+    {
+      title: "Resolusi DNS Mail Exchange (MX) Publik",
+      desc: "Menguji apakah domain server benar-benar aktif memiliki konfigurasi penerimaan surat di internet.",
+    },
+    {
+      title: "Deteksi Penyamaran Merek & Instansi Resmi",
+      desc: "Menganalisis indikator akun gratisan (@gmail) yang mencatut nama korporat atau instansi resmi.",
+    },
+  ],
+  file: [
+    {
+      title: "Ekstraksi Byte Asli & Perhitungan Sidik Jari Kriptografis",
+      desc: "Membaca byte berkas langsung (bukan nama file) dan menghitung hash SHA-256 serta MD5.",
+    },
+    {
+      title: "Inspeksi Struktur Arsip & Ekstraksi Multimodal",
+      desc: "Membongkar arsip APK (AndroidManifest) atau memproses decoding resolusi citra digital.",
+    },
+    {
+      title: "Bedah Forensik AI Vision / Izin Bahaya Android",
+      desc: "Mendeteksi kejanggalan visual font struk transfer palsu atau izin sadap SMS OTP pada APK.",
+    },
+    {
+      title: "Korelasi Dataset Global CIRCL & Penyusunan Diagnostik",
+      desc: "Mencocokkan hash dengan database CIRCL hashlookup dan merangkum rekomendasi keamanan.",
+    },
+  ],
+};
+
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
   const [scanType, setScanType] = useState<ScanCategory>("text");
@@ -136,6 +252,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   });
 
   const [loading, setLoading] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [result, setResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -202,7 +319,21 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       endpoint = "/api/v1/scan/file";
     }
 
+    const steps = TOOL_PIPELINES[scanType];
+    const STEP_DURATION_MS = 2000;
+
     setLoading(true);
+    setCurrentStepIndex(0);
+
+    const startTime = Date.now();
+    let stepCount = 0;
+    const stepTimer = setInterval(() => {
+      stepCount++;
+      if (stepCount < steps.length) {
+        setCurrentStepIndex(stepCount);
+      }
+    }, STEP_DURATION_MS);
+
     try {
       const isFileScan = scanType === "file" && selectedFile;
       const requestBody = isFileScan
@@ -229,10 +360,21 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         throw new Error(json.message || "Gagal memproses pemindaian.");
       }
 
+      // Lock minimum 2 seconds per stage
+      const totalMinDuration = steps.length * STEP_DURATION_MS;
+      const elapsed = Date.now() - startTime;
+      if (elapsed < totalMinDuration) {
+        await new Promise((resolve) => setTimeout(resolve, totalMinDuration - elapsed));
+      }
+
+      clearInterval(stepTimer);
+      setCurrentStepIndex(steps.length - 1);
       setResult(json.data);
     } catch (err: any) {
+      clearInterval(stepTimer);
       setErrorMsg(err.message || "Gagal menghubungi engine keamanan PANDU.");
     } finally {
+      clearInterval(stepTimer);
       setLoading(false);
     }
   };
@@ -542,7 +684,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <Search className="h-4 w-4" />
             <span>
               {loading
-                ? "Memeriksa..."
+                ? "Sedang Menyelidiki..."
                 : scanType === "text"
                 ? "Periksa Pesan"
                 : scanType === "url"
@@ -558,6 +700,104 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           </button>
         </div>
       </section>
+
+      {/* Active Forensic Inspection Pipeline (Minimum 2 seconds per stage) */}
+      {loading && (
+        <section className="rounded-2xl border border-blue-500/30 bg-[#121316]/95 backdrop-blur-md p-5 sm:p-6 shadow-2xl space-y-5 animate-in fade-in duration-300">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                </span>
+                <span className="font-bold text-white tracking-wide text-sm">
+                  Investigasi Forensik Otonom Berjalan
+                </span>
+              </div>
+              <span className="font-mono text-xs text-blue-400 font-bold bg-blue-950/60 border border-blue-500/30 px-2.5 py-1 rounded-full">
+                Tahap {currentStepIndex + 1} dari {TOOL_PIPELINES[scanType].length}
+              </span>
+            </div>
+
+            {/* Segmented Progress Bar */}
+            <div className="grid grid-cols-4 gap-2 h-1.5 w-full pt-1">
+              {TOOL_PIPELINES[scanType].map((_, sidx) => (
+                <div
+                  key={sidx}
+                  className={`h-full rounded-full transition-all duration-700 ${
+                    sidx <= currentStepIndex
+                      ? "bg-blue-500 shadow-sm shadow-blue-500/80"
+                      : "bg-white/10"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Detailed Stages List */}
+          <div className="space-y-2.5 pt-1">
+            {TOOL_PIPELINES[scanType].map((step, sidx) => {
+              const isPassed = sidx < currentStepIndex;
+              const isCurrent = sidx === currentStepIndex;
+              const isPending = sidx > currentStepIndex;
+
+              return (
+                <div
+                  key={sidx}
+                  className={`flex items-start gap-3.5 rounded-xl p-3.5 transition-all duration-500 ${
+                    isCurrent
+                      ? "border border-blue-500/50 bg-blue-950/30 shadow-lg shadow-blue-950/40 translate-x-1"
+                      : isPassed
+                      ? "border border-white/5 bg-white/[0.02] opacity-85"
+                      : "border border-transparent opacity-30"
+                  }`}
+                >
+                  <div className="mt-0.5 shrink-0">
+                    {isPassed ? (
+                      <div className="h-6 w-6 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+                    ) : isCurrent ? (
+                      <div className="h-6 w-6 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center">
+                        <span className="h-2.5 w-2.5 rounded-full bg-blue-400 animate-pulse" />
+                      </div>
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-slate-500">
+                        {sidx + 1}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className={`text-xs sm:text-sm font-bold ${
+                        isCurrent ? "text-white" : isPassed ? "text-slate-300" : "text-slate-500"
+                      }`}>
+                        {step.title}
+                      </h4>
+                      {isCurrent && (
+                        <span className="text-[10px] font-mono text-blue-400 animate-pulse font-semibold shrink-0">
+                          Sedang meninjau...
+                        </span>
+                      )}
+                      {isPassed && (
+                        <span className="text-[10px] font-mono text-emerald-400 font-semibold shrink-0">
+                          Selesai
+                        </span>
+                      )}
+                    </div>
+                    <p className={`text-xs leading-relaxed ${
+                      isCurrent ? "text-blue-200/90" : "text-slate-400"
+                    }`}>
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Result Section */}
       {result && (

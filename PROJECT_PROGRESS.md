@@ -136,3 +136,8 @@
   - No. Telepon & Rekening Bank: Menjalankan crawling OSINT real-time pada web terbuka untuk mencari jejak laporan aduan publik dan mengorelasikannya dengan Threat Registry PANDU. Jika bersih, mengembalikan 0% tanpa tuduhan sepihak.
   - Tautan Web & Email: Menggabungkan perayapan pasif formulir HTML, audit postur keamanan Grade A, umur registrasi RDAP, feed OpenPhish urlscan.io, StopForumSpam, dan DNS MX.
   - UI Frontend: Pill dock OSINT Industries dinamis, input kontinu dengan pemilih bank/e-wallet dan kode negara global terintegrasi, serta kartu temuan AI Vision dan Agent Analysis.
+- **Animasi Pipeline Forensik Otonom (Kunci Minimal 2 Detik per Tahapan)**:
+  - Setiap instrumen (Pesan Chat, Tautan Web, No. Telepon, Rekening Bank, Alamat Email, Berkas / APK) memiliki 4 tahapan peninjauan forensik yang unik dan relevan.
+  - Setiap tahapan dikunci durasi animasinya minimal 2 detik (2.000 ms) per tahap (total minimal 8 detik per investigasi lengkap), sehingga pengguna merasakan proses investigasi teknis yang matang meskipun server sedang low-traffic.
+  - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
+  - Dilengkapi indikator radar berdenyut, segmented progress bar 4 bagian, penanda centang hijau untuk tahap yang rampung, dan teks status transisi dinamis.
