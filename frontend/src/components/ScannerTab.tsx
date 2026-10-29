@@ -480,20 +480,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left">
-      {/* Intro Header Section */}
-      <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-2 shadow-xl">
-        <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-bold uppercase tracking-wider">
-          <BrainCircuit className="h-4 w-4" />
-          <span>Autonomous Threat Intelligence &amp; AI Forensics</span>
-        </div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Investigasi Ancaman Digital
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Mesin cerdas PANDU membedah rekayasa sosial, merayapi reputasi digital publik secara real-time, mengaudit alur interaksi web, dan menguji keaslian bukti transfer serta berkas mencurigakan sebelum Anda menjadi korban.
-        </p>
-      </section>
-
       {/* Main Scanner Card */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-5 shadow-xl">
         {/* Multi-Target Category Tabs (OSINT Industries Dynamic Pill Dock) */}
