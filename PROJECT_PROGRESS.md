@@ -54,6 +54,15 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **Penyempurnaan Label Tombol Aksi Taktis (Zero AI-Fluff)**:
+  - Mengganti teks tombol yang kaku dan panjang (`Mulai Analisis Forensik`) menjadi label aksi langsung yang dinamis (*target-aware*) dan punchy:
+    - Tab No. Telepon: `Periksa Nomor`
+    - Tab Rekening Bank: `Periksa Rekening`
+    - Tab Tautan Web: `Periksa Tautan`
+    - Tab Pesan Chat: `Periksa Pesan`
+    - Tab Alamat Email: `Periksa Email`
+    - Tab Berkas: `Periksa Berkas`
+    - Status loading: `Memeriksa...` (menggantikan `Membedah Indikator Bahaya...`).
 - **Mesin Rekayasa Sosial & Taksonomi Modus Penipuan Digital Komprehensif**:
   - Membedah pola manipulasi emosi (Cognitive Bias) multi-vektor:
     - *Fear / Panic Exploit* (+25): Eksploitasi rasa takut dan kepanikan nyawa (kecelakaan, kritis di RS, ancaman penjara/polisi).
