@@ -701,100 +701,41 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         </div>
       </section>
 
-      {/* Active Forensic Inspection Pipeline (Minimum 2 seconds per stage) */}
+      {/* Active Forensic Inspection Pipeline (Simple & Clean Cable Stepper) */}
       {loading && (
-        <section className="rounded-2xl border border-blue-500/30 bg-[#121316]/95 backdrop-blur-md p-5 sm:p-6 shadow-2xl space-y-5 animate-in fade-in duration-300">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2.5">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
-                </span>
-                <span className="font-bold text-white tracking-wide text-sm">
-                  Investigasi Forensik Otonom Berjalan
-                </span>
-              </div>
-              <span className="font-mono text-xs text-blue-400 font-bold bg-blue-950/60 border border-blue-500/30 px-2.5 py-1 rounded-full">
-                Tahap {currentStepIndex + 1} dari {TOOL_PIPELINES[scanType].length}
-              </span>
-            </div>
+        <section className="rounded-2xl border border-blue-500/30 bg-[#0c0d12] p-6 shadow-xl space-y-5 animate-in fade-in duration-200">
+          {/* Cable & Circular Badges Stepper */}
+          <div className="relative flex items-center justify-between max-w-xs sm:max-w-sm mx-auto px-2 pt-2">
+            {/* Connecting Cable Line */}
+            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-white/10 z-0" />
 
-            {/* Segmented Progress Bar */}
-            <div className="grid grid-cols-4 gap-2 h-1.5 w-full pt-1">
-              {TOOL_PIPELINES[scanType].map((_, sidx) => (
-                <div
-                  key={sidx}
-                  className={`h-full rounded-full transition-all duration-700 ${
-                    sidx <= currentStepIndex
-                      ? "bg-blue-500 shadow-sm shadow-blue-500/80"
-                      : "bg-white/10"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Detailed Stages List */}
-          <div className="space-y-2.5 pt-1">
-            {TOOL_PIPELINES[scanType].map((step, sidx) => {
-              const isPassed = sidx < currentStepIndex;
-              const isCurrent = sidx === currentStepIndex;
-              const isPending = sidx > currentStepIndex;
-
+            {/* Circular Stage Badges */}
+            {TOOL_PIPELINES[scanType].map((_, sidx) => {
+              const isActive = sidx === currentStepIndex;
               return (
-                <div
-                  key={sidx}
-                  className={`flex items-start gap-3.5 rounded-xl p-3.5 transition-all duration-500 ${
-                    isCurrent
-                      ? "border border-blue-500/50 bg-blue-950/30 shadow-lg shadow-blue-950/40 translate-x-1"
-                      : isPassed
-                      ? "border border-white/5 bg-white/[0.02] opacity-85"
-                      : "border border-transparent opacity-30"
-                  }`}
-                >
-                  <div className="mt-0.5 shrink-0">
-                    {isPassed ? (
-                      <div className="h-6 w-6 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                        <CheckCircle2 className="h-4 w-4" />
-                      </div>
-                    ) : isCurrent ? (
-                      <div className="h-6 w-6 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center">
-                        <span className="h-2.5 w-2.5 rounded-full bg-blue-400 animate-pulse" />
-                      </div>
-                    ) : (
-                      <div className="h-6 w-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-slate-500">
-                        {sidx + 1}
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className={`text-xs sm:text-sm font-bold ${
-                        isCurrent ? "text-white" : isPassed ? "text-slate-300" : "text-slate-500"
-                      }`}>
-                        {step.title}
-                      </h4>
-                      {isCurrent && (
-                        <span className="text-[10px] font-mono text-blue-400 animate-pulse font-semibold shrink-0">
-                          Sedang meninjau...
-                        </span>
-                      )}
-                      {isPassed && (
-                        <span className="text-[10px] font-mono text-emerald-400 font-semibold shrink-0">
-                          Selesai
-                        </span>
-                      )}
-                    </div>
-                    <p className={`text-xs leading-relaxed ${
-                      isCurrent ? "text-blue-200/90" : "text-slate-400"
-                    }`}>
-                      {step.desc}
-                    </p>
+                <div key={sidx} className="relative z-10 flex flex-col items-center">
+                  <div
+                    className={`flex items-center justify-center rounded-full font-mono text-xs font-bold transition-all duration-300 ${
+                      isActive
+                        ? "h-9 w-9 bg-blue-600 text-white border-2 border-blue-400 shadow-[0_0_18px_rgba(37,99,235,0.85)] scale-110"
+                        : "h-8 w-8 bg-[#121316] text-slate-600 border border-white/10"
+                    }`}
+                  >
+                    {sidx + 1}
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Single Clean Active Stage Label */}
+          <div className="text-center space-y-1 pt-1">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 font-semibold">
+              Tahap {currentStepIndex + 1} dari {TOOL_PIPELINES[scanType].length}
+            </div>
+            <h4 className="text-sm sm:text-base font-bold text-white tracking-wide animate-in fade-in duration-200">
+              {TOOL_PIPELINES[scanType][currentStepIndex]?.title}...
+            </h4>
           </div>
         </section>
       )}

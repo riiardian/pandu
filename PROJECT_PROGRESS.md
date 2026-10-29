@@ -140,7 +140,7 @@
   - Setiap instrumen (Pesan Chat, Tautan Web, No. Telepon, Rekening Bank, Alamat Email, Berkas / APK) memiliki 4 tahapan peninjauan forensik yang unik dan relevan.
   - Setiap tahapan dikunci durasi animasinya minimal 2 detik (2.000 ms) per tahap (total minimal 8 detik per investigasi lengkap), sehingga pengguna merasakan proses investigasi teknis yang matang meskipun server sedang low-traffic.
   - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
-  - Dilengkapi indikator radar berdenyut, segmented progress bar 4 bagian, penanda centang hijau untuk tahap yang rampung, dan teks status transisi dinamis.
+  - Desain UI Minimalis & Bersih: Menghapus card informasi panjang yang berlebih. Digantikan stepper kabel horizontal elegan dengan badge nomor bulat: badge tahap aktif menyala biru terang (`scale-110` + neon glow), tahap sebelumnya otomatis redup/gelap, dan di bawah kabel hanya menampilkan 1 baris status aksi yang ringkas dan padat.
 - **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
   - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
