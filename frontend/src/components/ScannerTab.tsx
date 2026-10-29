@@ -174,11 +174,11 @@ const SPEEDTEST_LABELS = [
 ];
 
 function getRiskTierColor(score: number): string {
-  if (score > 80) return "#ef4444"; // 80-100: Merah
-  if (score > 60) return "#f97316"; // 60-80: Jingga
+  if (score > 80) return "#dc2626"; // 80-100: Merah
+  if (score > 60) return "#ea580c"; // 60-80: Jingga
   if (score > 40) return "#eab308"; // 40-60: Kuning
-  if (score > 20) return "#3b82f6"; // 20-40: Biru
-  return "#10b981";                 // 0-20: Hijau
+  if (score > 20) return "#2563eb"; // 20-40: Biru
+  return "#16a34a";                 // 0-20: Hijau Asli Solid (Vivid Green)
 }
 
 function RiskGaugeDial({ score }: { score: number }) {
@@ -195,35 +195,24 @@ function RiskGaugeDial({ score }: { score: number }) {
       {/* Speedtest Style Radial Gauge */}
       <div className="relative w-[270px] sm:w-[290px] h-[195px] sm:h-[205px]">
         <svg viewBox="0 0 300 220" className="w-full h-full overflow-visible">
-          <defs>
-            {/* Multi-tier bloom glow for active sweep */}
-            <filter id="speedtestBloom" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={tierColor} floodOpacity="0.65" />
-            </filter>
-            <filter id="speedtestNeedleShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.9" />
-            </filter>
-          </defs>
-
-          {/* Inactive Background Ribbon (Solid clean white ribbon as requested) */}
+          {/* Inactive Background Ribbon: Solid Clean Pure White (No blur / No glassmorphism) */}
           <path
             d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
             stroke="#ffffff"
             strokeWidth="12"
             strokeLinecap="butt"
-            opacity="0.85"
           />
 
           {/* Outer Fine Ring Guide */}
           <path
             d="M 68.03 203.78 A 107 107 0 1 1 231.97 203.78"
             fill="none"
-            stroke="rgba(255, 255, 255, 0.3)"
+            stroke="rgba(255, 255, 255, 0.25)"
             strokeWidth="1.0"
           />
 
-          {/* Active Swept Ribbon (Dynamic color change per tier: 0-20 Hijau, 20-40 Biru, 40-60 Kuning, 60-80 Jingga, 80-100 Merah) */}
+          {/* Active Swept Ribbon: Pure Solid Flat Color (0-20 Hijau, 20-40 Biru, 40-60 Kuning, 60-80 Jingga, 80-100 Merah) */}
           <path
             d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
@@ -232,7 +221,6 @@ function RiskGaugeDial({ score }: { score: number }) {
             strokeLinecap="butt"
             strokeDasharray={arcLength}
             strokeDashoffset={activeDashoffset}
-            filter="url(#speedtestBloom)"
             style={{ transition: "stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.5s ease" }}
           />
 
@@ -244,9 +232,9 @@ function RiskGaugeDial({ score }: { score: number }) {
               y1={t.y1}
               x2={t.x2}
               y2={t.y2}
-              stroke={t.isMajor ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)"}
-              strokeWidth={t.isMajor ? 1.6 : 1.0}
-              strokeLinecap="round"
+              stroke={t.isMajor ? "#ffffff" : "#64748b"}
+              strokeWidth={t.isMajor ? 1.8 : 1.0}
+              strokeLinecap="butt"
             />
           ))}
 
@@ -267,29 +255,18 @@ function RiskGaugeDial({ score }: { score: number }) {
             </text>
           ))}
 
-          {/* SHORTER & STOUT THICK ELECTRIC BLUE NEEDLE */}
+          {/* SPEEDTEST RECTANGULAR BAR NEEDLE (Bentuk Kotak Speedtest) */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
-            filter="url(#speedtestNeedleShadow)"
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Stout Counterbalance Tail */}
-            <polygon points="146.5,135 146,149 154,149 153.5,135" fill="#111827" stroke="#1f2937" strokeWidth="0.8" />
-            <circle cx="150" cy="144" r="1.5" fill="#00d2ff" />
-
-            {/* Shorter, Thicker Sports Pointer (Length 62px, reaches r=74 well inside tick ring) */}
-            {/* Left side facet (Royal/Cobalt Blue) */}
-            <polygon points="146,123 148.4,65 150,61 150,123" fill="#1d4ed8" />
-            {/* Right side facet (Electric Cyan Blue) */}
-            <polygon points="154,123 151.6,65 150,61 150,123" fill="#00d2ff" />
-            {/* White central illuminated spine */}
-            <line x1="150" y1="123" x2="150" y2="63" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
-            {/* Pointer Tip Accent */}
-            <polygon points="148.2,66 150,61 151.8,66" fill="#ffffff" />
+            {/* Rectangular Blue Bar */}
+            <rect x="146.5" y="61" width="7" height="74" rx="1.5" fill="#2563eb" />
+            <line x1="150" y1="63" x2="150" y2="125" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" />
           </g>
 
           {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
-          <circle cx="150" cy="135" r="13" fill="#000000" stroke="#334155" strokeWidth="1.6" />
+          <circle cx="150" cy="135" r="12" fill="#000000" stroke="#334155" strokeWidth="1.5" />
         </svg>
       </div>
     </div>
