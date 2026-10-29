@@ -866,6 +866,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         return true;
                       })
                       .map((e: any) => {
+                        if (e.label === "Temuan Konten" || e.label === "Status Konten" || e.label === "Status Intelijen" || e.label === "Feed Phishing Terstruktur" || e.label === "Aduan Penipuan Publik") {
+                          return e.value;
+                        }
                         if (e.label === "Alamat IP publik") {
                           const ips = (e.value || "").split(", ").filter((ip: string) => !ip.includes(":")).slice(0, 2).join(", ");
                           return `IP: ${ips || e.value}`;

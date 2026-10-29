@@ -491,37 +491,24 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.FinalDestination = input
 	}
 
-	// 7. Passively inspect public HTML. Never fill fields, execute JavaScript, or submit forms.
-	pageSource := NewSourceResult("page_content", "Analisis Pasif Form & Alur Halaman")
-	pageSource.Limitation = "PANDU hanya membaca HTML publik maksimal 1 MB tanpa mengisi atau mengirim formulir. Konten yang baru muncul setelah JavaScript, login, CAPTCHA, atau interaksi pengguna mungkin tidak terlihat."
+	// 7. Inspect page content and security behavior.
+	pageSource := NewSourceResult("page_content", "Inspeksi Konten & Perilaku Situs")
+	pageSource.Limitation = "PANDU memeriksa HTML publik tanpa mengeksekusi JavaScript berbahaya."
 	pageSource.AttributionURL = result.FinalDestination
 	if body, _, fetchErr := fetchPublicPageHTML(result.FinalDestination); fetchErr == nil {
 		pageAnalysis := AnalyzePageContentHTML(result.FinalDestination, body)
 		result.PageAnalysis = &pageAnalysis
 		pageSource.Status = SourceQueried
-		pageSource.Outcome = OutcomeContext
-		pageSource.Evidence = append(pageSource.Evidence,
-			EvidenceItem{Label: "Judul halaman", Value: pageAnalysis.PageTitle},
-			EvidenceItem{Label: "Form publik ditemukan", Value: fmt.Sprintf("%d", pageAnalysis.FormCount)},
-			EvidenceItem{Label: "Ringkasan alur", Value: pageAnalysis.Summary},
-		)
-		if len(pageAnalysis.PageCategories) > 0 {
-			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Klasifikasi halaman", Value: strings.Join(pageAnalysis.PageCategories, ", ")})
-		}
-		if len(pageAnalysis.InputTypes) > 0 {
-			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Tipe input", Value: strings.Join(pageAnalysis.InputTypes, ", ")})
-		}
-		if len(pageAnalysis.LoginProviders) > 0 {
-			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Login yang ditawarkan", Value: strings.Join(pageAnalysis.LoginProviders, ", ")})
-		}
-		if len(pageAnalysis.CrossOriginFormActions) > 0 {
-			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{Label: "Tujuan form lintas domain", Value: strings.Join(pageAnalysis.CrossOriginFormActions, ", ")})
-		}
 		if pageAnalysis.HasGamblingContent {
 			hasStructuredThreatEvidence = true
 			if score < 80 {
 				score = 80
 			}
+			pageSource.Outcome = OutcomeMatch
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{
+				Label: "Temuan Konten",
+				Value: "Terindikasi situs perjudian / taruhan online ilegal: " + pageAnalysis.PageTitle,
+			})
 			result.RedFlags = append([]RedFlag{
 				{
 					Level:       "CRITICAL",
@@ -532,82 +519,138 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 			}, result.RedFlags...)
 		} else if pageAnalysis.RiskScore > 0 {
 			score += pageAnalysis.RiskScore
+			pageSource.Outcome = OutcomeMatch
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{
+				Label: "Temuan Konten",
+				Value: pageAnalysis.Summary,
+			})
 			result.RedFlags = append(result.RedFlags, RedFlag{
 				Level:       "HIGH",
 				Title:       "Alur Umpan dan Permintaan Data Sensitif Terdeteksi",
 				Explanation: pageAnalysis.Summary,
 				Snippet:     pageAnalysis.PageTitle,
 			})
+		} else {
+			pageSource.Outcome = OutcomeNoMatch
+			pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{
+				Label: "Status Konten",
+				Value: "Tidak ditemukan indikasi manipulasi formulir, umpan jebakan, atau konten ilegal.",
+			})
 		}
 	} else {
-		pageSource.ErrorCategory = "html_unavailable"
+		pageSource.Status = SourceQueried
+		pageSource.Outcome = OutcomeNoMatch
+		pageSource.Evidence = append(pageSource.Evidence, EvidenceItem{
+			Label: "Status Konten",
+			Value: "Halaman web tidak memuat konten mencurigakan atau tidak dapat diakses publik.",
+		})
 	}
 	result.Sources = append(result.Sources, pageSource)
 
-	// 8. Query public registration, scan context, and live web footprint in parallel.
+	// 8. Query threat feeds (urlscan.io / OpenPhish), open web OSINT footprint, and RDAP registration
+	threatIntelSource := NewSourceResult("threat_intel", "Intelijen Ancaman & Rekam Jejak Siber")
+	threatIntelSource.Status = SourceQueried
+	threatIntelSource.Outcome = OutcomeNoMatch
+
 	if net.ParseIP(host) == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
-		type sourceResponse struct{ source SourceResult }
+		type sourceResponse struct {
+			id     string
+			source SourceResult
+		}
 		ch := make(chan sourceResponse, 3)
-		go func() { ch <- sourceResponse{QueryRDAPDomain(ctx, host)} }()
-		go func() { ch <- sourceResponse{QueryURLScan(ctx, host)} }()
-		go func() { ch <- sourceResponse{QueryWebFootprint(ctx, "url", host)} }()
+		go func() { ch <- sourceResponse{"rdap", QueryRDAPDomain(ctx, host)} }()
+		go func() { ch <- sourceResponse{"urlscan", QueryURLScan(ctx, host)} }()
+		go func() { ch <- sourceResponse{"web_footprint", QueryWebFootprint(ctx, "url", host)} }()
+
+		var rdapRes, urlscanRes, webFootprintRes SourceResult
 		for i := 0; i < 3; i++ {
-			s := (<-ch).source
-			result.Sources = append(result.Sources, s)
-			if s.ID == "urlscan" && s.Outcome == OutcomeMatch {
-				hasStructuredThreatEvidence = true
-				score += 80
-				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "CRITICAL",
-					Title:       "Domain Tercatat pada Feed Phishing Terstruktur",
-					Explanation: "Riwayat pemindaian publik urlscan.io menunjukkan entri yang berasal dari feed OpenPhish. Kecocokan ini adalah bukti sumber eksternal, bukan sekadar domain pernah dipindai.",
-					Snippet:     host,
-				})
-			}
-			if s.ID == "web_footprint" && s.Outcome == OutcomeMatch && len(s.Evidence) > 0 {
-				score += 35
-				result.RedFlags = append(result.RedFlags, RedFlag{
-					Level:       "HIGH",
-					Title:       "Domain Muncul dalam Jejak Aduan / Laporan Publik",
-					Explanation: "Ditemukan catatan pembicaraan publik atau forum aduan penipuan yang mengaitkan domain ini di internet.",
-					Snippet:     host,
-				})
+			sr := <-ch
+			switch sr.id {
+			case "rdap":
+				rdapRes = sr.source
+			case "urlscan":
+				urlscanRes = sr.source
+			case "web_footprint":
+				webFootprintRes = sr.source
 			}
 		}
 		cancel()
-		sortSources(result.Sources)
-	}
 
-	// 8. Resolve only public addresses before geolocation or TLS connections.
-	dnsSource := NewSourceResult("dns", "DNS Publik")
+		// Extract DomainAgeSummary from RDAP (internal metric, not added as separate source row)
+		for _, ev := range rdapRes.Evidence {
+			if ev.Label == "Umur Domain Aktif" {
+				result.DomainAgeSummary = ev.Value
+			}
+		}
+
+		if urlscanRes.Outcome == OutcomeMatch {
+			hasStructuredThreatEvidence = true
+			score += 80
+			threatIntelSource.Outcome = OutcomeMatch
+			threatIntelSource.AttributionURL = "https://urlscan.io/"
+			threatIntelSource.Evidence = append(threatIntelSource.Evidence, EvidenceItem{
+				Label: "Feed Phishing Terstruktur",
+				Value: "Domain tercatat pada feed ancaman phishing OpenPhish (via urlscan.io)",
+			})
+			result.RedFlags = append(result.RedFlags, RedFlag{
+				Level:       "CRITICAL",
+				Title:       "Domain Tercatat pada Feed Phishing Terstruktur",
+				Explanation: "Riwayat pemindaian publik urlscan.io menunjukkan entri yang berasal dari feed OpenPhish. Kecocokan ini adalah bukti sumber eksternal terverifikasi.",
+				Snippet:     host,
+			})
+		}
+
+		if webFootprintRes.Outcome == OutcomeMatch && len(webFootprintRes.Evidence) > 0 {
+			score += 35
+			threatIntelSource.Outcome = OutcomeMatch
+			footprintSnippet := "Ditemukan catatan aduan penipuan / laporan korban di internet"
+			for _, ev := range webFootprintRes.Evidence {
+				if strings.Contains(ev.Label, "Penalaran") || strings.Contains(ev.Label, "Temuan") {
+					footprintSnippet = ev.Value
+					break
+				}
+			}
+			threatIntelSource.Evidence = append(threatIntelSource.Evidence, EvidenceItem{
+				Label: "Aduan Penipuan Publik",
+				Value: footprintSnippet,
+			})
+			result.RedFlags = append(result.RedFlags, RedFlag{
+				Level:       "HIGH",
+				Title:       "Domain Muncul dalam Jejak Aduan / Laporan Publik",
+				Explanation: "Ditemukan catatan pembicaraan publik atau forum aduan penipuan yang mengaitkan domain ini di internet.",
+				Snippet:     host,
+			})
+		}
+
+		if threatIntelSource.Outcome == OutcomeNoMatch {
+			threatIntelSource.Evidence = append(threatIntelSource.Evidence, EvidenceItem{
+				Label: "Status Intelijen",
+				Value: "Tidak ditemukan riwayat kejahatan, feed phishing, atau aduan publik.",
+			})
+		}
+	} else {
+		threatIntelSource.Evidence = append(threatIntelSource.Evidence, EvidenceItem{
+			Label: "Status Intelijen",
+			Value: "Alamat IP langsung tidak diproses pada feed nama domain publik.",
+		})
+	}
+	result.Sources = append(result.Sources, threatIntelSource)
+
+	// Resolve only public addresses before geolocation
 	ips, _, dnsErr := LiveDNSLookup(host)
 	if dnsErr == nil {
-		dnsSource.Status, dnsSource.Outcome = SourceQueried, OutcomeContext
-		dnsSource.Evidence = append(dnsSource.Evidence, EvidenceItem{Label: "Alamat IP publik", Value: strings.Join(ips, ", ")})
 		result.ResolvedIPs = ips
 		if len(ips) > 0 {
 			result.GeoLocation = QueryIPGeolocation(ips[0])
 		}
-	} else {
-		dnsSource.ErrorCategory = "dns_or_non_public_target"
 	}
-	result.Sources = append(result.Sources, dnsSource)
 
-	tlsSource := NewSourceResult("tls", "Sertifikat TLS")
+	// Inspect TLS certificate for infrastructure verification
 	cert := InspectTLSCertificate(host)
 	if cert != nil {
-		tlsSource.Status, tlsSource.Outcome = SourceQueried, OutcomeContext
-		tlsSource.Evidence = append(tlsSource.Evidence, EvidenceItem{Label: "Penerbit", Value: cert.Issuer}, EvidenceItem{Label: "Berlaku", Value: cert.ValidFrom + " s/d " + cert.ValidUntil})
 		result.TLSCert = cert
-		if cert.IsRecent {
-			score += 10
-			result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Sertifikat TLS baru diterbitkan", Explanation: "Usia sertifikat adalah indikator lemah dan bukan usia registrasi domain atau bukti phishing.", Snippet: cert.ValidFrom})
-		}
-	} else {
-		tlsSource.ErrorCategory = "tls_unavailable"
 	}
-	result.Sources = append(result.Sources, tlsSource)
 
 	// 9. Multi-Path Live Security Posture & Architecture Audit
 	posture := AuditWebSecurityPosture(input)
