@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import PanduLogo from "./PanduLogo";
 import {
-  Compass,
   Home,
   Search,
   BookOpen,
@@ -125,8 +125,8 @@ export default function Header() {
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-lg shadow-lg shadow-blue-600/30">
-              <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-black border border-white/20 text-white shadow-md shadow-black/50 p-1 hover:border-white/40 transition-all">
+              <PanduLogo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <span className="text-lg sm:text-xl font-black tracking-tight text-white block leading-tight">
               PANDU
