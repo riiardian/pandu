@@ -89,9 +89,11 @@ func RegisterRoutes(app *fiber.App) {
 		})
 	})
 
-	// Pillar 1: Recognize (Scanner)
-	// Only expose scanners backed by structured external intelligence sources.
+	// Pillar 1: Recognize (Scanner - Autonomous Multi-Vector Engine)
+	v1.Post("/scan/text", handleScanText)
 	v1.Post("/scan/url", handleScanURL)
+	v1.Post("/scan/phone", handleScanPhone)
+	v1.Post("/scan/bank", handleScanBank)
 	v1.Post("/scan/email", handleScanEmail)
 	v1.Post("/scan/file", handleScanFile)
 

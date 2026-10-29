@@ -1,8 +1,10 @@
 package scanner
 
 import (
+	"context"
 	"regexp"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -35,8 +37,9 @@ type TextScanResult struct {
 	RedFlags         []RedFlag       `json:"red_flags"`
 	Recommendations  []string        `json:"recommendations"`
 	ExtractedURLs    []string        `json:"extracted_urls"`
-	ExtractedPhones  []string        `json:"extracted_phones"`
-	ExtractedFiles   []string        `json:"extracted_files"`
+	ExtractedPhones  []string           `json:"extracted_phones"`
+	ExtractedFiles   []string           `json:"extracted_files"`
+	AIAgentAnalysis  *AITextAgentReport `json:"ai_agent_analysis,omitempty"`
 }
 
 // AnalyzeText performs deep explainable inspection on message text.
@@ -367,6 +370,41 @@ func AnalyzeText(rawText string) TextScanResult {
 			result.DetectedCategory = "Pesan Mengandung Indikasi Manipulatif"
 		} else {
 			result.DetectedCategory = "Komunikasi Wajar / Pesan Standar"
+		}
+	}
+
+	// Autonomous AI Agent Cognitive Analysis (Local 9Router)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	aiReport, aiErr := QueryAITextAgent(ctx, text)
+	cancel()
+	if aiErr == nil && aiReport != nil {
+		result.AIAgentAnalysis = aiReport
+		if aiReport.IsSuspicious {
+			if aiReport.RiskScore > result.RiskScore {
+				result.RiskScore = aiReport.RiskScore
+			}
+			if result.DetectedCategory == "" && aiReport.DetectedCategory != "" {
+				result.DetectedCategory = aiReport.DetectedCategory
+			}
+			if len(aiReport.KeyIndicators) > 0 {
+				result.RedFlags = append(result.RedFlags, RedFlag{
+					Level:       "HIGH",
+					Title:       "Analisis Pola Rekayasa Sosial AI Agent",
+					Explanation: aiReport.Explanation,
+					Snippet:     strings.Join(aiReport.KeyIndicators, ", "),
+				})
+			}
+			if aiReport.MitigationTip != "" {
+				result.Recommendations = append([]string{aiReport.MitigationTip}, result.Recommendations...)
+			}
+			if result.RiskScore >= 70 {
+				result.ThreatLevel = "KRITIS / INDIKASI PENIPUAN TINGGI"
+			} else if result.RiskScore >= 40 {
+				result.ThreatLevel = "WASPADA / PERLU PERHATIAN"
+			}
+		} else if result.RiskScore == 0 {
+			result.ThreatLevel = "TIDAK DITEMUKAN POLA MANIPULASI"
+			result.DetectedCategory = "Percakapan Wajar / Normal"
 		}
 	}
 

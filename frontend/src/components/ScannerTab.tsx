@@ -11,10 +11,15 @@ import {
   FileCode,
   ArrowRight,
   Flame,
+  MessageSquare,
   Globe,
+  Phone,
+  CreditCard,
   Mail,
   Upload,
   FileText,
+  ChevronDown,
+  Eye,
 } from "lucide-react";
 
 interface ScannerTabProps {
@@ -25,16 +30,110 @@ interface ScannerTabProps {
   }) => void;
 }
 
-type ScanCategory = "url" | "email" | "file";
+type ScanCategory = "text" | "url" | "phone" | "bank" | "email" | "file";
+
+interface BankOption {
+  id: string;
+  code: string;
+  name: string;
+  fullName: string;
+  type: string;
+  category: "bank" | "ewallet";
+  routingCode: string;
+}
+
+const BANK_CATALOG: BankOption[] = [
+  { id: "BCA", code: "BCA", name: "BCA", fullName: "Bank Central Asia (BCA)", type: "Bank Swasta", category: "bank", routingCode: "014" },
+  { id: "BRI", code: "BRI", name: "BRI", fullName: "Bank Rakyat Indonesia (BRI)", type: "Bank BUMN", category: "bank", routingCode: "002" },
+  { id: "Mandiri", code: "MANDIRI", name: "Bank Mandiri", fullName: "Bank Mandiri (Persero)", type: "Bank BUMN", category: "bank", routingCode: "008" },
+  { id: "BNI", code: "BNI", name: "BNI", fullName: "Bank Negara Indonesia (BNI)", type: "Bank BUMN", category: "bank", routingCode: "009" },
+  { id: "BSI", code: "BSI", name: "BSI", fullName: "Bank Syariah Indonesia (BSI)", type: "Bank Syariah", category: "bank", routingCode: "451" },
+  { id: "CIMB", code: "CIMB", name: "CIMB Niaga", fullName: "Bank CIMB Niaga", type: "Bank Swasta", category: "bank", routingCode: "022" },
+  { id: "Danamon", code: "DANAMON", name: "Bank Danamon", fullName: "Bank Danamon Indonesia", type: "Bank Swasta", category: "bank", routingCode: "011" },
+  { id: "Permata", code: "PERMATA", name: "Bank Permata", fullName: "Bank Permata", type: "Bank Swasta", category: "bank", routingCode: "013" },
+  { id: "BTN", code: "BTN", name: "BTN", fullName: "Bank Tabungan Negara (BTN)", type: "Bank BUMN", category: "bank", routingCode: "200" },
+  { id: "Jago", code: "JAGO", name: "Bank Jago", fullName: "Bank Jago Digital", type: "Bank Digital", category: "bank", routingCode: "542" },
+  { id: "SeaBank", code: "SEABANK", name: "SeaBank", fullName: "SeaBank Indonesia", type: "Bank Digital", category: "bank", routingCode: "535" },
+  { id: "DANA", code: "DANA", name: "DANA", fullName: "DANA (Dompet Digital)", type: "E-Wallet", category: "ewallet", routingCode: "014 / 002 (VA)" },
+  { id: "GoPay", code: "GOPAY", name: "GoPay", fullName: "GoPay (Gojek Ecosystem)", type: "E-Wallet", category: "ewallet", routingCode: "70001 (VA)" },
+  { id: "OVO", code: "OVO", name: "OVO", fullName: "OVO (Payment)", type: "E-Wallet", category: "ewallet", routingCode: "39358 (VA)" },
+  { id: "ShopeePay", code: "SHOPEEPAY", name: "ShopeePay", fullName: "ShopeePay Indonesia", type: "E-Wallet", category: "ewallet", routingCode: "122 (VA)" },
+];
+
+interface CountryOption {
+  code: string;
+  name: string;
+  flag: string;
+  dialCode: string;
+}
+
+const COUNTRY_CATALOG: CountryOption[] = [
+  { code: "ID", name: "Indonesia", flag: "🇮🇩", dialCode: "+62" },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾", dialCode: "+60" },
+  { code: "SG", name: "Singapura", flag: "🇸🇬", dialCode: "+65" },
+  { code: "PH", name: "Filipina", flag: "🇵🇭", dialCode: "+63" },
+  { code: "TH", name: "Thailand", flag: "🇹🇭", dialCode: "+66" },
+  { code: "VN", name: "Vietnam", flag: "🇻🇳", dialCode: "+84" },
+  { code: "KH", name: "Kamboja (Cambodia)", flag: "🇰🇭", dialCode: "+855" },
+  { code: "MM", name: "Myanmar (Burma)", flag: "🇲🇲", dialCode: "+95" },
+  { code: "LA", name: "Laos", flag: "🇱🇦", dialCode: "+856" },
+  { code: "US", name: "Amerika Serikat", flag: "🇺🇸", dialCode: "+1" },
+  { code: "GB", name: "Inggris Raya (UK)", flag: "🇬🇧", dialCode: "+44" },
+  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
+  { code: "JP", name: "Jepang", flag: "🇯🇵", dialCode: "+81" },
+  { code: "KR", name: "Korea Selatan", flag: "🇰🇷", dialCode: "+82" },
+  { code: "CN", name: "Tiongkok (China)", flag: "🇨🇳", dialCode: "+86" },
+  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
+  { code: "SA", name: "Arab Saudi", flag: "🇸🇦", dialCode: "+966" },
+  { code: "AE", name: "Uni Emirat Arab", flag: "🇦🇪", dialCode: "+971" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬", dialCode: "+234" },
+  { code: "RU", name: "Rusia", flag: "🇷🇺", dialCode: "+7" },
+  { code: "UA", name: "Ukraina", flag: "🇺🇦", dialCode: "+380" },
+  { code: "DE", name: "Jerman", flag: "🇩🇪", dialCode: "+49" },
+  { code: "FR", name: "Prancis", flag: "🇫🇷", dialCode: "+33" },
+  { code: "NL", name: "Belanda", flag: "🇳🇱", dialCode: "+31" },
+  { code: "TR", name: "Turki", flag: "🇹🇷", dialCode: "+90" },
+  { code: "BR", name: "Brasil", flag: "🇧🇷", dialCode: "+55" },
+];
 
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
-  const [scanType, setScanType] = useState<ScanCategory>("url");
+  const [scanType, setScanType] = useState<ScanCategory>("text");
 
   // Form states
+  const [inputText, setInputText] = useState("");
   const [inputURL, setInputURL] = useState("");
+  const [inputPhone, setInputPhone] = useState("");
+  const [inputBankName, setInputBankName] = useState("BCA");
+  const [inputBankAcc, setInputBankAcc] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(COUNTRY_CATALOG[0]);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countryFilterQuery, setCountryFilterQuery] = useState("");
+
+  const filteredCountries = COUNTRY_CATALOG.filter((c) => {
+    if (!countryFilterQuery.trim()) return true;
+    const q = countryFilterQuery.toLowerCase();
+    return c.name.toLowerCase().includes(q) || c.dialCode.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
+  });
+
+  const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
+  const [bankFilterQuery, setBankFilterQuery] = useState("");
+
+  const selectedBankObj = BANK_CATALOG.find((b) => b.id.toLowerCase() === inputBankName.toLowerCase()) || BANK_CATALOG[0];
+
+  const filteredBanks = BANK_CATALOG.filter((b) => {
+    if (!bankFilterQuery.trim()) return true;
+    const q = bankFilterQuery.toLowerCase();
+    return (
+      b.name.toLowerCase().includes(q) ||
+      b.fullName.toLowerCase().includes(q) ||
+      b.code.toLowerCase().includes(q) ||
+      b.type.toLowerCase().includes(q)
+    );
+  });
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -47,13 +146,43 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
     let endpoint = "";
     let payload: any = {};
 
-    if (scanType === "url") {
+    if (scanType === "text") {
+      if (!inputText.trim()) {
+        setErrorMsg("Masukkan teks pesan atau chat yang ingin diperiksa.");
+        return;
+      }
+      endpoint = "/api/v1/scan/text";
+      payload = { text: inputText };
+    } else if (scanType === "url") {
       if (!inputURL.trim()) {
-        setErrorMsg("Masukkan tautan atau domain website yang ingin Anda periksa.");
+        setErrorMsg("Masukkan tautan atau domain website yang ingin diperiksa.");
         return;
       }
       endpoint = "/api/v1/scan/url";
       payload = { url: inputURL, follow_redirects: true };
+    } else if (scanType === "phone") {
+      if (!inputPhone.trim()) {
+        setErrorMsg("Masukkan nomor telepon atau WhatsApp yang ingin diperiksa.");
+        return;
+      }
+      endpoint = "/api/v1/scan/phone";
+      const raw = inputPhone.trim();
+      let formattedPhone = raw;
+      if (!raw.startsWith("+")) {
+        if (selectedCountry.dialCode === "+62") {
+          formattedPhone = raw.startsWith("0") ? raw : "0" + raw;
+        } else {
+          formattedPhone = `${selectedCountry.dialCode}${raw.replace(/^0+/, "")}`;
+        }
+      }
+      payload = { phone: formattedPhone };
+    } else if (scanType === "bank") {
+      if (!inputBankAcc.trim()) {
+        setErrorMsg("Masukkan nomor rekening bank atau nomor akun e-wallet.");
+        return;
+      }
+      endpoint = "/api/v1/scan/bank";
+      payload = { bank_name: inputBankName, account_number: inputBankAcc };
     } else if (scanType === "email") {
       if (!inputEmail.trim()) {
         setErrorMsg("Masukkan alamat email yang ingin diperiksa.");
@@ -63,7 +192,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       payload = { email: inputEmail };
     } else if (scanType === "file") {
       if (!selectedFile) {
-        setErrorMsg("Pilih berkas atau gambar yang ingin diperiksa.");
+        setErrorMsg("Pilih berkas, gambar bukti transfer, atau APK yang ingin diperiksa.");
         return;
       }
       if (selectedFile.size > 5 * 1024 * 1024) {
@@ -129,20 +258,27 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   };
 
   const TABS = [
+    { id: "text", label: "Pesan Chat", icon: MessageSquare },
     { id: "url", label: "Tautan Web", icon: Globe },
+    { id: "phone", label: "No. Telepon", icon: Phone },
+    { id: "bank", label: "Rekening Bank", icon: CreditCard },
     { id: "email", label: "Alamat Email", icon: Mail },
-    { id: "file", label: "Berkas / APK", icon: FileCode },
+    { id: "file", label: "Berkas / APK / Foto", icon: FileCode },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left">
       {/* Intro Header Section */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-2 shadow-xl">
+        <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-bold uppercase tracking-wider">
+          <BrainCircuit className="h-4 w-4" />
+          <span>Autonomous Threat Intelligence &amp; AI Forensics</span>
+        </div>
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           Investigasi Ancaman Digital
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Pemeriksaan tautan, email, dan hash berkas terhadap sumber intelijen eksternal yang dapat dikueri dan ditampilkan buktinya.
+          Mesin cerdas PANDU membedah rekayasa sosial, merayapi reputasi digital publik secara real-time, mengaudit alur interaksi web, dan menguji keaslian bukti transfer serta berkas mencurigakan sebelum Anda menjadi korban.
         </p>
       </section>
 
@@ -161,6 +297,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   setScanType(tab.id as ScanCategory);
                   setResult(null);
                   setErrorMsg("");
+                  setIsBankDropdownOpen(false);
+                  setIsCountryDropdownOpen(false);
                 }}
                 className={`flex items-center gap-2 py-2 px-3.5 rounded-full text-xs transition-all duration-200 cursor-pointer shrink-0 ${
                   isActive
@@ -180,12 +318,20 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           })}
         </div>
 
-        <div className="rounded-xl border border-blue-500/20 bg-blue-950/15 px-3.5 py-3 text-xs text-slate-300 leading-relaxed">
-          Nomor telepon, rekening, dan analisis pesan tidak ditampilkan karena PANDU belum memiliki sumber eksternal terstruktur yang dapat membuktikan riwayat laporannya secara konsisten. Data laporan masyarakat tetap dikelola terpisah di Pusat Laporan.
-        </div>
-
         {/* Input Form Fields by Active Tab (OSINT Industries Unified Input Style) */}
         <div className="pt-1">
+          {scanType === "text" && (
+            <div className="rounded-xl border border-white/10 bg-[#060a14] p-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+              <textarea
+                rows={3}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Tempel atau ketik teks pesan WhatsApp, SMS, atau Telegram di sini untuk dibedah modusnya..."
+                className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none resize-none font-sans"
+              />
+            </div>
+          )}
+
           {scanType === "url" && (
             <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
               <span className="flex items-center gap-1 px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono shrink-0 select-none">
@@ -196,9 +342,128 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 type="text"
                 value={inputURL}
                 onChange={(e) => setInputURL(e.target.value)}
-                placeholder="bca-tarif-transaksi.xyz/login atau link bansos..."
+                placeholder="domain-atau-link-mencurigakan.com/login..."
                 className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
+            </div>
+          )}
+
+          {scanType === "phone" && (
+            <div className="relative">
+              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCountryDropdownOpen(!isCountryDropdownOpen);
+                    setIsBankDropdownOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                >
+                  <span className="text-base leading-none">{selectedCountry.flag}</span>
+                  <span>{selectedCountry.dialCode}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
+                </button>
+                <input
+                  type="text"
+                  value={inputPhone}
+                  onChange={(e) => setInputPhone(e.target.value)}
+                  placeholder="85819238491..."
+                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
+                />
+              </div>
+
+              {isCountryDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
+                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
+                    <input
+                      type="text"
+                      value={countryFilterQuery}
+                      onChange={(e) => setCountryFilterQuery(e.target.value)}
+                      placeholder="Cari negara atau kode..."
+                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  {filteredCountries.map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCountry(c);
+                        setIsCountryDropdownOpen(false);
+                        setCountryFilterQuery("");
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
+                        selectedCountry.code === c.code ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300 hover:bg-white/5"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-base leading-none">{c.flag}</span>
+                        <span className="truncate">{c.name}</span>
+                      </div>
+                      <span className="text-[11px] font-mono text-slate-400 ml-2 shrink-0">{c.dialCode}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {scanType === "bank" && (
+            <div className="relative">
+              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsBankDropdownOpen(!isBankDropdownOpen);
+                    setIsCountryDropdownOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                >
+                  <CreditCard className="h-3.5 w-3.5 text-blue-400" />
+                  <span>{selectedBankObj?.code}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
+                </button>
+                <input
+                  type="text"
+                  value={inputBankAcc}
+                  onChange={(e) => setInputBankAcc(e.target.value)}
+                  placeholder={`Nomor rekening / akun ${selectedBankObj?.code}...`}
+                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
+                />
+              </div>
+
+              {isBankDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
+                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
+                    <input
+                      type="text"
+                      value={bankFilterQuery}
+                      onChange={(e) => setBankFilterQuery(e.target.value)}
+                      placeholder="Cari bank atau e-wallet..."
+                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  {filteredBanks.map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => {
+                        setInputBankName(b.id);
+                        setIsBankDropdownOpen(false);
+                        setBankFilterQuery("");
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
+                        inputBankName.toLowerCase() === b.id.toLowerCase() ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300 hover:bg-white/5"
+                      }`}
+                    >
+                      <span className="truncate">{b.fullName}</span>
+                      <span className="text-[10px] font-mono text-slate-500 ml-2 shrink-0">{b.type}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -211,7 +476,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 type="email"
                 value={inputEmail}
                 onChange={(e) => setInputEmail(e.target.value)}
-                placeholder="rekrutmen.pertamina@gmail.com atau official@..."
+                placeholder="nama-pengirim@domain.com..."
                 className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
             </div>
@@ -224,10 +489,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   <Upload className="h-5 w-5 text-blue-400 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-white truncate">
-                      {selectedFile ? selectedFile.name : "Unggah APK, gambar, atau dokumen"}
+                      {selectedFile ? selectedFile.name : "Unggah bukti transfer, poster loker/undian, atau berkas APK"}
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Maksimal 5 MB"}
+                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Mendukung JPG, PNG, WEBP, PDF, APK (Maksimal 5 MB)"}
                     </p>
                   </div>
                 </div>
@@ -278,8 +543,14 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <span>
               {loading
                 ? "Memeriksa..."
+                : scanType === "text"
+                ? "Periksa Pesan"
                 : scanType === "url"
                 ? "Periksa Tautan"
+                : scanType === "phone"
+                ? "Periksa Nomor"
+                : scanType === "bank"
+                ? "Periksa Rekening"
                 : scanType === "email"
                 ? "Periksa Email"
                 : "Periksa Berkas"}
@@ -330,12 +601,85 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             </div>
 
+            {/* AI Vision Multimodal Forensic Report */}
+            {result.ai_vision_result && (
+              <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-blue-300 font-bold text-xs">
+                    <Eye className="h-4 w-4" />
+                    <span>Bedah Forensik AI Vision (OCR &amp; Rekayasa Visual)</span>
+                  </div>
+                  <span className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-mono font-bold text-[10px]">
+                    {result.ai_vision_result.content_type}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed">
+                  {result.ai_vision_result.explanation}
+                </p>
+                {result.ai_vision_result.extracted_text_summary && (
+                  <div className="rounded-lg bg-black/50 border border-white/10 p-2 text-[11px] text-slate-300">
+                    <span className="text-slate-500 block font-mono text-[10px] uppercase">Ringkasan Teks Terbaca:</span>
+                    <span className="font-mono">{result.ai_vision_result.extracted_text_summary}</span>
+                  </div>
+                )}
+                {result.ai_vision_result.visual_anomalies?.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-rose-300 uppercase block font-bold">Kejanggalan Visual Terdeteksi:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {result.ai_vision_result.visual_anomalies.map((ano: string, aidx: number) => (
+                        <span key={aidx} className="rounded bg-rose-950/60 border border-rose-500/30 px-2 py-0.5 text-[11px] text-rose-300 font-medium">
+                          {ano}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {result.ai_vision_result.social_engineering_patterns?.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-amber-300 uppercase block font-bold">Pola Rekayasa Sosial:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {result.ai_vision_result.social_engineering_patterns.map((pat: string, pidx: number) => (
+                        <span key={pidx} className="rounded bg-amber-950/60 border border-amber-500/30 px-2 py-0.5 text-[11px] text-amber-300 font-medium">
+                          {pat}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AI Text Agent Cognitive Report */}
+            {result.ai_agent_analysis && (
+              <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-blue-300 font-bold text-xs">
+                    <BrainCircuit className="h-4 w-4" />
+                    <span>Analisis AI Agent Rekayasa Sosial</span>
+                  </div>
+                  <span className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-mono font-bold text-[10px]">
+                    {result.ai_agent_analysis.detected_category}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed">
+                  {result.ai_agent_analysis.explanation}
+                </p>
+                {result.ai_agent_analysis.manipulative_tactics?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {result.ai_agent_analysis.manipulative_tactics.map((tac: string, tidx: number) => (
+                      <span key={tidx} className="rounded bg-blue-950/60 border border-blue-500/30 px-2 py-0.5 text-[11px] text-blue-300">
+                        {tac}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Coverage and queried-source evidence */}
             {result.coverage_summary && (
               <div className={`rounded-xl border p-4 space-y-1 ${
-                result.coverage === "complete"
-                  ? "border-blue-500/30 bg-blue-950/20"
-                  : "border-amber-500/30 bg-amber-950/20"
+                result.coverage === "complete" ? "border-blue-500/30 bg-blue-950/20" : "border-amber-500/30 bg-amber-950/20"
               }`}>
                 <div className="text-xs font-bold text-white">
                   Cakupan pemeriksaan: {result.coverage === "complete" ? "Lengkap" : result.coverage === "partial" ? "Parsial" : "Terbatas"}
@@ -344,10 +688,11 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             )}
 
+            {/* Sources list */}
             {result.sources && result.sources.length > 0 && (
               <div className="space-y-2">
                 <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                  Sumber yang Diperiksa
+                  Sumber Intelijen &amp; Penelusuran Publik yang Diperiksa
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {result.sources.map((source: any) => (
@@ -367,10 +712,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                           {source.status === "unavailable"
                             ? "Tidak tersedia"
                             : source.outcome === "match"
-                            ? "Ada kecocokan"
+                            ? "Ada catatan"
                             : source.outcome === "no_match"
                             ? "Tidak ditemukan"
-                            : "Konteks ditemukan"}
+                            : "Konteks valid"}
                         </span>
                       </div>
                       {source.evidence?.map((item: any, index: number) => (
@@ -391,82 +736,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             )}
 
-            {/* Blacklist Match Card if registered */}
-            {result.blacklist_entry && (
-              <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 space-y-2">
-                <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
-                  <Flame className="h-4 w-4 shrink-0" />
-                  <span>Entitas Tercatat di Registri Internal Terverifikasi PANDU</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1 text-slate-300">
-                  <div>
-                    <span className="text-slate-500 block">Total Laporan Masyarakat:</span>
-                    <span className="font-bold text-rose-300 font-mono">
-                      {result.blacklist_entry.report_count} Laporan
-                    </span>
-                  </div>
-                  {result.blacklist_entry.account_holder && (
-                    <div>
-                      <span className="text-slate-500 block">Nama Pemilik Akun:</span>
-                      <span className="font-bold text-white font-mono">
-                        {result.blacklist_entry.account_holder}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <span className="text-slate-500 block">Modus Utama:</span>
-                    <span className="font-bold text-white">
-                      {result.blacklist_entry.category}
-                    </span>
-                  </div>
-                </div>
-                {result.blacklist_entry.description && (
-                  <p className="text-xs text-slate-300 pt-1 border-t border-rose-500/20 leading-relaxed">
-                    Kronologi catatan: {result.blacklist_entry.description}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Global Threat Intelligence Box (StopForumSpam) */}
-            {result.global_intel && result.global_intel.found && (
-              <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 space-y-2">
-                <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
-                  <Flame className="h-4 w-4 shrink-0" />
-                  <span>Terdeteksi di Jaringan Intelijen Kejahatan Siber Global ({result.global_intel.source})</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1 text-slate-300">
-                  <div>
-                    <span className="text-slate-500 block">Total Laporan Global:</span>
-                    <span className="font-bold text-rose-300 font-mono">
-                      {result.global_intel.frequency} Kali Terdeteksi
-                    </span>
-                  </div>
-                  {result.global_intel.last_seen && (
-                    <div>
-                      <span className="text-slate-500 block">Terakhir Aktif:</span>
-                      <span className="font-bold text-white font-mono">
-                        {result.global_intel.last_seen}
-                      </span>
-                    </div>
-                  )}
-                  {result.global_intel.confidence !== undefined && (
-                    <div>
-                      <span className="text-slate-500 block">Indeks Keyakinan Sensor:</span>
-                      <span className="font-bold text-rose-400 font-mono">
-                        {result.global_intel.confidence}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {result.global_intel.risk_summary && (
-                  <p className="text-xs text-slate-300 pt-1 border-t border-rose-500/20 leading-relaxed">
-                    {result.global_intel.risk_summary}
-                  </p>
-                )}
-              </div>
-            )}
-
             {/* Technical Detail Badges */}
             {(result.operator || result.hlr_region || result.institution_type || result.bank_routing_code || result.domain || result.geolocation || result.tls_cert || result.domain_age_summary || result.web_posture || result.sha256) && (
               <div className="pt-2 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -474,12 +743,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   <div className="rounded-xl bg-white/5 p-3">
                     <span className="text-slate-500 block">Operator Seluler:</span>
                     <span className="font-bold text-white">{result.operator}</span>
-                  </div>
-                )}
-                {result.hlr_region && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Wilayah Distribusi HLR:</span>
-                    <span className="font-bold text-white">{result.hlr_region}</span>
+                    <span className="block text-[10px] text-slate-400 mt-0.5">{result.hlr_region}</span>
                   </div>
                 )}
                 {result.country_name && (
@@ -492,26 +756,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   <div className="rounded-xl bg-white/5 p-3">
                     <span className="text-slate-500 block">Tipe Lembaga:</span>
                     <span className="font-bold text-white">{result.institution_type}</span>
-                  </div>
-                )}
-                {result.bank_routing_code && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Kode Kliring BI Fast / SKNBI:</span>
-                    <span className="font-bold text-blue-400 font-mono">{result.bank_routing_code}</span>
-                  </div>
-                )}
-                {result.report_status && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Status Registri Internal PANDU:</span>
-                    <span className={`font-bold font-mono ${result.total_reports > 0 ? "text-rose-400" : "text-slate-300"}`}>
-                      {result.report_status}
-                    </span>
-                  </div>
-                )}
-                {result.account_holder && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Nama Pemilik Akun:</span>
-                    <span className="font-bold text-white font-mono">{result.account_holder}</span>
+                    <span className="block text-[10px] text-slate-400 mt-0.5">Kliring: {result.bank_routing_code}</span>
                   </div>
                 )}
                 {result.domain_age_summary && (
@@ -535,7 +780,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 )}
                 {result.tls_cert && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Penerbit Sertifikat SSL:</span>
+                    <span className="text-slate-500 block">Sertifikat SSL/TLS:</span>
                     <span className="font-bold text-white">{result.tls_cert.issuer}</span>
                     <span className="block text-[10px] text-slate-500 font-mono mt-0.5">Berlaku s/d {result.tls_cert.valid_until}</span>
                   </div>
@@ -548,7 +793,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         {result.web_posture.security_grade}
                       </span>
                     </div>
-                    {result.web_posture.security_strengths && result.web_posture.security_strengths.length > 0 && (
+                    {result.web_posture.security_strengths?.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
                         {result.web_posture.security_strengths.map((str: string, sidx: number) => (
                           <div key={sidx} className="flex items-center gap-1.5 text-[11px] text-slate-300">
@@ -629,7 +874,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               <p className="text-xs text-slate-400">
                 Sindikat penipuan memanfaatkan bias kognitif berikut untuk menekan nalar Anda:
               </p>
-
               <div className="grid gap-3 sm:grid-cols-2 pt-1">
                 {result.cognitive_biases.map((bias: any, idx: number) => (
                   <div
@@ -643,18 +887,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       </span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">{bias.description}</p>
-                    {bias.trigger_words && bias.trigger_words.length > 0 && (
-                      <div className="pt-1 flex flex-wrap gap-1">
-                        {bias.trigger_words.map((tw: string, tidx: number) => (
-                          <span
-                            key={tidx}
-                            className="rounded bg-black border border-white/10 px-1.5 py-0.5 text-[10px] font-mono text-slate-300"
-                          >
-                            "{tw}"
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -690,7 +922,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   Indikator &amp; Temuan yang Dapat Dijelaskan
                 </h4>
               </div>
-
               <div className="space-y-3 pt-1">
                 {result.red_flags.map((rf: any, idx: number) => (
                   <div
@@ -711,9 +942,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       </span>
                       <h5 className="text-sm font-bold text-white">{rf.title}</h5>
                     </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      {rf.explanation}
-                    </p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{rf.explanation}</p>
                     {rf.snippet && (
                       <div className="mt-2 rounded-lg bg-black border border-white/10 p-2.5 font-mono text-xs text-slate-300 break-all">
                         Target/Cuplikan: {rf.snippet}
@@ -733,18 +962,15 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 Langkah Pengamanan &amp; Mitigasi
               </h4>
             </div>
-
             <ul className="space-y-2.5">
-              {result.recommendations &&
-                result.recommendations.map((rec: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
+              {result.recommendations?.map((rec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>{rec}</span>
+                </li>
+              ))}
             </ul>
 
-            {/* Direct CTA to Action Center */}
             <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-xs text-slate-400">
                 Apakah Anda atau kerabat Anda terlanjur menjadi target atau mengirim uang?
@@ -764,9 +990,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       result.email ||
                       result.file_name ||
                       "",
-                    chronology: `Hasil pemeriksaan PANDU: ${
+                    chronology: `Hasil investigasi PANDU: ${
                       result.detected_category || result.threat_level || "indikator digital"
-                    }. Indeks indikator ${result.risk_score}%; hasil bergantung pada sumber yang berhasil diperiksa.`,
+                    }. Indeks indikator ${result.risk_score}%.`,
                   };
                   if (typeof window !== "undefined") {
                     try {

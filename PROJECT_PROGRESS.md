@@ -129,9 +129,10 @@
   - Kemiripan nama brand kini berbobot heuristik 25 dan TLD alternatif hanya konteks tambahan 5; keduanya tidak boleh menghasilkan status `phishing tinggi` tanpa bukti ancaman terstruktur.
   - Status bahaya tinggi kini memerlukan provenance feed ancaman seperti OpenPhish. Grade A security headers diperlakukan sebagai konteks hardening teknis, bukan bukti situs resmi dan bukan penghapus bukti ancaman.
   - Menambahkan regression test untuk pemisahan Grade A, heuristik brand, dan bukti reputasi terstruktur.
-- **Analisis Pasif Alur Halaman Web — Pembeda Login Normal vs Rekayasa Sosial**:
-  - PANDU membaca HTML publik maksimal 1 MB tanpa menjalankan JavaScript, mengisi kolom, menekan submit, menyimpan cookie, atau mengirim kredensial/OTP.
-  - Menginventarisasi judul halaman, jumlah form, tipe input, opsi login Google/Facebook/Apple/Microsoft, permintaan password/OTP/e-wallet/data finansial, dan tujuan form lintas domain.
-  - Login biasa, termasuk form same-origin dan identity provider lintas domain, tetap bernilai 0 jika tidak disertai umpan hadiah/kerja atau korelasi permintaan data sensitif.
-  - Risiko konten hanya naik dari rangkaian perilaku seperti umpan hadiah/kerja + password/OTP/e-wallet + tujuan form janggal; heuristik konten dibatasi maksimal 60 dan tidak menjadi vonis phishing terstruktur.
-  - Menampilkan bagian `Alur Data pada Halaman Publik` beserta batasan bahwa konten JavaScript, CAPTCHA, atau halaman setelah login mungkin tidak terlihat.
+- **Mesin Forensik Otonom & AI Agentic Multi-Vektor (6 Instrumen Lengkap Aktif)**:
+  - Mengembalikan 6 instrumen investigasi lengkap: Pesan Chat, Tautan Web, No. Telepon, Rekening Bank, Alamat Email, Berkas/APK/Foto.
+  - Pesan Chat: Dianalisis oleh AI Agent forensik kognitif lokal (`ag/gemini-3.8-flash-high` pada 9Router) untuk membedah psikologi manipulasi emosi (kepanikan, desakan waktu, imbalan palsu, impersonasi keluarga). Percakapan normal bersih 0% tanpa penalti.
+  - Berkas & Foto: Dilengkapi AI Vision multimodal yang membaca teks (OCR visual), memeriksa kejanggalan visual (font transfer tidak konsisten / ciri generator struk palsu), dan mengidentifikasi perangkap rekayasa sosial dalam gambar.
+  - No. Telepon & Rekening Bank: Menjalankan crawling OSINT real-time pada web terbuka untuk mencari jejak laporan aduan publik dan mengorelasikannya dengan Threat Registry PANDU. Jika bersih, mengembalikan 0% tanpa tuduhan sepihak.
+  - Tautan Web & Email: Menggabungkan perayapan pasif formulir HTML, audit postur keamanan Grade A, umur registrasi RDAP, feed OpenPhish urlscan.io, StopForumSpam, dan DNS MX.
+  - UI Frontend: Pill dock OSINT Industries dinamis, input kontinu dengan pemilih bank/e-wallet dan kode negara global terintegrasi, serta kartu temuan AI Vision dan Agent Analysis.

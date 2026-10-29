@@ -95,8 +95,9 @@ type FileScanResult struct {
 	Sources          []SourceResult `json:"sources"`
 	DangerousPerms   []string       `json:"dangerous_perms,omitempty"`
 	RedFlags         []RedFlag      `json:"red_flags"`
-	Recommendations  []string       `json:"recommendations"`
-	BlacklistEntry   any            `json:"blacklist_entry,omitempty"`
+	Recommendations  []string          `json:"recommendations"`
+	BlacklistEntry   any               `json:"blacklist_entry,omitempty"`
+	AIVisionResult   *AIVisionAnalysis `json:"ai_vision_result,omitempty"`
 }
 
 // Detailed Indonesian mobile phone prefixes mapping with HLR regional info
@@ -602,6 +603,41 @@ func AnalyzeFile(filename string, filesize int64, content []byte) FileScanResult
 			result.ThreatLevel = "ISI GAMBAR TIDAK VALID"
 			result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Berkas gambar tidak dapat didekode", Explanation: "Signature atau struktur gambar rusak/tidak sesuai.", Snippet: cleanName})
 		}
+
+		// Agentic Multimodal AI Vision Forensics
+		vCtx, vCancel := context.WithTimeout(context.Background(), 45*time.Second)
+		visionRes, visionErr := QueryAIVisionAgent(vCtx, mimeType, content)
+		vCancel()
+		if visionErr == nil && visionRes != nil {
+			result.AIVisionResult = visionRes
+			if visionRes.IsSuspicious && visionRes.RiskScore > result.RiskScore {
+				result.RiskScore = visionRes.RiskScore
+				result.ThreatLevel = visionRes.ThreatLevel
+				if len(visionRes.SocialEngineeringPatterns) > 0 {
+					result.RedFlags = append(result.RedFlags, RedFlag{
+						Level:       "HIGH",
+						Title:       "Indikasi Rekayasa Sosial Terdeteksi pada Gambar",
+						Explanation: strings.Join(visionRes.SocialEngineeringPatterns, "; "),
+						Snippet:     visionRes.ExtractedTextSummary,
+					})
+				}
+				if len(visionRes.VisualAnomalies) > 0 {
+					result.RedFlags = append(result.RedFlags, RedFlag{
+						Level:       "HIGH",
+						Title:       "Kejanggalan Visual & Ciri Manipulasi Gambar",
+						Explanation: strings.Join(visionRes.VisualAnomalies, "; "),
+						Snippet:     cleanName,
+					})
+				}
+			}
+			if visionRes.Explanation != "" {
+				result.Recommendations = append([]string{visionRes.Explanation}, result.Recommendations...)
+			}
+			if visionRes.MitigationGuide != "" {
+				result.Recommendations = append(result.Recommendations, visionRes.MitigationGuide)
+			}
+		}
+
 		result.Recommendations = append(result.Recommendations, "Untuk bukti transfer, pastikan dana masuk melalui mutasi rekening Anda sendiri; screenshot bukan bukti penerimaan dana.")
 	} else {
 		dangerousExts := map[string]string{".exe": "eksekutabel Windows", ".scr": "screensaver executable", ".bat": "skrip batch", ".vbs": "skrip Visual Basic", ".js": "skrip JavaScript"}
