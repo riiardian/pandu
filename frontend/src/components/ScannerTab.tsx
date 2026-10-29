@@ -173,6 +173,14 @@ const SPEEDTEST_LABELS = [
   { x: 209.75, y: 185.14, val: 100 },
 ];
 
+function getRiskTierColor(score: number): string {
+  if (score > 80) return "#ef4444"; // 80-100: Merah
+  if (score > 60) return "#f97316"; // 60-80: Jingga
+  if (score > 40) return "#eab308"; // 40-60: Kuning
+  if (score > 20) return "#3b82f6"; // 20-40: Biru
+  return "#10b981";                 // 0-20: Hijau
+}
+
 function RiskGaugeDial({ score }: { score: number }) {
   const clampedScore = Math.max(0, Math.min(100, score || 0));
   // Needle angle: -130deg at 0% score to +130deg at 100% score (260deg sweep, Ookla Speedtest spec)
@@ -180,24 +188,7 @@ function RiskGaugeDial({ score }: { score: number }) {
   // Circumference for 260 deg arc on r=100: 2 * PI * 100 * (260/360) = 453.79
   const arcLength = 453.79;
   const activeDashoffset = arcLength - (clampedScore / 100) * arcLength;
-
-  // Dynamic colors:
-  // Score < 35: Vibrant Cyan-Emerald (#10b981)
-  // Score 35 - 69: Vibrant Amber-Orange (#f59e0b)
-  // Score >= 70: Vibrant Crimson-Rose (#ef4444)
-  let mainColor = "#10b981";
-  let gradStart = "#06b6d4";
-  let gradEnd = "#10b981";
-
-  if (clampedScore >= 70) {
-    mainColor = "#ef4444";
-    gradStart = "#f59e0b";
-    gradEnd = "#ef4444";
-  } else if (clampedScore >= 35) {
-    mainColor = "#f59e0b";
-    gradStart = "#10b981";
-    gradEnd = "#f59e0b";
-  }
+  const tierColor = getRiskTierColor(clampedScore);
 
   return (
     <div className="flex flex-col items-center justify-center text-center select-none">
@@ -207,55 +198,42 @@ function RiskGaugeDial({ score }: { score: number }) {
           <defs>
             {/* Multi-tier bloom glow for active sweep */}
             <filter id="speedtestBloom" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={mainColor} floodOpacity="0.7" />
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={tierColor} floodOpacity="0.65" />
             </filter>
             <filter id="speedtestNeedleShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.8" />
+              <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.9" />
             </filter>
-            {/* Active sweep gradient */}
-            <linearGradient id="speedtestSweepGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={gradStart} />
-              <stop offset="100%" stopColor={gradEnd} />
-            </linearGradient>
           </defs>
 
-          {/* Inactive Background Ribbon (Translucent white/slate track) */}
+          {/* Inactive Background Ribbon (Solid clean white ribbon as requested) */}
           <path
             d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
-            stroke="rgba(255, 255, 255, 0.10)"
+            stroke="#ffffff"
             strokeWidth="12"
             strokeLinecap="butt"
+            opacity="0.85"
           />
 
           {/* Outer Fine Ring Guide */}
           <path
             d="M 68.03 203.78 A 107 107 0 1 1 231.97 203.78"
             fill="none"
-            stroke="rgba(255, 255, 255, 0.15)"
-            strokeWidth="0.8"
+            stroke="rgba(255, 255, 255, 0.3)"
+            strokeWidth="1.0"
           />
 
-          {/* Redline Danger Zone Ribbon (80 to 100) */}
-          <path
-            d="M 247.81 114.21 A 100 100 0 0 1 226.60 199.28"
-            fill="none"
-            stroke="rgba(239, 68, 68, 0.25)"
-            strokeWidth="12"
-            strokeLinecap="butt"
-          />
-
-          {/* Active Swept Ribbon (Dynamic fill from 0 up to current needle angle) */}
+          {/* Active Swept Ribbon (Dynamic color change per tier: 0-20 Hijau, 20-40 Biru, 40-60 Kuning, 60-80 Jingga, 80-100 Merah) */}
           <path
             d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
-            stroke="url(#speedtestSweepGrad)"
+            stroke={tierColor}
             strokeWidth="12"
             strokeLinecap="butt"
             strokeDasharray={arcLength}
             strokeDashoffset={activeDashoffset}
             filter="url(#speedtestBloom)"
-            style={{ transition: "stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+            style={{ transition: "stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.5s ease" }}
           />
 
           {/* Radial Ticks Inside Arc */}
@@ -266,24 +244,22 @@ function RiskGaugeDial({ score }: { score: number }) {
               y1={t.y1}
               x2={t.x2}
               y2={t.y2}
-              stroke={t.isMajor ? "#ffffff" : "rgba(255, 255, 255, 0.45)"}
-              strokeWidth={t.isMajor ? 2.6 : 1.2}
+              stroke={t.isMajor ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)"}
+              strokeWidth={t.isMajor ? 1.6 : 1.0}
               strokeLinecap="round"
             />
           ))}
 
-          {/* Scale Labels (Solid thick bold white 0 to 100) */}
+          {/* Scale Labels (Reverted to clean original numbers) */}
           {SPEEDTEST_LABELS.map((l, idx) => (
             <text
               key={idx}
               x={l.x}
               y={l.y}
-              fill="#ffffff"
-              stroke="#ffffff"
-              strokeWidth="0.5"
-              fontSize="13.5"
+              fill="#94a3b8"
+              fontSize="10"
               fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-              fontWeight="900"
+              fontWeight="600"
               textAnchor="middle"
               dominantBaseline="central"
             >
@@ -291,26 +267,25 @@ function RiskGaugeDial({ score }: { score: number }) {
             </text>
           ))}
 
-          {/* CUSTOM ELECTRIC BLUE ARROWHEAD NEEDLE */}
+          {/* SHORTER & STOUT THICK ELECTRIC BLUE NEEDLE */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
             filter="url(#speedtestNeedleShadow)"
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Aerodynamic Counterbalance Tail */}
-            <polygon points="147.5,135 147,153 153,153 152.5,135" fill="#111827" stroke="#1f2937" strokeWidth="0.8" />
-            <circle cx="150" cy="147" r="1.6" fill="#00d2ff" />
+            {/* Stout Counterbalance Tail */}
+            <polygon points="146.5,135 146,149 154,149 153.5,135" fill="#111827" stroke="#1f2937" strokeWidth="0.8" />
+            <circle cx="150" cy="144" r="1.5" fill="#00d2ff" />
 
-            {/* Main Stem: Two-tone Electric Blue */}
-            <polygon points="147.5,135 148.5,51 151.5,51 152.5,135" fill="#0284c7" />
-            <polygon points="150,135 150,51 151.5,51 152.5,135" fill="#00d2ff" />
-
-            {/* Distinct Precision Arrowhead Tip */}
-            <polygon points="146.2,51 150,35 150,51" fill="#0284c7" />
-            <polygon points="153.8,51 150,35 150,51" fill="#00d2ff" />
-            {/* Sharp white illuminated spine and apex */}
-            <line x1="150" y1="135" x2="150" y2="37" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
-            <polygon points="148.8,39 150,35 151.2,39" fill="#ffffff" />
+            {/* Shorter, Thicker Sports Pointer (Length 62px, reaches r=74 well inside tick ring) */}
+            {/* Left side facet (Royal/Cobalt Blue) */}
+            <polygon points="146,123 148.4,65 150,61 150,123" fill="#1d4ed8" />
+            {/* Right side facet (Electric Cyan Blue) */}
+            <polygon points="154,123 151.6,65 150,61 150,123" fill="#00d2ff" />
+            {/* White central illuminated spine */}
+            <line x1="150" y1="123" x2="150" y2="63" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+            {/* Pointer Tip Accent */}
+            <polygon points="148.2,66 150,61 151.8,66" fill="#ffffff" />
           </g>
 
           {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
