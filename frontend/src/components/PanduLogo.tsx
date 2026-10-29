@@ -5,11 +5,11 @@ interface PanduLogoProps {
   size?: number;
 }
 
-export default function PanduLogo({ className = "h-6 w-6", size }: PanduLogoProps) {
-  const style = size ? { width: size, height: size } : undefined;
+export default function PanduLogo({ className = "h-[18px] sm:h-[20px] w-auto", size }: PanduLogoProps) {
+  const style = size ? { width: size, height: "auto" } : undefined;
   return (
     <svg
-      viewBox="0 0 512 512"
+      viewBox="60 172 392 168"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}

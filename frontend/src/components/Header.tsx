@@ -123,12 +123,12 @@ export default function Header() {
           {/* Brand & Identity */}
           <Link
             href="/"
-            className="flex items-center gap-2 sm:gap-2.5 text-left focus:outline-none min-w-0 group"
+            className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0 group"
           >
             <div className="flex shrink-0 items-center justify-center text-white group-hover:text-blue-400 transition-colors">
-              <PanduLogo className="h-7 w-7 sm:h-8 sm:w-8" />
+              <PanduLogo className="h-[18px] sm:h-[20px] w-auto" />
             </div>
-            <span className="text-lg sm:text-xl font-black tracking-tight text-white block leading-tight group-hover:text-blue-400 transition-colors">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-white block leading-tight group-hover:text-blue-400 transition-colors">
               PANDU
             </span>
           </Link>
