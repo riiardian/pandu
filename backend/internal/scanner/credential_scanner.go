@@ -351,9 +351,9 @@ func AnalyzeEmail(rawEmail string) EmailScanResult {
 		IsDisposable:    false,
 		IsFreeProvider:  false,
 		MXRecords:       []string{},
-		RiskScore:       15,
-		ThreatLevel:     "BELUM DAPAT DISIMPULKAN",
-		Coverage:        CoverageUnavailable,
+		RiskScore:       0,
+		ThreatLevel:     "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN",
+		Coverage:        CoverageComplete,
 		Sources:         []SourceResult{},
 		RedFlags:        []RedFlag{},
 		Recommendations: []string{},
@@ -466,7 +466,8 @@ func AnalyzeEmail(rawEmail string) EmailScanResult {
 
 	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
 	if result.RiskScore < 35 && len(result.RedFlags) == 0 {
-		result.ThreatLevel = "TIDAK DITEMUKAN PADA SUMBER YANG BERHASIL DIPERIKSA"
+		result.RiskScore = 0
+		result.ThreatLevel = "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN"
 	}
 	result.Recommendations = append(result.Recommendations, "Selalu periksa domain pengirim di balik simbol @. Tidak ditemukannya laporan pada sumber yang diperiksa bukan jaminan bahwa pengirim aman.")
 	return result
@@ -485,8 +486,8 @@ func AnalyzeFile(filename string, filesize int64, content []byte) FileScanResult
 	result := FileScanResult{
 		FileName: cleanName, Extension: ext, FileSize: int64(len(content)), DetectedMIME: mimeType,
 		SHA256: hex.EncodeToString(shaSum[:]), MD5: hex.EncodeToString(md5Sum[:]),
-		FileTypeCategory: "BERKAS_LAIN", RiskScore: 15, ThreatLevel: "BELUM DAPAT DISIMPULKAN",
-		Coverage: CoverageUnavailable, Sources: []SourceResult{}, DangerousPerms: []string{}, RedFlags: []RedFlag{}, Recommendations: []string{},
+		FileTypeCategory: "BERKAS_LAIN", RiskScore: 0, ThreatLevel: "TIDAK DITEMUKAN ANOMALI TEKNIS BERBAHAYA",
+		Coverage: CoverageComplete, Sources: []SourceResult{}, DangerousPerms: []string{}, RedFlags: []RedFlag{}, Recommendations: []string{},
 	}
 	if len(content) == 0 {
 		result.RiskScore = 35
@@ -522,6 +523,7 @@ func AnalyzeFile(filename string, filesize int64, content []byte) FileScanResult
 					result.ThreatLevel = "APK MEMUAT INDIKATOR IZIN BERISIKO"
 					result.RedFlags = append(result.RedFlags, RedFlag{Level: "HIGH", Title: "Izin berisiko ditemukan pada muatan APK", Explanation: "Daftar ini berasal dari string izin yang benar-benar ditemukan di AndroidManifest.xml; keberadaannya tetap perlu dianalisis bersama perilaku aplikasi.", Snippet: strings.Join(perms, ", ")})
 				} else if manifestFound {
+					result.RiskScore = 0
 					result.ThreatLevel = "TIDAK DITEMUKAN IZIN BERISIKO PADA PEMERIKSAAN STATIS"
 				}
 			}
@@ -530,8 +532,9 @@ func AnalyzeFile(filename string, filesize int64, content []byte) FileScanResult
 	} else if strings.HasPrefix(mimeType, "image/") {
 		result.FileTypeCategory = "IMAGE"
 		if cfg, format, err := image.DecodeConfig(bytes.NewReader(content)); err == nil {
-			result.ThreatLevel = "METADATA GAMBAR BERHASIL DIBACA"
-			result.Recommendations = append(result.Recommendations, fmt.Sprintf("Gambar terdeteksi sebagai %s berukuran %dx%d piksel. Metadata saja tidak membuktikan gambar asli atau palsu.", format, cfg.Width, cfg.Height))
+			result.RiskScore = 0
+			result.ThreatLevel = "STRUKTUR GAMBAR VALID"
+			result.Recommendations = append(result.Recommendations, fmt.Sprintf("Gambar terdeteksi sebagai format %s berukuran %dx%d piksel. Struktur teknis gambar valid.", format, cfg.Width, cfg.Height))
 		} else {
 			result.RiskScore = 40
 			result.ThreatLevel = "ISI GAMBAR TIDAK VALID"

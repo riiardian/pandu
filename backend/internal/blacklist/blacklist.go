@@ -124,7 +124,6 @@ func InitRegistry(dbURL string) *PostgresRegistry {
 
 		globalRegistry = &PostgresRegistry{db: db}
 		globalRegistry.ensureSchema()
-		globalRegistry.seedIfEmpty()
 		log.Println("PANDU PostgreSQL Threat Registry successfully initialized")
 	})
 	return globalRegistry
@@ -164,149 +163,6 @@ func (r *PostgresRegistry) ensureSchema() {
 	`
 	if _, err := r.db.Exec(query); err != nil {
 		log.Printf("Warning: Failed to ensure PostgreSQL schema: %v", err)
-	}
-}
-
-func (r *PostgresRegistry) seedIfEmpty() {
-	var count int
-	if err := r.db.QueryRow("SELECT COUNT(*) FROM threat_blacklist").Scan(&count); err != nil {
-		return
-	}
-	if count > 0 {
-		return // already populated
-	}
-
-	initialThreats := []struct {
-		id, t, ident, cat, risk, desc, bank, holder string
-		count                                       int
-		tags                                        []string
-	}{
-		{
-			id:    "THREAT-085819238491",
-			t:     string(TypePhone),
-			ident: "085819238491",
-			cat:   string(CatLokerFreelance),
-			risk:  "CRITICAL",
-			count: 24,
-			desc:  "Perekrut palsu tugas like video YouTube & TikTok. Meminta deposit bertahap hingga puluhan juta rupiah.",
-			tags:  []string{"deposit_tugas_vip", "loker_freelance", "grup_telegram_palsu"},
-		},
-		{
-			id:    "THREAT-082194810293",
-			t:     string(TypePhone),
-			ident: "082194810293",
-			cat:   string(CatKurirAPK),
-			risk:  "CRITICAL",
-			count: 41,
-			desc:  "Mengaku kurir ekspedisi J&T mengirimkan file paket berkedok resi_paket.apk untuk membajak SMS OTP m-banking.",
-			tags:  []string{"kirim_apk_resi", "sadap_sms_otp", "kurir_gadungan"},
-		},
-		{
-			id:    "THREAT-087819382019",
-			t:     string(TypePhone),
-			ident: "087819382019",
-			cat:   string(CatImpersonasi),
-			risk:  "HIGH",
-			count: 12,
-			desc:  "Impersonasi kontak kerabat/teman di WhatsApp, mengaku ganti nomor dan meminta transfer talangan mendesak.",
-			tags:  []string{"ganti_nomor_wa", "pinjam_dana_darurat", "foto_profil_curian"},
-		},
-		{
-			id:    "THREAT-081293847102",
-			t:     string(TypePhone),
-			ident: "081293847102",
-			cat:   string(CatPhishingBank),
-			risk:  "CRITICAL",
-			count: 33,
-			desc:  "Mengatasnamakan CS Bank BRI, menyebarkan ancaman perubahan tarif transaksi Rp 150.000/bulan.",
-			tags:  []string{"cs_bank_palsu", "ancaman_kenaikan_tarif", "link_phishing_bri"},
-		},
-		{
-			id:     "THREAT-BCA-8271039481",
-			t:      string(TypeBank),
-			ident:  "BCA 8271039481",
-			cat:    string(CatLokerFreelance),
-			risk:   "CRITICAL",
-			count:  19,
-			desc:   "Rekening penampung dana deposit tugas kerja sampingan freelance online.",
-			bank:   "BCA (Bank Central Asia)",
-			holder: "Wahyu Pratama",
-			tags:   []string{"rekening_penampung", "setor_deposit", "loker_bodong"},
-		},
-		{
-			id:     "THREAT-BRI-034101002948501",
-			t:      string(TypeBank),
-			ident:  "BRI 034101002948501",
-			cat:    string(CatPinjolIlegal),
-			risk:   "CRITICAL",
-			count:  28,
-			desc:   "Rekening tujuan pelunasan denda pinjol ilegal dengan ancaman penyebaran kontak.",
-			bank:   "Bank BRI",
-			holder: "Siti Nurhaliza",
-			tags:   []string{"pinjol_ilegal", "pemerasan_kontak", "rekening_bodong"},
-		},
-		{
-			id:     "THREAT-DANA-085819238491",
-			t:      string(TypeBank),
-			ident:  "DANA 085819238491",
-			cat:    string(CatKurirAPK),
-			risk:   "HIGH",
-			count:  15,
-			desc:   "Akun e-wallet DANA penampung transfer biaya konfirmasi resi kurir fiktif.",
-			bank:   "DANA (E-Wallet)",
-			holder: "Bayu Kencana",
-			tags:   []string{"ewallet_penampung", "tebusan_paket", "kurir_gadungan"},
-		},
-		{
-			id:    "THREAT-URL-SHOPEE-VIP",
-			t:     string(TypeURL),
-			ident: "shopee-vip-toko.site",
-			cat:   string(CatPhishingBank),
-			risk:  "CRITICAL",
-			count: 38,
-			desc:  "Domain phishing meniru portal e-commerce Shopee untuk pendaftaran akun tugas deposit berbayar.",
-			tags:  []string{"typosquatting", "phishing_ecommerce", "domain_site"},
-		},
-		{
-			id:    "THREAT-URL-RESI-PAKET",
-			t:     string(TypeURL),
-			ident: "resi-paket-jne-expedisi.com",
-			cat:   string(CatKurirAPK),
-			risk:  "CRITICAL",
-			count: 45,
-			desc:  "Situs palsu penyedia unduhan malware Android berkedok tracking resi JNE.",
-			tags:  []string{"drive_by_download", "malware_apk", "typosquat_jne"},
-		},
-		{
-			id:    "THREAT-URL-BCA-XYZ",
-			t:     string(TypeURL),
-			ident: "bca-tarif-transaksi.xyz",
-			cat:   string(CatPhishingBank),
-			risk:  "CRITICAL",
-			count: 52,
-			desc:  "Situs phishing formulir perubahan tarif BCA palsu yang mencuri nomor kartu debit dan OTP.",
-			tags:  []string{"phishing_bca", "curi_otp_perbankan", "domain_xyz"},
-		},
-	}
-
-	stmt, err := r.db.Prepare(`
-		INSERT INTO threat_blacklist (
-			id, type, identifier, clean_key, category, risk_level, report_count,
-			description, reported_bank, account_holder, verified, chronology_tags
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		ON CONFLICT (type, clean_key) DO NOTHING
-	`)
-	if err != nil {
-		return
-	}
-	defer stmt.Close()
-
-	for _, item := range initialThreats {
-		clean := normalizeKey(item.ident)
-		_, _ = stmt.Exec(
-			item.id, item.t, item.ident, clean, item.cat, item.risk, item.count,
-			item.desc, item.bank, item.holder, true, pq.Array(item.tags),
-		)
 	}
 }
 
@@ -489,7 +345,7 @@ func (r *PostgresRegistry) GetRecentThreats(limit int) []*BlacklistEntry {
 	}
 	defer rows.Close()
 
-	var list []*BlacklistEntry
+	list := make([]*BlacklistEntry, 0)
 	for rows.Next() {
 		var entry BlacklistEntry
 		var tags []string

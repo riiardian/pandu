@@ -239,27 +239,10 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               </button>
             </div>
 
-            {/* Quick Sample Chips */}
-            <div className="flex items-center gap-1.5 flex-wrap pt-1 text-xs">
-              <span className="text-slate-500 text-[11px] font-mono">Uji Cepat:</span>
-              {[
-                { label: "085819238491 (Loker VIP)", val: "085819238491" },
-                { label: "082194810293 (Kurir APK)", val: "082194810293" },
-                { label: "BCA 8271039481", val: "8271039481" },
-                { label: "shopee-vip-toko.site", val: "shopee-vip-toko.site" },
-              ].map((chip) => (
-                <button
-                  key={chip.val}
-                  onClick={() => {
-                    setSearchQuery(chip.val);
-                    handleSearch(chip.val);
-                  }}
-                  className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-300 hover:border-blue-500/50 hover:text-white transition-colors"
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
+            {/* Quick Helper Note */}
+            <p className="text-[11px] text-slate-500 pt-1">
+              Masukkan nomor kontak, rekening bank, atau tautan yang mencurigakan untuk memeriksa apakah sudah pernah dilaporkan masyarakat.
+            </p>
           </div>
 
           {/* Search Result Display */}
@@ -374,36 +357,47 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {recentThreats.slice(0, 6).map((threat) => (
-                <div
-                  key={threat.id}
-                  onClick={() => {
-                    setSearchQuery(threat.identifier);
-                    handleSearch(threat.identifier);
-                  }}
-                  className="cursor-pointer rounded-xl border border-white/10 bg-[#121316]/80 p-3.5 space-y-2 hover:border-blue-500/40 hover:bg-[#18191f] transition-all text-left"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white font-mono truncate">
-                      {threat.identifier}
-                    </span>
-                    <span className="rounded bg-rose-950/60 border border-rose-800/40 px-2 py-0.2 text-[9px] font-mono font-bold text-rose-300 shrink-0">
-                      {threat.report_count} Laporan
-                    </span>
-                  </div>
+            {recentThreats.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {recentThreats.slice(0, 6).map((threat) => (
+                  <div
+                    key={threat.id}
+                    onClick={() => {
+                      setSearchQuery(threat.identifier);
+                      handleSearch(threat.identifier);
+                    }}
+                    className="cursor-pointer rounded-xl border border-white/10 bg-[#121316]/80 p-3.5 space-y-2 hover:border-blue-500/40 hover:bg-[#18191f] transition-all text-left"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white font-mono truncate">
+                        {threat.identifier}
+                      </span>
+                      <span className="rounded bg-rose-950/60 border border-rose-800/40 px-2 py-0.2 text-[9px] font-mono font-bold text-rose-300 shrink-0">
+                        {threat.report_count} Laporan
+                      </span>
+                    </div>
 
-                  <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
-                    {threat.description}
-                  </p>
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                      {threat.description}
+                    </p>
 
-                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-white/5">
-                    <span className="capitalize">{threat.category?.replace("_", " ")}</span>
-                    <span>Aktif: {threat.last_reported?.split(" ")[0]}</span>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-white/5">
+                      <span className="capitalize">{threat.category?.replace("_", " ")}</span>
+                      <span>Aktif: {threat.last_reported?.split(" ")[0]}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6 text-center space-y-1.5">
+                <p className="text-xs text-slate-300 font-medium">
+                  Belum ada catatan laporan aduan pada basis data.
+                </p>
+                <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed">
+                  PANDU tidak memuat data rekaan. Daftar hitam akan bertambah secara transparan saat ada laporan riil yang diajukan oleh masyarakat.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

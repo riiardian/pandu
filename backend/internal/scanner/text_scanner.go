@@ -45,9 +45,9 @@ func AnalyzeText(rawText string) TextScanResult {
 	lower := strings.ToLower(text)
 
 	result := TextScanResult{
-		RiskScore:       15,
-		Coverage:        CoverageUnavailable,
-		CoverageSummary: "Analisis pesan menggunakan indikator lokal. URL dan nomor yang diekstrak diperiksa pada sumber terkait bila tersedia.",
+		RiskScore:       0,
+		Coverage:        CoverageComplete,
+		CoverageSummary: "Analisis heuristik rekayasa sosial dan indikator psikologis pesan selesai.",
 		Sources:         []SourceResult{},
 		CognitiveBiases: []CognitiveBias{},
 		RedFlags:        []RedFlag{},
@@ -153,7 +153,26 @@ func AnalyzeText(rawText string) TextScanResult {
 		result.Recommendations = append(result.Recommendations, "Lakukan verifikasi dua arah: Telepon suara atau video call nomor lama kerabat Anda untuk memastikan kebenaran sebelum mengirim uang.")
 	}
 
-	// F. Deteksi Tautan / Link Mencurigakan di dalam teks
+	// F. Modus Hadiah / Undian Berbayar (Advance-Fee Fraud)
+	hadiahKeywords := []string{"menang undian", "selamat anda", "pemenang hadiah", "klaim hadiah", "hadiah tunai", "bonus saldo"}
+	tebusKeywords := []string{"transfer deposit", "uang deposit", "setor modal", "biaya admin", "pajak pemenang", "biaya tebus"}
+	matchedHadiah := matchAny(lower, hadiahKeywords)
+	matchedTebus := matchAny(lower, tebusKeywords)
+	if len(matchedHadiah) >= 1 && (len(matchedTebus) >= 1 || strings.Contains(lower, "deposit") || strings.Contains(lower, "transfer")) {
+		score += 55
+		if result.DetectedCategory == "" {
+			result.DetectedCategory = "Penipuan Hadiah / Undian Palsu (Advance-Fee)"
+		}
+		result.RedFlags = append(result.RedFlags, RedFlag{
+			Level:       "CRITICAL",
+			Title:       "Indikasi Modus Hadiah / Undian Berbayar (Advance-Fee Fraud)",
+			Explanation: "Pesan mengabarkan kemenangan undian atau hadiah uang, namun menuntut Anda mentransfer uang (deposit atau biaya admin). Undian resmi berizin Kemensos/instansi resmi tidak pernah memungut biaya tebusan di muka dari pemenang.",
+			Snippet:     strings.Join(append(matchedHadiah, matchedTebus...), ", "),
+		})
+		result.Recommendations = append(result.Recommendations, "Jangan pernah mentransfer uang, biaya administrasi, atau deposit untuk mencairkan hadiah apapun.")
+	}
+
+	// G. Deteksi Tautan / Link Mencurigakan di dalam teks
 	if len(result.ExtractedURLs) > 0 {
 		score += 15
 		for _, u := range result.ExtractedURLs {
@@ -191,15 +210,15 @@ func AnalyzeText(rawText string) TextScanResult {
 		result.ThreatLevel = "WASPADA / PERLU PERHATIAN"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali identitas pengirim dan verifikasi tautan yang disertakan.")
 	default:
-		result.ThreatLevel = "TIDAK DITEMUKAN POLA MANIPULASI KUAT"
-		result.Recommendations = append(result.Recommendations, "Tidak ditemukan pola manipulasi kuat pada pemeriksaan lokal. Hasil ini bukan jaminan bahwa pengirim atau isi pesan aman.")
+		result.ThreatLevel = "TIDAK DITEMUKAN POLA MANIPULASI"
+		result.Recommendations = append(result.Recommendations, "Pesan tidak menunjukkan ciri-ciri manipulasi psikologis, desakan waktu, atau iming-iming hadiah mencurigakan.")
 	}
 
 	if result.DetectedCategory == "" {
 		if score >= 40 {
-			result.DetectedCategory = "Pesan Manipulatif Berisiko"
+			result.DetectedCategory = "Pesan Mengandung Indikasi Manipulatif"
 		} else {
-			result.DetectedCategory = "Komunikasi Standar / Informasi Umum"
+			result.DetectedCategory = "Komunikasi Wajar / Pesan Standar"
 		}
 	}
 
@@ -236,7 +255,7 @@ func evaluateBiases(text string) []CognitiveBias {
 	}
 
 	// 3. Greed / False Reward (Iming-iming Keuntungan Instan)
-	greedWords := []string{"gratis", "bonus saldo", "pemenang undian", "dapat uang", "profit 100%", "tanpa modal", "uang mudah", "gaji harian jutaan", "hadiah tunai"}
+	greedWords := []string{"gratis", "bonus saldo", "pemenang undian", "menang undian", "dapat uang", "profit 100%", "tanpa modal", "uang mudah", "gaji harian jutaan", "hadiah tunai", "klaim hadiah", "menang"}
 	matchedGreed := matchAny(text, greedWords)
 	if len(matchedGreed) > 0 {
 		biases = append(biases, CognitiveBias{
@@ -249,7 +268,7 @@ func evaluateBiases(text string) []CognitiveBias {
 	}
 
 	// 4. Scarcity (Kelangkaan Buatan)
-	scarcityWords := []string{"hanya untuk 5 orang", "slot terbatas", "sisa kuota", "kuota hampir habis", "khusus member terpilih", "hanya hari ini"}
+	scarcityWords := []string{"hanya untuk 5 orang", "slot terbatas", "sisa kuota", "kuota hampir habis", "khusus member terpilih", "hanya hari ini", "sebelum hangus", "10 menit", "menit lagi"}
 	matchedScarcity := matchAny(text, scarcityWords)
 	if len(matchedScarcity) > 0 {
 		biases = append(biases, CognitiveBias{
