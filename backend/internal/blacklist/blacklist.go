@@ -124,6 +124,7 @@ func InitRegistry(dbURL string) *PostgresRegistry {
 
 		globalRegistry = &PostgresRegistry{db: db}
 		globalRegistry.ensureSchema()
+		globalRegistry.seedIfEmpty()
 		log.Println("PANDU PostgreSQL Threat Registry successfully initialized")
 	})
 	return globalRegistry
@@ -293,7 +294,7 @@ func (r *PostgresRegistry) seedIfEmpty() {
 			id, type, identifier, clean_key, category, risk_level, report_count,
 			description, reported_bank, account_holder, verified, chronology_tags
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		ON CONFLICT (clean_key) DO NOTHING
+		ON CONFLICT (type, clean_key) DO NOTHING
 	`)
 	if err != nil {
 		return

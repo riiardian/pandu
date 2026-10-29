@@ -222,15 +222,26 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.FinalDestination = input
 	}
 
-	// 7. Query public registration and scan context in parallel.
+	// 7. Query public registration, scan context, and live web footprint in parallel.
 	if net.ParseIP(host) == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 		type sourceResponse struct{ source SourceResult }
-		ch := make(chan sourceResponse, 2)
+		ch := make(chan sourceResponse, 3)
 		go func() { ch <- sourceResponse{QueryRDAPDomain(ctx, host)} }()
 		go func() { ch <- sourceResponse{QueryURLScan(ctx, host)} }()
-		for i := 0; i < 2; i++ {
-			result.Sources = append(result.Sources, (<-ch).source)
+		go func() { ch <- sourceResponse{QueryWebFootprint(ctx, "url", host)} }()
+		for i := 0; i < 3; i++ {
+			s := (<-ch).source
+			result.Sources = append(result.Sources, s)
+			if s.ID == "web_footprint" && s.Outcome == OutcomeMatch && len(s.Evidence) > 0 {
+				score += 35
+				result.RedFlags = append(result.RedFlags, RedFlag{
+					Level:       "HIGH",
+					Title:       "Domain Muncul dalam Jejak Aduan / Laporan Publik",
+					Explanation: "Ditemukan catatan pembicaraan publik atau forum aduan penipuan yang mengaitkan domain ini di internet.",
+					Snippet:     host,
+				})
+			}
 		}
 		cancel()
 		sortSources(result.Sources)

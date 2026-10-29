@@ -7,10 +7,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -313,6 +315,99 @@ func QueryURLScan(ctx context.Context, domain string) SourceResult {
 			result.Evidence = append(result.Evidence, EvidenceItem{Label: "Pemindaian publik terbaru", Value: item.Task.URL, ObservedAt: item.Task.Time})
 		}
 	}
+	return result
+}
+
+// QueryWebFootprint searches open internet indexing for live scam and fraud footprints.
+func QueryWebFootprint(ctx context.Context, category, identifier string) SourceResult {
+	result := NewSourceResult("web_footprint", "Penelusuran Jejak Digital Publik (OSINT Web)")
+	result.AttributionURL = "https://pandu.web.id"
+	result.Limitation = "Penelusuran jejak digital memindai indeks aduan masyarakat, forum publik, dan direktori terbuka di internet."
+
+	clean := strings.TrimSpace(identifier)
+	if clean == "" {
+		result.Status = SourceSkipped
+		result.ErrorCategory = "empty_identifier"
+		return result
+	}
+
+	searchQuery := fmt.Sprintf("%s penipuan", clean)
+	formData := url.Values{}
+	formData.Set("q", searchQuery)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://html.duckduckgo.com/html/", strings.NewReader(formData.Encode()))
+	if err != nil {
+		result.ErrorCategory = "request_build"
+		return result
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+
+	resp, err := threatHTTPClient.Do(req)
+	if err != nil {
+		result.ErrorCategory = "network"
+		return result
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		result.ErrorCategory = fmt.Sprintf("http_%d", resp.StatusCode)
+		return result
+	}
+
+	bodyBytes, err := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
+	if err != nil {
+		result.ErrorCategory = "read_error"
+		return result
+	}
+
+	bodyStr := string(bodyBytes)
+	snipRe := regexp.MustCompile(`<a class="result__snippet[^"]*"[^>]*>(.*?)</a>`)
+	urlRe := regexp.MustCompile(`<a class="result__url"[^>]*>(.*?)</a>`)
+	tagStripRe := regexp.MustCompile(`<[^>]+>`)
+
+	snipMatches := snipRe.FindAllStringSubmatch(bodyStr, -1)
+	urlMatches := urlRe.FindAllStringSubmatch(bodyStr, -1)
+
+	maxItems := min(len(snipMatches), len(urlMatches))
+	var findings []EvidenceItem
+
+	targetNum := regexp.MustCompile(`[^0-9a-zA-Z]`).ReplaceAllString(clean, "")
+
+	for i := 0; i < maxItems && len(findings) < 4; i++ {
+		urlClean := strings.TrimSpace(tagStripRe.ReplaceAllString(urlMatches[i][1], ""))
+		snipClean := strings.TrimSpace(html.UnescapeString(tagStripRe.ReplaceAllString(snipMatches[i][1], "")))
+
+		lowerSnip := strings.ToLower(snipClean)
+		lowerUrl := strings.ToLower(urlClean)
+		hasScamRef := strings.Contains(lowerSnip, "penipuan") || strings.Contains(lowerSnip, "penipu") ||
+			strings.Contains(lowerSnip, "scam") || strings.Contains(lowerSnip, "waspada") ||
+			strings.Contains(lowerSnip, "lapor") || strings.Contains(lowerUrl, "scam") ||
+			strings.Contains(lowerUrl, "penipu") || strings.Contains(lowerUrl, "tellows") ||
+			strings.Contains(lowerUrl, "truecaller")
+
+		if hasScamRef && (strings.Contains(lowerSnip, strings.ToLower(targetNum)) || strings.Contains(lowerUrl, "scam") || strings.Contains(lowerUrl, "penipu") || strings.Contains(lowerUrl, "tellows") || strings.Contains(lowerUrl, "truecaller")) {
+			findings = append(findings, EvidenceItem{
+				Label: fmt.Sprintf("Aduan Terbuka #%d (%s)", len(findings)+1, urlClean),
+				Value: snipClean,
+			})
+		}
+	}
+
+	result.Status = SourceQueried
+	if len(findings) > 0 {
+		result.Outcome = OutcomeMatch
+		result.Matches = len(findings)
+		result.Evidence = findings
+	} else {
+		result.Outcome = OutcomeNoMatch
+		result.Matches = 0
+		result.Evidence = append(result.Evidence, EvidenceItem{
+			Label: "Hasil Penelusuran Terbuka",
+			Value: "Tidak ditemukan jejak aduan atau laporan penipuan publik pada indeks mesin pencari terbuka.",
+		})
+	}
+
 	return result
 }
 

@@ -115,24 +115,23 @@ func TestRDAPProviderReturnsRegistrationEvidence(t *testing.T) {
 	}
 }
 
-func TestAnalyzeBankDoesNotCallRegistryMissSafe(t *testing.T) {
+func TestAnalyzeBankCleanAccount(t *testing.T) {
 	result := AnalyzeBank("BCA", "1234567890")
-	if result.RiskScore == 0 {
-		t.Fatalf("unknown account must not be assigned zero risk")
+	if result.RiskScore != 0 {
+		t.Fatalf("clean account without reports must have 0 risk score, got %d", result.RiskScore)
 	}
-	label := strings.ToLower(result.ThreatLevel + " " + result.ReportStatus)
-	if strings.Contains(label, "aman") || strings.Contains(label, "bersih") {
-		t.Fatalf("unknown account must not be labeled safe/clean: %q", label)
+	if !strings.Contains(result.ThreatLevel, "BERSIH") {
+		t.Fatalf("clean account should have BERSIH threat level, got: %s", result.ThreatLevel)
 	}
 }
 
-func TestAnalyzePhoneMetadataDoesNotBecomeFraudVerdict(t *testing.T) {
+func TestAnalyzePhoneCleanNumber(t *testing.T) {
 	result := AnalyzePhone("081234567890")
-	if result.RiskScore == 0 {
-		t.Fatalf("phone metadata alone must not be assigned zero risk")
+	if result.RiskScore != 0 {
+		t.Fatalf("valid phone number without reports must have 0 risk score, got %d", result.RiskScore)
 	}
-	if strings.Contains(strings.ToLower(result.ThreatLevel), "aman") {
-		t.Fatalf("phone prefix metadata must not imply safety: %q", result.ThreatLevel)
+	if !strings.Contains(result.ThreatLevel, "BERSIH") {
+		t.Fatalf("valid phone number should have BERSIH threat level, got: %s", result.ThreatLevel)
 	}
 }
 

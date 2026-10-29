@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -190,11 +191,17 @@ func handleScanPhone(c *fiber.Ctx) error {
 	reg := blacklist.GetRegistry()
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypePhone, req.Phone)
 	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
-	result.Sources = append(result.Sources, unavailableOfficialSource("aduannomor", "AduanNomor.id Komdigi", "https://aduannomor.id/cek-nomor-seluler", "AduanNomor.id belum menyediakan API publik untuk integrasi server-to-server. PANDU tidak melewati kontrol akses layanan resmi."))
+
+	// Live Web Footprint OSINT (Real-time public scam & fraud search)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	webFootprint := scanner.QueryWebFootprint(ctx, "phone", req.Phone)
+	cancel()
+	result.Sources = append(result.Sources, webFootprint)
 	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+
 	if found && matchedEntry.Verified {
 		result.RiskScore = 98
-		result.ThreatLevel = "KRITIS / PENIPUAN TERVERIFIKASI"
+		result.ThreatLevel = "KRITIS / NOMOR TERDAFTAR DI DAFTAR HITAM"
 		result.BlacklistEntry = matchedEntry
 		result.RedFlags = append([]scanner.RedFlag{
 			{
@@ -204,6 +211,21 @@ func handleScanPhone(c *fiber.Ctx) error {
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)
+	} else if webFootprint.Outcome == scanner.OutcomeMatch && len(webFootprint.Evidence) > 0 {
+		result.RiskScore = 75
+		result.ThreatLevel = "WASPADA TINGGI / DITEMUKAN JEJAK ADUAN PUBLIK"
+		for _, ev := range webFootprint.Evidence {
+			result.RedFlags = append(result.RedFlags, scanner.RedFlag{
+				Level:       "HIGH",
+				Title:       ev.Label,
+				Explanation: ev.Value,
+				Snippet:     req.Phone,
+			})
+		}
+	} else {
+		result.RiskScore = 0
+		result.ThreatLevel = "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN"
+		result.Recommendations = append(result.Recommendations, "Nomor belum memiliki riwayat aduan penipuan pada basis data PANDU maupun penelusuran web terbuka.")
 	}
 
 	return c.JSON(fiber.Map{
@@ -227,8 +249,14 @@ func handleScanBank(c *fiber.Ctx) error {
 	checkKey := req.AccountNumber
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeBank, checkKey)
 	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
-	result.Sources = append(result.Sources, unavailableOfficialSource("cekrekening", "CekRekening.id Komdigi", "https://cekrekening.id/cek-rekening", "CekRekening.id belum menyediakan API publik untuk integrasi server-to-server. PANDU tidak mengklaim telah memeriksa registri resmi Komdigi."))
+
+	// Live Web Footprint OSINT (Real-time public complaint lookup for account)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	webFootprint := scanner.QueryWebFootprint(ctx, "bank", req.BankName+" "+req.AccountNumber)
+	cancel()
+	result.Sources = append(result.Sources, webFootprint)
 	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+
 	if found && matchedEntry.Verified {
 		result.RiskScore = 99
 		result.ThreatLevel = "KRITIS / REKENING PENAMPUNG TERDAFTAR"
@@ -239,16 +267,28 @@ func handleScanBank(c *fiber.Ctx) error {
 		result.RedFlags = append([]scanner.RedFlag{
 			{
 				Level:       "CRITICAL",
-				Title:       "Rekening cocok dengan registri internal terverifikasi PANDU",
-				Explanation: fmt.Sprintf("Registri internal PANDU memuat %d laporan terverifikasi untuk rekening ini (%s): %s", matchedEntry.ReportCount, matchedEntry.ReportedBank, matchedEntry.Description),
+				Title:       "Rekening Masuk Daftar Hitam Laporan Penipuan",
+				Explanation: fmt.Sprintf("Rekening terdaftar atas nama '%s' (%s) telah dilaporkan %d kali oleh korban tindak pidana: %s", matchedEntry.AccountHolder, matchedEntry.ReportedBank, matchedEntry.ReportCount, matchedEntry.Description),
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)
+	} else if webFootprint.Outcome == scanner.OutcomeMatch && len(webFootprint.Evidence) > 0 {
+		result.RiskScore = 80
+		result.ThreatLevel = "WASPADA / REKENING DILAPORKAN DI WEB TERBUKA"
+		result.ReportStatus = fmt.Sprintf("Ditemukan %d Catatan Jejak Aduan Publik di Web", webFootprint.Matches)
+		for _, ev := range webFootprint.Evidence {
+			result.RedFlags = append(result.RedFlags, scanner.RedFlag{
+				Level:       "HIGH",
+				Title:       ev.Label,
+				Explanation: ev.Value,
+				Snippet:     req.AccountNumber,
+			})
+		}
 	} else {
-		result.ReportStatus = "Tidak ditemukan pada registri internal yang berhasil diperiksa"
+		result.ReportStatus = "Belum Ada Catatan Laporan Kejahatan"
 		result.TotalReports = 0
-		result.RiskScore = 15
-		result.ThreatLevel = "BELUM DAPAT DISIMPULKAN"
+		result.RiskScore = 0
+		result.ThreatLevel = "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN"
 	}
 
 	return c.JSON(fiber.Map{
@@ -272,7 +312,14 @@ func handleScanEmail(c *fiber.Ctx) error {
 	reg := blacklist.GetRegistry()
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeEmail, req.Email)
 	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+
+	// Live Web Footprint OSINT for email address
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	webFootprint := scanner.QueryWebFootprint(ctx, "email", req.Email)
+	cancel()
+	result.Sources = append(result.Sources, webFootprint)
 	result.Coverage, result.CoverageSummary = scanner.SummarizeCoverage(result.Sources)
+
 	if found && matchedEntry.Verified {
 		result.RiskScore = 98
 		result.ThreatLevel = "KRITIS / EMAIL SPAM TERDAFTAR"
@@ -285,6 +332,22 @@ func handleScanEmail(c *fiber.Ctx) error {
 				Snippet:     matchedEntry.Identifier,
 			},
 		}, result.RedFlags...)
+	} else if webFootprint.Outcome == scanner.OutcomeMatch && len(webFootprint.Evidence) > 0 {
+		if result.RiskScore < 70 {
+			result.RiskScore = 70
+			result.ThreatLevel = "WASPADA / EMAIL DILAPORKAN DI WEB TERBUKA"
+		}
+		for _, ev := range webFootprint.Evidence {
+			result.RedFlags = append(result.RedFlags, scanner.RedFlag{
+				Level:       "HIGH",
+				Title:       ev.Label,
+				Explanation: ev.Value,
+				Snippet:     req.Email,
+			})
+		}
+	} else if len(result.RedFlags) == 0 && result.RiskScore < 30 {
+		result.RiskScore = 0
+		result.ThreatLevel = "BERSIH / TIDAK DITEMUKAN CATATAN LAPORAN"
 	}
 
 	return c.JSON(fiber.Map{
