@@ -809,458 +809,174 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
       {/* Result Section */}
       {result && (
-        <div className="space-y-5 animate-in fade-in duration-300">
-          {/* Diagnostic Header Card */}
-          <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-4">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-left w-full md:w-auto flex-1 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                  <span className="text-[11px] font-mono font-bold text-blue-400 uppercase tracking-wider">
-                    Hasil Diagnosis Forensik
-                  </span>
+        <div className="space-y-4 animate-in fade-in duration-300 pt-2">
+          {/* Borderless Speedometer Gauge (No Box / No Card) */}
+          <div className="py-2 flex flex-col items-center justify-center text-center select-none">
+            <RiskGaugeDial score={result.risk_score} threatLevel={result.threat_level} />
+            <div className="mt-2 text-center space-y-0.5">
+              <div className="text-base font-bold text-white tracking-wide">
+                {result.hostname || result.clean_number || result.account_number || result.email || result.file_name || "Target Terperiksa"}
+              </div>
+              {result.detected_category && (
+                <div className="text-xs text-slate-400">
+                  {result.detected_category}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
-                  {result.detected_category ||
-                    (result.impersonated_brand
-                      ? `Pencatutan ${result.impersonated_brand}`
-                      : result.operator
-                      ? `${result.operator} (${result.country_name})`
-                      : result.institution_type
-                      ? `${result.original_bank} — ${result.clean_number}`
-                      : result.file_type_category
-                      ? `Berkas: ${result.file_name}`
-                      : "Pemeriksaan Keabsahan Target")}
-                </h3>
-                {result.hostname && (
-                  <p className="text-xs font-mono text-slate-400">
-                    Host: <span className="text-white font-bold">{result.hostname}</span> {result.tld ? `(${result.tld})` : ""}
-                  </p>
-                )}
-                {result.original_url && result.original_url !== result.hostname && (
-                  <p className="text-xs font-mono text-slate-500 truncate max-w-md">
-                    URL: {result.original_url}
-                  </p>
-                )}
-              </div>
-
-              {/* Dynamic Cyber Risk Gauge Dial with Needle Pointer */}
-              <div className="shrink-0 flex justify-center w-full md:w-auto">
-                <RiskGaugeDial score={result.risk_score} threatLevel={result.threat_level} />
-              </div>
+              )}
             </div>
+          </div>
 
-            {/* AI Vision Multimodal Forensic Report */}
-            {result.ai_vision_result && (
-              <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-blue-300 font-bold text-xs">
-                    <Eye className="h-4 w-4" />
-                    <span>Bedah Forensik AI Vision (OCR &amp; Rekayasa Visual)</span>
-                  </div>
-                  <span className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-mono font-bold text-[10px]">
-                    {result.ai_vision_result.content_type}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  {result.ai_vision_result.explanation}
-                </p>
-                {result.ai_vision_result.extracted_text_summary && (
-                  <div className="rounded-lg bg-black/50 border border-white/10 p-2 text-[11px] text-slate-300">
-                    <span className="text-slate-500 block font-mono text-[10px] uppercase">Ringkasan Teks Terbaca:</span>
-                    <span className="font-mono">{result.ai_vision_result.extracted_text_summary}</span>
-                  </div>
-                )}
-                {result.ai_vision_result.visual_anomalies?.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono text-rose-300 uppercase block font-bold">Kejanggalan Visual Terdeteksi:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {result.ai_vision_result.visual_anomalies.map((ano: string, aidx: number) => (
-                        <span key={aidx} className="rounded bg-rose-950/60 border border-rose-500/30 px-2 py-0.5 text-[11px] text-rose-300 font-medium">
-                          {ano}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {result.ai_vision_result.social_engineering_patterns?.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono text-amber-300 uppercase block font-bold">Pola Rekayasa Sosial:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {result.ai_vision_result.social_engineering_patterns.map((pat: string, pidx: number) => (
-                        <span key={pidx} className="rounded bg-amber-950/60 border border-amber-500/30 px-2 py-0.5 text-[11px] text-amber-300 font-medium">
-                          {pat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* AI Text Agent Cognitive Report */}
-            {result.ai_agent_analysis && (
-              <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-blue-300 font-bold text-xs">
-                    <BrainCircuit className="h-4 w-4" />
-                    <span>Analisis AI Agent Rekayasa Sosial</span>
-                  </div>
-                  <span className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-mono font-bold text-[10px]">
-                    {result.ai_agent_analysis.detected_category}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  {result.ai_agent_analysis.explanation}
-                </p>
-                {result.ai_agent_analysis.manipulative_tactics?.length > 0 && (
-                  <div className="flex flex-wrap gap-1 pt-1">
-                    {result.ai_agent_analysis.manipulative_tactics.map((tac: string, tidx: number) => (
-                      <span key={tidx} className="rounded bg-blue-950/60 border border-blue-500/30 px-2 py-0.5 text-[11px] text-blue-300">
-                        {tac}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Coverage and queried-source evidence */}
-            {result.coverage_summary && (
-              <div className={`rounded-xl border p-4 space-y-1 ${
-                result.coverage === "complete" ? "border-blue-500/30 bg-blue-950/20" : "border-amber-500/30 bg-amber-950/20"
-              }`}>
-                <div className="text-xs font-bold text-white">
-                  Cakupan pemeriksaan: {result.coverage === "complete" ? "Lengkap" : result.coverage === "partial" ? "Parsial" : "Terbatas"}
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{result.coverage_summary}</p>
-              </div>
-            )}
-
-            {/* Sources list */}
-            {result.sources && result.sources.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                  Sumber Intelijen &amp; Penelusuran Publik yang Diperiksa
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {result.sources.map((source: any) => (
-                    <div key={source.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 space-y-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <div className="text-xs font-bold text-white">{source.name}</div>
-                          <div className="text-[10px] font-mono text-slate-500 break-all">{source.checked_at}</div>
-                        </div>
-                        <span className={`rounded px-2 py-1 text-[10px] font-bold ${
-                          source.status === "unavailable"
-                            ? "bg-amber-950/60 text-amber-300"
-                            : source.outcome === "match"
-                            ? "bg-rose-950/60 text-rose-300"
-                            : "bg-blue-950/60 text-blue-300"
-                        }`}>
-                          {source.status === "unavailable"
-                            ? "Tidak tersedia"
-                            : source.outcome === "match"
-                            ? "Ada catatan"
-                            : source.outcome === "no_match"
-                            ? "Tidak ditemukan"
-                            : "Konteks valid"}
-                        </span>
-                      </div>
-                      {source.evidence?.map((item: any, index: number) => (
-                        <div key={`${source.id}-${index}`} className="text-[11px] text-slate-300">
-                          <span className="text-slate-500">{item.label}: </span>
-                          <span className="font-mono break-all">{item.value}</span>
-                        </div>
-                      ))}
-                      {source.limitation && <p className="text-[11px] text-slate-500 leading-relaxed">{source.limitation}</p>}
-                      {source.attribution_url && (
-                        <a href={source.attribution_url} target="_blank" rel="noreferrer" className="text-[11px] text-blue-400 hover:text-blue-300">
-                          Lihat sumber
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Technical Detail Badges */}
-            {(result.operator || result.hlr_region || result.institution_type || result.bank_routing_code || result.domain || result.geolocation || result.tls_cert || result.domain_age_summary || result.web_posture || result.sha256) && (
-              <div className="pt-2 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                {result.operator && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Operator Seluler:</span>
-                    <span className="font-bold text-white">{result.operator}</span>
-                    <span className="block text-[10px] text-slate-400 mt-0.5">{result.hlr_region}</span>
-                  </div>
-                )}
-                {result.country_name && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Negara Asal:</span>
-                    <span className="font-bold text-white">{result.country_name}</span>
-                  </div>
-                )}
-                {result.institution_type && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Tipe Lembaga:</span>
-                    <span className="font-bold text-white">{result.institution_type}</span>
-                    <span className="block text-[10px] text-slate-400 mt-0.5">Kliring: {result.bank_routing_code}</span>
-                  </div>
-                )}
-                {result.domain_age_summary && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Umur Registrasi Domain:</span>
-                    <span className="font-bold text-emerald-400 font-mono">{result.domain_age_summary}</span>
-                  </div>
-                )}
-                {result.domain && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Domain Server:</span>
-                    <span className="font-bold text-white font-mono">@{result.domain}</span>
-                  </div>
-                )}
-                {result.geolocation && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Server Hosting &amp; ASN:</span>
-                    <span className="font-bold text-white">{result.geolocation.isp} ({result.geolocation.country})</span>
-                    <span className="block text-[10px] text-slate-500 font-mono mt-0.5">{result.geolocation.asn}</span>
-                  </div>
-                )}
-                {result.tls_cert && (
-                  <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Sertifikat SSL/TLS:</span>
-                    <span className="font-bold text-white">{result.tls_cert.issuer}</span>
-                    <span className="block text-[10px] text-slate-500 font-mono mt-0.5">Berlaku s/d {result.tls_cert.valid_until}</span>
-                  </div>
-                )}
-                {result.web_posture && (
-                  <div className="rounded-xl bg-white/5 p-3 sm:col-span-3 space-y-2 border border-blue-500/20 bg-blue-950/10">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-400 block font-bold">Struktur Pertahanan Keamanan Web:</span>
-                      <span className={`font-mono font-bold text-xs ${result.web_posture.security_grade.startsWith("A") ? "text-emerald-400" : "text-amber-400"}`}>
-                        {result.web_posture.security_grade}
-                      </span>
-                    </div>
-                    {result.web_posture.security_strengths?.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
-                        {result.web_posture.security_strengths.map((str: string, sidx: number) => (
-                          <div key={sidx} className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                            <span className="text-emerald-400">✓</span>
-                            <span>{str}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-                {result.sha256 && (
-                  <div className="rounded-xl bg-white/5 p-3 sm:col-span-3">
-                    <span className="text-slate-500 block">Sidik Jari Kriptografi (SHA-256):</span>
-                    <span className="font-bold text-slate-300 font-mono text-[11px] break-all">{result.sha256}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Passive public-page flow analysis */}
-            {result.page_analysis && (
-              <div className="pt-2 border-t border-white/10 space-y-2">
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">
-                  Alur Data pada Halaman Publik
-                </span>
-                <div className="rounded-xl border border-blue-500/20 bg-blue-950/10 p-3 space-y-2 text-xs">
-                  <p className="text-slate-300 leading-relaxed">{result.page_analysis.summary}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {result.page_analysis.page_categories?.map((cat: string, cidx: number) => (
-                      <span key={`cat-${cidx}`} className="rounded bg-blue-900/60 border border-blue-500/40 px-2 py-0.5 text-blue-200 font-semibold text-[11px]">{cat}</span>
-                    ))}
-                    {result.page_analysis.form_count > 0 && <span className="rounded bg-white/10 px-2 py-1 text-slate-300">{result.page_analysis.form_count} form</span>}
-                    {result.page_analysis.has_reward_bait && <span className="rounded bg-indigo-950/60 px-2 py-1 text-indigo-300">Umpan hadiah</span>}
-                    {result.page_analysis.has_job_bait && <span className="rounded bg-indigo-950/60 px-2 py-1 text-indigo-300">Umpan kerja</span>}
-                    {result.page_analysis.requests_password && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta password</span>}
-                    {result.page_analysis.requests_otp && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta OTP</span>}
-                    {result.page_analysis.requests_ewallet && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta nomor e-wallet</span>}
-                    {result.page_analysis.requests_financial_data && <span className="rounded bg-rose-950/50 px-2 py-1 text-rose-300">Meminta data finansial</span>}
-                  </div>
-                  {result.page_analysis.login_providers?.length > 0 && (
-                    <p className="text-slate-400">Opsi login terlihat: <span className="text-slate-200">{result.page_analysis.login_providers.join(", ")}</span></p>
-                  )}
-                  {result.page_analysis.cross_origin_form_actions?.length > 0 && (
-                    <p className="text-slate-400 break-all">Tujuan form lintas domain: <span className="font-mono text-slate-200">{result.page_analysis.cross_origin_form_actions.join(", ")}</span></p>
-                  )}
-                  <p className="text-slate-500">PANDU hanya membaca HTML publik; tidak mengisi kredensial, tidak meminta OTP, dan tidak mengirim formulir.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Live DNS MX Records (if email) */}
-            {result.mx_records && result.mx_records.length > 0 && (
-              <div className="pt-2 border-t border-white/10 space-y-1.5">
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">
-                  Server Mail Exchange (MX) Aktif di DNS Publik:
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                  {result.mx_records.map((mx: string, mxidx: number) => (
-                    <div key={mxidx} className="rounded-lg bg-black/60 border border-white/10 p-2 font-mono text-[11px] text-slate-300">
-                      {mx}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* Cognitive Bias Section (If analyzing text) */}
-          {result.cognitive_biases && result.cognitive_biases.length > 0 && (
-            <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-3">
-              <div className="flex items-center gap-2">
-                <BrainCircuit className="h-5 w-5 text-blue-400" />
-                <h4 className="text-sm sm:text-base font-bold text-white">
-                  Anatomi Manipulasi Emosi (Cognitive Bias)
-                </h4>
-              </div>
-              <p className="text-xs text-slate-400">
-                Sindikat penipuan memanfaatkan bias kognitif berikut untuk menekan nalar Anda:
-              </p>
-              <div className="grid gap-3 sm:grid-cols-2 pt-1">
-                {result.cognitive_biases.map((bias: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="rounded-xl border border-white/5 bg-[#0d0e12] p-3.5 space-y-1.5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-blue-300">{bias.label}</span>
-                      <span className="rounded bg-blue-950/60 border border-blue-500/30 px-1.5 py-0.5 text-[10px] font-mono text-blue-300">
-                        Bobot +{bias.weight}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">{bias.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Dangerous Android Permissions for APK */}
-          {result.dangerous_perms && result.dangerous_perms.length > 0 && (
-            <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-3">
-              <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
-                <AlertTriangle className="h-4 w-4" />
-                <span>Izin Bahaya Tingkat Tinggi yang Diminta Aplikasi (.APK):</span>
-              </div>
-              <div className="space-y-1.5">
-                {result.dangerous_perms.map((perm: string, pidx: number) => (
-                  <div
-                    key={pidx}
-                    className="rounded-lg bg-rose-950/20 border border-rose-500/20 p-2.5 text-xs text-slate-300 font-mono"
-                  >
-                    {perm}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Red Flags Indicators */}
+          {/* Temuan Indikator (Hanya jika ada red flags) */}
           {result.red_flags && result.red_flags.length > 0 && (
-            <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-3">
-              <div className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-rose-400" />
-                <h4 className="text-sm sm:text-base font-bold text-white">
-                  Indikator &amp; Temuan yang Dapat Dijelaskan
-                </h4>
+            <div className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 space-y-2">
+              <div className="text-xs font-bold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Flame className="h-4 w-4" />
+                <span>Temuan Indikator ({result.red_flags.length})</span>
               </div>
-              <div className="space-y-3 pt-1">
+              <div className="space-y-1.5 pt-1">
                 {result.red_flags.map((rf: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="rounded-xl border border-white/5 bg-[#0d0e12] p-4 space-y-1.5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider ${
-                          rf.level === "CRITICAL"
-                            ? "bg-rose-950/80 border border-rose-500/40 text-rose-300"
-                            : rf.level === "HIGH"
-                            ? "bg-amber-950/80 border border-amber-500/40 text-amber-300"
-                            : "bg-white/10 text-slate-300"
-                        }`}
-                      >
-                        {rf.level}
-                      </span>
-                      <h5 className="text-sm font-bold text-white">{rf.title}</h5>
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">{rf.explanation}</p>
-                    {rf.snippet && (
-                      <div className="mt-2 rounded-lg bg-black border border-white/10 p-2.5 font-mono text-xs text-slate-300 break-all">
-                        Target/Cuplikan: {rf.snippet}
-                      </div>
-                    )}
+                  <div key={idx} className="flex items-start gap-2 text-xs">
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
+                      rf.level === "CRITICAL" ? "bg-rose-950 text-rose-300 border border-rose-500/40" : "bg-amber-950 text-amber-300 border border-amber-500/40"
+                    }`}>
+                      {rf.level}
+                    </span>
+                    <p className="text-slate-300 leading-relaxed">
+                      <strong className="text-white">{rf.title}:</strong> {rf.explanation}
+                    </p>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
           )}
 
-          {/* Safety Recommendations */}
-          <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-4">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-emerald-400" />
-              <h4 className="text-sm sm:text-base font-bold text-white">
-                Langkah Pengamanan &amp; Mitigasi
-              </h4>
+          {/* Analisis AI Vision untuk Berkas / Gambar */}
+          {result.ai_vision_result && (
+            <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
+              <div className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Eye className="h-4 w-4" />
+                <span>Analisis AI Vision ({result.ai_vision_result.content_type})</span>
+              </div>
+              <p className="text-slate-300 leading-relaxed">{result.ai_vision_result.explanation}</p>
+              {result.ai_vision_result.extracted_text_summary && (
+                <p className="text-[11px] text-slate-400 font-mono">Teks: {result.ai_vision_result.extracted_text_summary}</p>
+              )}
             </div>
-            <ul className="space-y-2.5">
-              {result.recommendations?.map((rec: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>{rec}</span>
-                </li>
-              ))}
-            </ul>
+          )}
 
-            <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p className="text-xs text-slate-400">
-                Apakah Anda atau kerabat Anda terlanjur menjadi target atau mengirim uang?
-              </p>
-              <button
-                onClick={() => {
-                  const payload = {
-                    category:
-                      result.detected_category?.includes("APK") || result.file_type_category === "APK_TROJAN"
-                        ? "APK_SNIFFER"
-                        : result.detected_category?.includes("Loker")
-                        ? "LOKER_FREELANCE"
-                        : "PHISHING_URL",
-                    suspect_url:
-                      result.normalized_url ||
-                      result.clean_number ||
-                      result.email ||
-                      result.file_name ||
-                      "",
-                    chronology: `Hasil investigasi PANDU: ${
-                      result.detected_category || result.threat_level || "indikator digital"
-                    }. Indeks indikator ${result.risk_score}%.`,
-                  };
-                  if (typeof window !== "undefined") {
-                    try {
-                      sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
-                    } catch (e) {}
+          {/* Sumber Data yang Diperiksa (Transparan & Rapi) */}
+          {result.sources && result.sources.length > 0 && (
+            <div className="rounded-xl border border-white/10 bg-[#0c0d12] p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs border-b border-white/10 pb-2.5">
+                <span className="font-mono font-bold text-slate-300 uppercase tracking-wider">
+                  Sumber Data Diperiksa ({result.sources.length})
+                </span>
+                <span className="text-[11px] font-mono text-slate-500">
+                  {result.sources.filter((s: any) => s.status === "queried").length} Sumber Aktif
+                </span>
+              </div>
+              <div className="divide-y divide-white/5">
+                {result.sources.map((source: any) => {
+                  const isMatch = source.outcome === "match";
+                  const isUnavailable = source.status === "unavailable";
+
+                  // Format evidence cleanly without yapping
+                  let evidenceText = "";
+                  if (source.evidence && source.evidence.length > 0) {
+                    const cleanItems = source.evidence
+                      .filter((e: any) => {
+                        if (!isMatch && e.label?.includes("Penalaran")) return false;
+                        if (e.label === "expiration" || e.label === "last changed") return false;
+                        if (e.label === "Ringkasan alur") return false;
+                        if (e.label === "Judul halaman") return false;
+                        return true;
+                      })
+                      .map((e: any) => {
+                        if (e.label === "Alamat IP publik") {
+                          const ips = (e.value || "").split(", ").filter((ip: string) => !ip.includes(":")).slice(0, 2).join(", ");
+                          return `IP: ${ips || e.value}`;
+                        }
+                        if (e.label === "Umur Domain Aktif") return `Umur: ${e.value}`;
+                        if (e.label === "Domain registry") return `Registry: ${e.value}`;
+                        if (e.label === "Penerbit") return `Penerbit: ${e.value}`;
+                        if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
+                        return `${e.label}: ${e.value}`;
+                      });
+                    evidenceText = cleanItems.join(" • ");
                   }
-                  if (onForwardToDossier) {
-                    onForwardToDossier(payload);
-                  } else {
-                    router.push("/aksi");
+
+                  if (!evidenceText) {
+                    evidenceText = isMatch ? "Ditemukan catatan kecurigaan." : "Tidak ditemukan riwayat kejahatan / aduan.";
                   }
-                }}
-                className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition-all w-full sm:w-auto"
-              >
-                <span>Bawa ke Pusat Laporan &amp; Daftar Hitam</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+
+                  return (
+                    <div key={source.id} className="py-2.5 flex items-start justify-between gap-3 text-xs">
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-white">{source.name}</span>
+                          {source.attribution_url && (
+                            <a href={source.attribution_url} target="_blank" rel="noreferrer" className="text-[11px] text-blue-400 hover:text-blue-300 font-mono">
+                              [Tautan ↗]
+                            </a>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-normal truncate">
+                          {evidenceText}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
+                        isUnavailable
+                          ? "bg-slate-800 text-slate-400"
+                          : isMatch
+                          ? "bg-rose-950 text-rose-300 border border-rose-500/40"
+                          : "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
+                      }`}>
+                        {isUnavailable ? "Tidak Tersedia" : isMatch ? "Ada Catatan" : "Bersih"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </section>
+          )}
+
+          {/* Action CTA */}
+          <div className="pt-1 flex justify-end">
+            <button
+              onClick={() => {
+                const payload = {
+                  category:
+                    result.detected_category?.includes("APK") || result.file_type_category === "APK_TROJAN"
+                      ? "APK_SNIFFER"
+                      : result.detected_category?.includes("Loker")
+                      ? "LOKER_FREELANCE"
+                      : "PHISHING_URL",
+                  suspect_url:
+                    result.normalized_url ||
+                    result.clean_number ||
+                    result.email ||
+                    result.file_name ||
+                    "",
+                  chronology: `Hasil investigasi PANDU: ${
+                    result.detected_category || result.threat_level || "indikator digital"
+                  }. Indeks indikator ${result.risk_score}%.`,
+                };
+                if (typeof window !== "undefined") {
+                  try {
+                    sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
+                  } catch (e) {}
+                }
+                if (onForwardToDossier) {
+                  onForwardToDossier(payload);
+                } else {
+                  router.push("/aksi");
+                }
+              }}
+              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all w-full sm:w-auto cursor-pointer"
+            >
+              <span>Bawa ke Pusat Laporan &amp; Dossier</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       )}
     </div>

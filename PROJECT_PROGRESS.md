@@ -142,6 +142,10 @@
   - Jika proses pemindaian berat (seperti AI Vision multimodal) memakan waktu lebih lama, tahapan terakhir tetap berjalan mulus hingga respons backend mendarat.
   - Desain UI Minimalis & Bersih: Menghapus card informasi panjang yang berlebih. Digantikan stepper kabel horizontal elegan dengan badge nomor bulat: badge tahap aktif menyala biru terang (`scale-110` + neon glow), tahap sebelumnya otomatis redup/gelap, dan di bawah kabel hanya menampilkan 1 baris status aksi yang ringkas dan padat.
   - Judul Tahapan Kustom Sesuai Pilihan Pengguna: Memperbarui judul 4 tahapan untuk seluruh 6 target scanner (Chat, URL, No. Telepon, Rekening Bank, Email, Berkas/APK/Foto) dengan terminologi yang padat, presisi, dan natural.
+- **Pembersihan Total UI Hasil Forensik (Eliminasi AI Slop & Card Bertumpuk)**:
+  - Indikator Spedometer Card-Free: Menghapus container card/border yang mengurung speedometer. Speedometer dan jarum dinamis kini melayang bersih di latar belakang hitam.
+  - Pemangkasan Paragraf & AI Yapping: Menghapus paragraf disclaimers panjang, box cakupan pemeriksaan parsial, dan grid teknis redundan.
+  - Tabel Sumber Data Transparan & Rapi: Menampilkan daftar sumber data yang diperiksa (RDAP, urlscan.io, OSINT web, DNS, TLS) secara ringkas dalam 1 tabel bersih dengan link sumber langsung (`[Tautan ↗]`), status tegas (`Bersih` / `Ada Catatan`), dan cuplikan data esensial 1 baris.
 - **Indikator Indeks Risiko Cyber Gauge Speedometer (Panah Timbangan Dinamis)**:
   - Mengganti box kotak persentase lama dengan speedometer semi-sirkular (180°) berdesain dark-mode cyber forensik modern.
   - Dilengkapi jarum timbangan dinamis (*needle indicator*) yang bergerak memutar dari -90° (skor 0%) hingga +90° (skor 100%) dengan animasi pegas (*cubic-bezier*).
