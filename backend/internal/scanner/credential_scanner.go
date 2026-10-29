@@ -262,11 +262,12 @@ func AnalyzePhone(rawPhone string) PhoneScanResult {
 
 			if info.IsVirtual {
 				result.NumberType = "Nomor Prabayar Digital / Virtual eSIM"
-				result.RiskScore += 25
+				result.RiskScore = 30
+				result.ThreatLevel = "WASPADA / NOMOR VIRTUAL DIGITAL"
 				result.RedFlags = append(result.RedFlags, RedFlag{
 					Level:       "MEDIUM",
 					Title:       "Nomor Seluler Digital / Virtual eSIM",
-					Explanation: fmt.Sprintf("Nomor ini menggunakan layanan seluler digital (%s). Kartu SIM digital dapat dibeli secara instan secara online tanpa tatap muka langsung, sehingga kerap dieksploitasi oleh bot spammer.", info.Operator),
+					Explanation: fmt.Sprintf("Nomor ini menggunakan layanan seluler digital (%s). Kartu SIM digital dapat dibeli secara online tanpa verifikasi fisik konter, sehingga kerap dieksploitasi oleh bot spammer.", info.Operator),
 					Snippet:     prefix,
 				})
 			}
@@ -275,16 +276,19 @@ func AnalyzePhone(rawPhone string) PhoneScanResult {
 
 	// Digit length check for Indonesia (10-13 digits)
 	if len(clean) < 10 || len(clean) > 13 {
-		result.RiskScore += 25
+		result.RiskScore = 40
+		result.ThreatLevel = "WASPADA / ANOMALI PANJANG DIGIT"
 		result.RedFlags = append(result.RedFlags, RedFlag{
 			Level:       "MEDIUM",
 			Title:       "Panjang Digit di Luar Standar Seluler",
 			Explanation: fmt.Sprintf("Nomor memiliki %d digit. Rentang nomor telepon seluler normal di Indonesia adalah 10 hingga 13 digit.", len(clean)),
 			Snippet:     clean,
 		})
-	} else {
-		result.Recommendations = append(result.Recommendations, "Cek riwayat nama nomor ini di aplikasi identifikasi kontak seperti Getcontact atau Truecaller.")
-		result.Recommendations = append(result.Recommendations, "Jangan pernah membagikan kode OTP atau PIN kepada pihak mana pun yang menghubungi lewat nomor ini.")
+	} else if !result.VirtualRisk {
+		result.RiskScore = 0
+		result.ThreatLevel = "AMAN / NOMOR SELULER VALID"
+		result.Recommendations = append(result.Recommendations, "Format nomor seluler valid dan tidak terdaftar dalam catatan blacklist kejahatan PANDU.")
+		result.Recommendations = append(result.Recommendations, "Tetap jaga kerahasiaan kode OTP, PIN m-banking, dan password pribadi Anda.")
 	}
 
 	return result
@@ -305,8 +309,8 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 		DigitLength:     len(accOnly),
 		IsLengthValid:   true,
 		MuleRiskLevel:   "TERDETEKSI NORMAL / BELUM DILAPORKAN",
-		RiskScore:       20,
-		ThreatLevel:     "WASPADA / BUTUH VERIFIKASI",
+		RiskScore:       0,
+		ThreatLevel:     "AMAN / FORMAT VALID & BERSIH",
 		RedFlags:        []RedFlag{},
 		Recommendations: []string{},
 	}
@@ -318,13 +322,58 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 		return result
 	}
 
-	// Match bank specs
+	// Match bank specs explicitly to prevent substring collision (e.g. "danamon" matching "dana")
 	var matchedSpec *bankSpec
-	for k, spec := range indonesianBankSpecs {
-		if strings.Contains(bankKey, k) || strings.Contains(k, bankKey) {
-			s := spec
+	if spec, ok := indonesianBankSpecs[bankKey]; ok {
+		s := spec
+		matchedSpec = &s
+	} else {
+		switch {
+		case strings.Contains(bankKey, "danamon"):
+			s := indonesianBankSpecs["danamon"]
 			matchedSpec = &s
-			break
+		case strings.Contains(bankKey, "dana"):
+			s := indonesianBankSpecs["dana"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "bca"):
+			s := indonesianBankSpecs["bca"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "bri"):
+			s := indonesianBankSpecs["bri"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "mandiri"):
+			s := indonesianBankSpecs["mandiri"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "bni"):
+			s := indonesianBankSpecs["bni"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "bsi") || strings.Contains(bankKey, "syariah"):
+			s := indonesianBankSpecs["bsi"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "cimb"):
+			s := indonesianBankSpecs["cimb"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "permata"):
+			s := indonesianBankSpecs["permata"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "btn"):
+			s := indonesianBankSpecs["btn"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "jago"):
+			s := indonesianBankSpecs["jago"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "seabank"):
+			s := indonesianBankSpecs["seabank"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "gopay") || strings.Contains(bankKey, "gojek"):
+			s := indonesianBankSpecs["gopay"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "ovo"):
+			s := indonesianBankSpecs["ovo"]
+			matchedSpec = &s
+		case strings.Contains(bankKey, "shopee"):
+			s := indonesianBankSpecs["shopeepay"]
+			matchedSpec = &s
 		}
 	}
 
@@ -335,17 +384,22 @@ func AnalyzeBank(rawBank, rawAcc string) BankScanResult {
 
 		if len(accOnly) < matchedSpec.MinDig || len(accOnly) > matchedSpec.MaxDig {
 			result.IsLengthValid = false
-			result.RiskScore += 45
+			result.RiskScore = 60
+			result.ThreatLevel = "WASPADA / ANOMALI PANJANG DIGIT"
 			result.RedFlags = append(result.RedFlags, RedFlag{
 				Level:       "HIGH",
 				Title:       "Panjang Nomor Rekening Tidak Sesuai Format " + matchedSpec.Name,
 				Explanation: fmt.Sprintf("Nomor yang Anda masukkan berjumlah %d digit, sedangkan format resmi %s adalah %s.", len(accOnly), matchedSpec.Name, matchedSpec.Example),
 				Snippet:     accOnly,
 			})
+		} else {
+			result.RiskScore = 0
+			result.ThreatLevel = "AMAN / FORMAT VALID & BERSIH"
+			result.Recommendations = append(result.Recommendations, fmt.Sprintf("Format digit nomor rekening sesuai dengan standar resmi %s (%s).", matchedSpec.Name, matchedSpec.Example))
 		}
 	}
 
-	result.Recommendations = append(result.Recommendations, "Periksa nama pemilik rekening saat di layar konfirmasi transfer ATM/m-banking. Pastikan atas nama instansi resmi, bukan rekening perorangan.")
+	result.Recommendations = append(result.Recommendations, "Periksa nama pemilik rekening saat di layar konfirmasi transfer ATM/m-banking. Pastikan atas nama instansi resmi, bukan perorangan.")
 	result.Recommendations = append(result.Recommendations, "Waspadai transaksi jika nama penerima rekening berbeda dengan nama orang yang menghubungi Anda.")
 
 	return result
