@@ -47,8 +47,13 @@
   - Mengintegrasikan mesin pencari jejak siber publik secara real-time (`QueryWebFootprint`) untuk nomor telepon, rekening bank, email, dan URL.
   - Menarik kutipan langsung (snippets), judul laporan, dan URL dari indeks forum publik, media, dan portal aduan jika entitas pernah dilaporkan.
   - Entitas bersih (seperti nomor pribadi yang tidak pernah dilaporkan) secara akurat menampilkan 0% risiko dan status bersih.
-- **Basis Data Ancaman Komunitas (PANDU Threat Registry)**:
-  - Mengaktifkan registri ancaman terverifikasi di PostgreSQL dengan indeks unik berbasis tipe (`type, clean_key`) untuk skenario lokal (Loker Like Video, Kurir APK, Rekening Penampung BCA/BRI, Phishing Perbankan).
+- **Pembersihan Total Data Dummy & Prinsip Anti-Overclaim**:
+  - Seluruh data dummy, akun rekaan, dan chip sampel palsu di Pusat Laporan & Daftar Hitam dihapus total; registri hanya memuat aduan riil masyarakat.
+  - Audit menyeluruh di 6 menu Radar Forensik untuk mengeliminasi kesimpulan sepihak:
+    - Pesan wajar mendapatkan skor 0% (TIDAK DITEMUKAN POLA MANIPULASI).
+    - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
+    - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
+    - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
 - **Intelijen Terbuka Global & Berkas Nyata**:
   - StopForumSpam (Global Email Spam Network) via hash MD5 & DNS MX query.
   - RDAP registry domain & urlscan.io public search untuk investigasi URL/domain.
