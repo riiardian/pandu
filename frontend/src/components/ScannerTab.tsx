@@ -547,10 +547,24 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           <button
             onClick={handleRunScan}
             disabled={loading}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 focus:outline-none transition-all disabled:opacity-50"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 focus:outline-none transition-all disabled:opacity-50 cursor-pointer"
           >
             <Search className="h-4 w-4" />
-            <span>{loading ? "Membedah Indikator Bahaya..." : "Mulai Analisis Forensik"}</span>
+            <span>
+              {loading
+                ? "Memeriksa..."
+                : scanType === "phone"
+                ? "Periksa Nomor"
+                : scanType === "bank"
+                ? "Periksa Rekening"
+                : scanType === "url"
+                ? "Periksa Tautan"
+                : scanType === "email"
+                ? "Periksa Email"
+                : scanType === "file"
+                ? "Periksa Berkas"
+                : "Periksa Pesan"}
+            </span>
           </button>
         </div>
       </section>
