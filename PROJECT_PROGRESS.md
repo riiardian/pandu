@@ -54,6 +54,12 @@
     - Tautan bersih seperti `paysaku.site` diaudit postur keamanannya (Grade A, HSTS, proteksi clickjacking) dan diverifikasi 0% risiko tanpa vonis TLD sepihak.
     - Nomor telepon dan rekening bersih mendapatkan skor 0% (BERSIH) tanpa penalti buatan.
     - Berkas/gambar valid didekode secara teknis tanpa klaim malware sepihak.
+- **Rebranding Presisi: Investigasi Ancaman Digital**:
+  - Menyelaraskan seluruh penyebutan fitur lama `Radar Forensik Siber` menjadi **Investigasi Ancaman Digital** di seluruh antarmuka:
+    - Header modul `/xray`: `Investigasi Ancaman Digital` dengan subjudul praktisi: *"Verifikasi nomor kontak, rekening bank, tautan web, email, dan berkas mencurigakan berbasis data intelijen terbuka dan analisis rekayasa sosial."*
+    - Menu Navigasi Global (`Header.tsx`): `Investigasi Ancaman`.
+    - Kartu Modul Beranda (`HomeTab.tsx`): `Investigasi Ancaman Digital`.
+    - Metadata Dokumen & Tab Browser (`page.tsx`): `Investigasi Ancaman Digital — PANDU`.
 - **Penyempurnaan Label Tombol Aksi Taktis (Zero AI-Fluff)**:
   - Mengganti teks tombol yang kaku dan panjang (`Mulai Analisis Forensik`) menjadi label aksi langsung yang dinamis (*target-aware*) dan punchy:
     - Tab No. Telepon: `Periksa Nomor`
