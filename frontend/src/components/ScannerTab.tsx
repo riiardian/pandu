@@ -761,20 +761,35 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {loading && (
         <section className="rounded-2xl border border-blue-500/30 bg-[#0c0d12] p-6 shadow-xl space-y-5 animate-in fade-in duration-200">
           {/* Cable & Circular Badges Stepper */}
-          <div className="relative flex items-center justify-between max-w-xs sm:max-w-sm mx-auto px-2 pt-2">
-            {/* Connecting Cable Line */}
-            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-white/10 z-0" />
+          <div className="relative flex items-center justify-between max-w-xs sm:max-w-sm mx-auto px-4 h-10">
+            {/* Inactive Cable Base Line (Dead-center) */}
+            <div className="absolute left-[34px] right-[34px] top-1/2 -translate-y-1/2 h-[3px] bg-white/10 z-0" />
+
+            {/* Active Glowing Cable Line (Progressively connects completed/active stages) */}
+            <div
+              className="absolute left-[34px] top-1/2 -translate-y-1/2 h-[3px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.9)] z-0 transition-all duration-500 ease-out"
+              style={{
+                width: `calc((100% - 68px) * ${
+                  TOOL_PIPELINES[scanType].length > 1
+                    ? currentStepIndex / (TOOL_PIPELINES[scanType].length - 1)
+                    : 0
+                })`,
+              }}
+            />
 
             {/* Circular Stage Badges */}
             {TOOL_PIPELINES[scanType].map((_, sidx) => {
+              const isReached = sidx <= currentStepIndex;
               const isActive = sidx === currentStepIndex;
               return (
-                <div key={sidx} className="relative z-10 flex flex-col items-center">
+                <div key={sidx} className="relative z-10 flex items-center justify-center">
                   <div
                     className={`flex items-center justify-center rounded-full font-mono text-xs font-bold transition-all duration-300 ${
                       isActive
-                        ? "h-9 w-9 bg-blue-600 text-white border-2 border-blue-400 shadow-[0_0_18px_rgba(37,99,235,0.85)] scale-110"
-                        : "h-8 w-8 bg-[#121316] text-slate-600 border border-white/10"
+                        ? "h-9 w-9 bg-blue-600 text-white border-2 border-blue-300 shadow-[0_0_18px_rgba(37,99,235,0.9)] scale-110"
+                        : isReached
+                        ? "h-8 w-8 bg-blue-600 text-white border-2 border-blue-400 shadow-[0_0_12px_rgba(37,99,235,0.6)]"
+                        : "h-8 w-8 bg-[#12141c] text-slate-500 border border-white/10"
                     }`}
                   >
                     {sidx + 1}
