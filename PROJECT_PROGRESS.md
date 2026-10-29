@@ -156,6 +156,14 @@
     - Risiko Kritis (>= 70%): Merah menyala (*rose red*) `#f43f5e` dengan jarum mengarah ke kanan (100%).
   - Memuat teks persentase besar bercahaya, label 'Indeks Risiko', dan badge status ancaman berdenyut di bawah pusat jarum.
   - Tata letak responsif: bersanding rapi dengan informasi target di layar desktop dan terpusat elegan di layar smartphone.
+- **Speedometer Indeks Risiko Realistis (White Dial Face & Jarum Fisik Otentik)**:
+  - Merombak total visual speedometer semi-sirkular lama yang tampak seperti vektor datar/AI slop menjadi instrumen speedometer analog fisik presisi tinggi berlatar dial putih (white enameled dial face) terinspirasi cluster speedometer mobil sport.
+  - Skala Busur 220° & Kalibrasi Matematis Penuh: Rentang putaran dari -110° (0%) hingga +110° (100%) dengan 51 garis graduasi (*tick marks*) presisi (major tick tebal, intermediate tick, dan sub-tick halus) serta zona redline menyala merah (70% - 100%).
+  - Label Angka Speedometer: Angka 0, 20, 40, 60 berwarna gelap kontras dan 80, 100 berwarna merah di zona redline dengan tipografi instrumen teknis.
+  - Jarum Speedometer Riil (Solid Red Blade & Batang Meruncing): Bilah jarum berwarna merah balap pekat (*fluorescent sports red*) dengan bevel pencahayaan 3D, meruncing anggun dari pangkal lebar (8px) ke ujung jarum tajam presisi (1.2px) tepat di batas garis graduasi.
+  - Poros Tengah & Ekor Penyeimbang (Counterbalance Hub): Poros logam bertingkat (*machined metal hub*) dengan pin baut poros, serta ekor penyeimbang mekanis (*counterbalance tail*) di belakang poros yang berputar sinkron 180° berlawanan arah jarum.
+  - Kedalaman Fisik 3D: Memproyeksikan bayangan lembut (*soft directional drop shadow*) dari jarum ke atas permukaan piringan putih speedometer, meniadakan kesan grafis 2D tempelan.
+  - HUD Odometer Digital Rapi: Angka persentase risiko, label Indeks Risiko, dan pill badge status ancaman ditempatkan dengan padding proporsional di bawah bezel tanpa tumpang tindih atau memotong skala jarum.
 - **Integrasi Penalaran Riil AI Agent OSINT (Eliminasi Regex Scraping Palsu)**:
   - Mengubah perayapan `QueryWebFootprint`: data mentah pencarian web (search snippets) tidak lagi difilter menggunakan regex/substring statis yang rentan false-positive.
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
