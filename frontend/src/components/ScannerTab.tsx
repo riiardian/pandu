@@ -140,242 +140,242 @@ const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
   ],
 };
 
-const GAUGE_TICKS = [
-  { x1: 56.03, y1: 159.20, x2: 71.07, y2: 153.73, stroke: "#0f172a", width: 2.6 },
-  { x1: 53.68, y1: 151.89, x2: 60.43, y2: 150.01, stroke: "#64748b", width: 1.0 },
-  { x1: 51.90, y1: 144.42, x2: 58.77, y2: 143.06, stroke: "#64748b", width: 1.0 },
-  { x1: 50.70, y1: 136.84, x2: 57.65, y2: 136.01, stroke: "#64748b", width: 1.0 },
-  { x1: 50.09, y1: 129.19, x2: 57.08, y2: 128.89, stroke: "#64748b", width: 1.0 },
-  { x1: 50.06, y1: 121.51, x2: 62.05, y2: 121.93, stroke: "#0f172a", width: 1.8 },
-  { x1: 50.62, y1: 113.85, x2: 57.58, y2: 114.63, stroke: "#64748b", width: 1.0 },
-  { x1: 51.77, y1: 106.26, x2: 58.65, y2: 107.57, stroke: "#64748b", width: 1.0 },
-  { x1: 53.50, y1: 98.78, x2: 60.25, y2: 100.62, stroke: "#64748b", width: 1.0 },
-  { x1: 55.79, y1: 91.45, x2: 62.39, y2: 93.80, stroke: "#64748b", width: 1.0 },
-  { x1: 58.65, y1: 84.33, x2: 73.26, y2: 90.83, stroke: "#0f172a", width: 2.6 },
-  { x1: 62.04, y1: 77.44, x2: 68.19, y2: 80.77, stroke: "#64748b", width: 1.0 },
-  { x1: 65.94, y1: 70.83, x2: 71.83, y2: 74.62, stroke: "#64748b", width: 1.0 },
-  { x1: 70.35, y1: 64.54, x2: 75.92, y2: 68.77, stroke: "#64748b", width: 1.0 },
-  { x1: 75.22, y1: 58.61, x2: 80.45, y2: 63.25, stroke: "#64748b", width: 1.0 },
-  { x1: 80.53, y1: 53.07, x2: 88.87, y2: 61.70, stroke: "#0f172a", width: 1.8 },
-  { x1: 86.26, y1: 47.95, x2: 90.72, y2: 53.34, stroke: "#64748b", width: 1.0 },
-  { x1: 92.36, y1: 43.29, x2: 96.39, y2: 49.01, stroke: "#64748b", width: 1.0 },
-  { x1: 98.80, y1: 39.10, x2: 102.38, y2: 45.12, stroke: "#64748b", width: 1.0 },
-  { x1: 105.54, y1: 35.43, x2: 108.65, y2: 41.70, stroke: "#64748b", width: 1.0 },
-  { x1: 112.54, y1: 32.28, x2: 118.53, y2: 47.12, stroke: "#0f172a", width: 2.6 },
-  { x1: 119.76, y1: 29.68, x2: 121.88, y2: 36.35, stroke: "#64748b", width: 1.0 },
-  { x1: 127.16, y1: 27.64, x2: 128.76, y2: 34.46, stroke: "#64748b", width: 1.0 },
-  { x1: 134.70, y1: 26.18, x2: 135.77, y2: 33.09, stroke: "#64748b", width: 1.0 },
-  { x1: 142.33, y1: 25.29, x2: 142.87, y2: 32.27, stroke: "#64748b", width: 1.0 },
-  { x1: 150.00, y1: 25.00, x2: 150.00, y2: 37.00, stroke: "#0f172a", width: 1.8 },
-  { x1: 157.67, y1: 25.29, x2: 157.13, y2: 32.27, stroke: "#64748b", width: 1.0 },
-  { x1: 165.30, y1: 26.18, x2: 164.23, y2: 33.09, stroke: "#64748b", width: 1.0 },
-  { x1: 172.84, y1: 27.64, x2: 171.24, y2: 34.46, stroke: "#64748b", width: 1.0 },
-  { x1: 180.24, y1: 29.68, x2: 178.12, y2: 36.35, stroke: "#64748b", width: 1.0 },
-  { x1: 187.46, y1: 32.28, x2: 181.47, y2: 47.12, stroke: "#0f172a", width: 2.6 },
-  { x1: 194.46, y1: 35.43, x2: 191.35, y2: 41.70, stroke: "#64748b", width: 1.0 },
-  { x1: 201.20, y1: 39.10, x2: 197.62, y2: 45.12, stroke: "#64748b", width: 1.0 },
-  { x1: 207.64, y1: 43.29, x2: 203.61, y2: 49.01, stroke: "#64748b", width: 1.0 },
-  { x1: 213.74, y1: 47.95, x2: 209.28, y2: 53.34, stroke: "#64748b", width: 1.0 },
-  { x1: 219.47, y1: 53.07, x2: 211.13, y2: 61.70, stroke: "#dc2626", width: 1.8 },
-  { x1: 224.78, y1: 58.61, x2: 219.55, y2: 63.25, stroke: "#f87171", width: 1.0 },
-  { x1: 229.65, y1: 64.54, x2: 224.08, y2: 68.77, stroke: "#f87171", width: 1.0 },
-  { x1: 234.06, y1: 70.83, x2: 228.17, y2: 74.62, stroke: "#f87171", width: 1.0 },
-  { x1: 237.96, y1: 77.44, x2: 231.81, y2: 80.77, stroke: "#f87171", width: 1.0 },
-  { x1: 241.35, y1: 84.33, x2: 226.74, y2: 90.83, stroke: "#dc2626", width: 2.6 },
-  { x1: 244.21, y1: 91.45, x2: 237.61, y2: 93.80, stroke: "#f87171", width: 1.0 },
-  { x1: 246.50, y1: 98.78, x2: 239.75, y2: 100.62, stroke: "#f87171", width: 1.0 },
-  { x1: 248.23, y1: 106.26, x2: 241.35, y2: 107.57, stroke: "#f87171", width: 1.0 },
-  { x1: 249.38, y1: 113.85, x2: 242.42, y2: 114.63, stroke: "#f87171", width: 1.0 },
-  { x1: 249.94, y1: 121.51, x2: 237.95, y2: 121.93, stroke: "#dc2626", width: 1.8 },
-  { x1: 249.91, y1: 129.19, x2: 242.92, y2: 128.89, stroke: "#f87171", width: 1.0 },
-  { x1: 249.30, y1: 136.84, x2: 242.35, y2: 136.01, stroke: "#f87171", width: 1.0 },
-  { x1: 248.10, y1: 144.42, x2: 241.23, y2: 143.06, stroke: "#f87171", width: 1.0 },
-  { x1: 246.32, y1: 151.89, x2: 239.57, y2: 150.01, stroke: "#f87171", width: 1.0 },
-  { x1: 243.97, y1: 159.20, x2: 228.93, y2: 153.73, stroke: "#dc2626", width: 2.6 },
+const SPEEDTEST_TICKS = [
+  { x1: 83.35, y1: 190.92, x2: 78.76, y2: 194.78, isMajor: true },
+  { x1: 69.81, y1: 175.86, x2: 67.14, y2: 177.22, isMajor: false },
+  { x1: 62.67, y1: 156.77, x2: 59.76, y2: 157.50, isMajor: false },
+  { x1: 60.01, y1: 136.57, x2: 57.01, y2: 136.62, isMajor: false },
+  { x1: 64.90, y1: 116.91, x2: 59.03, y2: 115.66, isMajor: true },
+  { x1: 68.43, y1: 96.96, x2: 65.71, y2: 95.70, isMajor: false },
+  { x1: 79.08, y1: 79.59, x2: 76.71, y2: 77.74, isMajor: false },
+  { x1: 93.36, y1: 65.06, x2: 91.47, y2: 62.73, isMajor: false },
+  { x1: 111.86, y1: 56.80, x2: 109.23, y2: 51.41, isMajor: true },
+  { x1: 129.75, y1: 47.31, x2: 129.08, y2: 44.38, isMajor: false },
+  { x1: 150.00, y1: 45.00, x2: 150.00, y2: 42.00, isMajor: false },
+  { x1: 170.25, y1: 47.31, x2: 170.92, y2: 44.38, isMajor: false },
+  { x1: 188.14, y1: 56.80, x2: 190.77, y2: 51.41, isMajor: true },
+  { x1: 206.64, y1: 65.06, x2: 208.53, y2: 62.73, isMajor: false },
+  { x1: 220.92, y1: 79.59, x2: 223.29, y2: 77.74, isMajor: false },
+  { x1: 231.57, y1: 96.96, x2: 234.29, y2: 95.70, isMajor: false },
+  { x1: 235.10, y1: 116.91, x2: 240.97, y2: 115.66, isMajor: true },
+  { x1: 239.99, y1: 136.57, x2: 242.99, y2: 136.62, isMajor: false },
+  { x1: 237.33, y1: 156.77, x2: 240.24, y2: 157.50, isMajor: false },
+  { x1: 230.19, y1: 175.86, x2: 232.86, y2: 177.22, isMajor: false },
+  { x1: 216.65, y1: 190.92, x2: 221.24, y2: 194.78, isMajor: true },
 ];
 
-const GAUGE_LABELS = [
-  { x: 84.22, y: 148.94, text: "0", color: "#0f172a" },
-  { x: 86.05, y: 96.53, text: "20", color: "#0f172a" },
-  { x: 123.78, y: 60.10, text: "40", color: "#0f172a" },
-  { x: 176.22, y: 60.10, text: "60", color: "#0f172a" },
-  { x: 213.95, y: 96.53, text: "80", color: "#dc2626" },
-  { x: 215.78, y: 148.94, text: "100", color: "#dc2626" },
+const SPEEDTEST_LABELS = [
+  { x: 90.25, y: 185.14, val: 0 },
+  { x: 73.70, y: 118.78, val: 20 },
+  { x: 115.81, y: 64.89, val: 40 },
+  { x: 184.19, y: 64.89, val: 60 },
+  { x: 226.30, y: 118.78, val: 80 },
+  { x: 209.75, y: 185.14, val: 100 },
 ];
 
 function RiskGaugeDial({ score, threatLevel }: { score: number; threatLevel: string }) {
   const clampedScore = Math.max(0, Math.min(100, score || 0));
-  // Needle angle: -110deg at 0% score to +110deg at 100% score (220deg sweep)
-  const needleAngle = -110 + (clampedScore / 100) * 220;
+  // Needle angle: -130deg at 0% score to +130deg at 100% score (260deg sweep, Ookla Speedtest spec)
+  const needleAngle = -130 + (clampedScore / 100) * 260;
+  // Circumference for 260 deg arc on r=100: 2 * PI * 100 * (260/360) = 453.79
+  const arcLength = 453.79;
+  const activeDashoffset = arcLength - (clampedScore / 100) * arcLength;
 
   // Dynamic colors:
-  // Score < 35: Emerald Green (#10b981)
-  // Score 35 - 69: Amber Orange (#f59e0b)
-  // Score >= 70: Crimson Red (#dc2626)
-  let color = "#10b981";
+  // Score < 35: Vibrant Cyan-Emerald (#10b981)
+  // Score 35 - 69: Vibrant Amber-Orange (#f59e0b)
+  // Score >= 70: Vibrant Crimson-Rose (#ef4444)
+  let mainColor = "#10b981";
+  let gradStart = "#06b6d4";
+  let gradEnd = "#10b981";
   let badgeBorder = "border-emerald-500/30";
   let badgeBg = "bg-emerald-950/40 text-emerald-300";
 
   if (clampedScore >= 70) {
-    color = "#dc2626";
+    mainColor = "#ef4444";
+    gradStart = "#f59e0b";
+    gradEnd = "#ef4444";
     badgeBorder = "border-rose-500/40";
     badgeBg = "bg-rose-950/50 text-rose-300";
   } else if (clampedScore >= 35) {
-    color = "#f59e0b";
+    mainColor = "#f59e0b";
+    gradStart = "#10b981";
+    gradEnd = "#f59e0b";
     badgeBorder = "border-amber-500/30";
     badgeBg = "bg-amber-950/40 text-amber-300";
   }
 
   return (
     <div className="flex flex-col items-center justify-center p-2 text-center select-none">
-      {/* Precision White Dial Speedometer */}
-      <div className="relative w-[260px] sm:w-[280px] h-[185px] sm:h-[195px]">
-        <svg viewBox="0 0 300 215" className="w-full h-full overflow-visible">
+      {/* Speedtest Style Radial Gauge */}
+      <div className="relative w-[270px] sm:w-[290px] h-[210px] sm:h-[220px]">
+        <svg viewBox="0 0 300 235" className="w-full h-full overflow-visible">
           <defs>
-            {/* Needle physical drop shadow */}
-            <filter id="gaugeNeedleShadow" x="-40%" y="-40%" width="180%" height="180%">
-              <feDropShadow dx="2" dy="5" stdDeviation="3.5" floodColor="#000000" floodOpacity="0.5" />
+            {/* Multi-tier bloom glow for active sweep */}
+            <filter id="speedtestBloom" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={mainColor} floodOpacity="0.7" />
             </filter>
-
-            {/* Chrome Bezel Rim Gradient */}
-            <linearGradient id="gaugeChromeBezel" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#94a3b8" />
-              <stop offset="30%" stopColor="#f8fafc" />
-              <stop offset="50%" stopColor="#334155" />
-              <stop offset="70%" stopColor="#cbd5e1" />
-              <stop offset="100%" stopColor="#0f172a" />
+            <filter id="speedtestNeedleShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.8" />
+            </filter>
+            {/* Active sweep gradient */}
+            <linearGradient id="speedtestSweepGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={gradStart} />
+              <stop offset="100%" stopColor={gradEnd} />
             </linearGradient>
-
-            {/* White Enameled Face Disc with subtle pearl depth */}
-            <radialGradient id="gaugeWhiteDial" cx="50%" cy="45%" r="55%">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="75%" stopColor="#f8fafc" />
-              <stop offset="100%" stopColor="#e2e8f0" />
-            </radialGradient>
-
-            {/* Machined Metal Center Hub */}
-            <radialGradient id="gaugeMetalHub" cx="35%" cy="35%" r="65%">
-              <stop offset="0%" stopColor="#475569" />
-              <stop offset="55%" stopColor="#1e293b" />
-              <stop offset="100%" stopColor="#020617" />
-            </radialGradient>
           </defs>
 
-          {/* Chrome Bezel Ring */}
-          <circle cx="150" cy="125" r="115" fill="#0b0f19" stroke="url(#gaugeChromeBezel)" strokeWidth="2.5" />
-
-          {/* White Enameled Dial Face */}
-          <circle cx="150" cy="125" r="112" fill="url(#gaugeWhiteDial)" />
-          <circle cx="150" cy="125" r="112" fill="none" stroke="#cbd5e1" strokeWidth="0.8" />
-
-          {/* Calibrated White Dial Track Arc (220 deg sweep) */}
+          {/* Inactive Background Ribbon (Translucent white/slate track) */}
           <path
-            d="M 56.03 159.20 A 100 100 0 1 1 243.97 159.20"
+            d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
-            stroke="#0f172a"
-            strokeWidth="2.2"
-            strokeLinecap="round"
+            stroke="rgba(255, 255, 255, 0.10)"
+            strokeWidth="12"
+            strokeLinecap="butt"
           />
 
-          {/* Redline Danger Zone Arc (70% - 100%) */}
+          {/* Outer Fine Ring Guide */}
           <path
-            d="M 219.47 53.07 A 100 100 0 0 1 243.97 159.20"
+            d="M 68.03 203.78 A 107 107 0 1 1 231.97 203.78"
             fill="none"
-            stroke="#dc2626"
-            strokeWidth="4.0"
-            strokeLinecap="round"
+            stroke="rgba(255, 255, 255, 0.15)"
+            strokeWidth="0.8"
           />
 
-          {/* Precision Graduation Ticks */}
-          {GAUGE_TICKS.map((t, idx) => (
+          {/* Redline Danger Zone Ribbon (80 to 100) */}
+          <path
+            d="M 247.81 114.21 A 100 100 0 0 1 226.60 199.28"
+            fill="none"
+            stroke="rgba(239, 68, 68, 0.25)"
+            strokeWidth="12"
+            strokeLinecap="butt"
+          />
+
+          {/* Active Swept Ribbon (Dynamic fill from 0 up to current needle angle) */}
+          <path
+            d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
+            fill="none"
+            stroke="url(#speedtestSweepGrad)"
+            strokeWidth="12"
+            strokeLinecap="butt"
+            strokeDasharray={arcLength}
+            strokeDashoffset={activeDashoffset}
+            filter="url(#speedtestBloom)"
+            style={{ transition: "stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
+          />
+
+          {/* Radial Ticks Inside Arc */}
+          {SPEEDTEST_TICKS.map((t, idx) => (
             <line
               key={idx}
               x1={t.x1}
               y1={t.y1}
               x2={t.x2}
               y2={t.y2}
-              stroke={t.stroke}
-              strokeWidth={t.width}
+              stroke={t.isMajor ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.2)"}
+              strokeWidth={t.isMajor ? 1.8 : 1.0}
               strokeLinecap="round"
             />
           ))}
 
-          {/* Speedometer Scale Numbers (0, 20, 40, 60, 80, 100) */}
-          {GAUGE_LABELS.map((l, idx) => (
-            <text
-              key={idx}
-              x={l.x}
-              y={l.y}
-              fill={l.color}
-              fontSize="10.5"
-              fontFamily="-apple-system, system-ui, sans-serif"
-              fontWeight="800"
-              textAnchor="middle"
-              dominantBaseline="central"
-            >
-              {l.text}
-            </text>
-          ))}
+          {/* Scale Labels (Illuminated when passed by sweep) */}
+          {SPEEDTEST_LABELS.map((l, idx) => {
+            const isPassed = l.val <= clampedScore;
+            return (
+              <text
+                key={idx}
+                x={l.x}
+                y={l.y}
+                fill={isPassed ? "#ffffff" : "rgba(255, 255, 255, 0.45)"}
+                fontSize="10"
+                fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                fontWeight={isPassed ? "700" : "500"}
+                textAnchor="middle"
+                dominantBaseline="central"
+              >
+                {l.val}
+              </text>
+            );
+          })}
 
-          {/* Dial Subtitle */}
-          <text
-            x="150"
-            y="87"
-            fill="#64748b"
-            fontSize="8.5"
-            fontFamily="monospace"
-            fontWeight="700"
-            letterSpacing="1.5"
-            textAnchor="middle"
-          >
-            INDEKS RISIKO
-          </text>
-
-          {/* REAL SPEEDOMETER NEEDLE ASSEMBLY */}
+          {/* SPEEDTEST TAPERED NEEDLE */}
           <g
-            transform={`rotate(${needleAngle} 150 125)`}
-            filter="url(#gaugeNeedleShadow)"
+            transform={`rotate(${needleAngle} 150 135)`}
+            filter="url(#speedtestNeedleShadow)"
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Counterbalance Tail */}
-            <polygon points="146.5,125 145,153 155,153 153.5,125" fill="#0f172a" />
-            <circle cx="150" cy="145" r="2.2" fill="#e2e8f0" stroke="#475569" strokeWidth="0.8" />
+            {/* Subtle counterbalance tail */}
+            <polygon points="147.5,135 147,147 153,147 152.5,135" fill="#1e2433" />
 
-            {/* Main Needle Stem: Solid Fluorescent Sports Red Blade */}
-            <polygon points="146,125 149.4,27 150,24 150,125" fill="#b91c1c" />
-            <polygon points="154,125 150.6,27 150,24 150,125" fill="#ef4444" />
-            <line x1="150" y1="127" x2="150" y2="26" stroke="#ffffff" strokeWidth="0.8" strokeLinecap="round" opacity="0.9" />
+            {/* Tapered Blade Stem */}
+            <polygon
+              points="146.5,117 149.25,41 150,39 150.75,41 153.5,117"
+              fill={mainColor}
+            />
+            {/* Luminous Center Lightguide Spine */}
+            <line
+              x1="150"
+              y1="117"
+              x2="150"
+              y2="42"
+              stroke="#ffffff"
+              strokeWidth="1.0"
+              strokeLinecap="round"
+              opacity="0.9"
+            />
+            {/* Illuminated Needle Tip */}
+            <circle cx="150" cy="41" r="1.5" fill="#ffffff" />
 
-            {/* Center Pivot Hub */}
-            <circle cx="150" cy="125" r="14" fill="url(#gaugeMetalHub)" stroke="#334155" strokeWidth="1.5" />
-            <circle cx="150" cy="125" r="9" fill="#0f172a" stroke="#cbd5e1" strokeWidth="1.0" />
-            <circle cx="150" cy="125" r="4" fill="#334155" />
+            {/* Center Hub Pivot */}
+            <circle cx="150" cy="135" r="14" fill="#0c101a" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+            <circle cx="150" cy="135" r="9" fill="#141a29" stroke={mainColor} strokeWidth="1.2" />
+            <circle cx="150" cy="135" r="3.5" fill="#ffffff" />
+          </g>
+
+          {/* Center Readout (Inside gauge lower center, Ookla Speedtest typography) */}
+          <g transform="translate(150, 168)">
+            <text
+              x="0"
+              y="0"
+              fill="#ffffff"
+              fontSize="46"
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+              fontWeight="300"
+              letterSpacing="-1.5"
+              textAnchor="middle"
+            >
+              {clampedScore}
+              <tspan fontSize="22" fontWeight="600" fill={mainColor} dx="2">
+                %
+              </tspan>
+            </text>
+            <text
+              x="0"
+              y="18"
+              fill="#94a3b8"
+              fontSize="9"
+              fontFamily="monospace"
+              fontWeight="700"
+              letterSpacing="2"
+              textAnchor="middle"
+            >
+              INDEKS RISIKO
+            </text>
           </g>
         </svg>
       </div>
 
-      {/* Digital HUD Readout */}
-      <div className="mt-3 flex flex-col items-center text-center space-y-1">
-        <div
-          className="text-4xl sm:text-5xl font-black font-sans tracking-tight"
-          style={{ color }}
+      {/* Threat Level Status Pill Badge */}
+      <div className="mt-2.5">
+        <span
+          className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${badgeBorder} ${badgeBg}`}
         >
-          {clampedScore}%
-        </div>
-        <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
-          Indeks Risiko
-        </div>
-        <div className="pt-1.5">
           <span
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${badgeBorder} ${badgeBg}`}
-          >
-            <span
-              className="h-2 w-2 rounded-full animate-pulse shrink-0"
-              style={{ backgroundColor: color }}
-            />
-            <span className="truncate max-w-xs">{threatLevel}</span>
-          </span>
-        </div>
+            className="h-2 w-2 rounded-full animate-pulse shrink-0"
+            style={{ backgroundColor: mainColor }}
+          />
+          <span className="truncate max-w-xs">{threatLevel}</span>
+        </span>
       </div>
     </div>
   );
