@@ -210,39 +210,101 @@ var indonesianBankSpecs = map[string]bankSpec{
 	"shopeepay": {Name: "ShopeePay (E-Wallet)", Type: "E-Wallet", RoutingCode: "122 / 014 (VA)", MinDig: 10, MaxDig: 13, Example: "Nomor HP atau kode 122..."},
 }
 
+type CountryDialInfo struct {
+	CountryCode string
+	CountryName string
+	Region      string
+	Flag        string
+}
+
+var globalDialCatalog = map[string]CountryDialInfo{
+	"+62":  {CountryCode: "+62", CountryName: "Indonesia", Region: "Asia Tenggara", Flag: "🇮🇩"},
+	"+60":  {CountryCode: "+60", CountryName: "Malaysia", Region: "Asia Tenggara", Flag: "🇲🇾"},
+	"+65":  {CountryCode: "+65", CountryName: "Singapura", Region: "Asia Tenggara", Flag: "🇸🇬"},
+	"+63":  {CountryCode: "+63", CountryName: "Filipina", Region: "Asia Tenggara", Flag: "🇵🇭"},
+	"+66":  {CountryCode: "+66", CountryName: "Thailand", Region: "Asia Tenggara", Flag: "🇹🇭"},
+	"+84":  {CountryCode: "+84", CountryName: "Vietnam", Region: "Asia Tenggara", Flag: "🇻🇳"},
+	"+855": {CountryCode: "+855", CountryName: "Kamboja (Cambodia)", Region: "Asia Tenggara", Flag: "🇰🇭"},
+	"+95":  {CountryCode: "+95", CountryName: "Myanmar", Region: "Asia Tenggara", Flag: "🇲🇲"},
+	"+856": {CountryCode: "+856", CountryName: "Laos", Region: "Asia Tenggara", Flag: "🇱🇦"},
+	"+1":   {CountryCode: "+1", CountryName: "Amerika Serikat / Kanada", Region: "Amerika Utara", Flag: "🇺🇸"},
+	"+44":  {CountryCode: "+44", CountryName: "Inggris Raya (UK)", Region: "Eropa", Flag: "🇬🇧"},
+	"+61":  {CountryCode: "+61", CountryName: "Australia", Region: "Oseania", Flag: "🇦🇺"},
+	"+81":  {CountryCode: "+81", CountryName: "Jepang", Region: "Asia Timur", Flag: "🇯🇵"},
+	"+82":  {CountryCode: "+82", CountryName: "Korea Selatan", Region: "Asia Timur", Flag: "🇰🇷"},
+	"+86":  {CountryCode: "+86", CountryName: "Tiongkok (China)", Region: "Asia Timur", Flag: "🇨🇳"},
+	"+91":  {CountryCode: "+91", CountryName: "India", Region: "Asia Selatan", Flag: "🇮🇳"},
+	"+234": {CountryCode: "+234", CountryName: "Nigeria", Region: "Afrika Barat", Flag: "🇳🇬"},
+	"+966": {CountryCode: "+966", CountryName: "Arab Saudi", Region: "Timur Tengah", Flag: "🇸🇦"},
+	"+971": {CountryCode: "+971", CountryName: "Uni Emirat Arab", Region: "Timur Tengah", Flag: "🇦🇪"},
+	"+7":   {CountryCode: "+7", CountryName: "Rusia / Kazakhstan", Region: "Eurasia", Flag: "🇷🇺"},
+	"+380": {CountryCode: "+380", CountryName: "Ukraina", Region: "Eropa Timur", Flag: "🇺🇦"},
+	"+49":  {CountryCode: "+49", CountryName: "Jerman", Region: "Eropa Barat", Flag: "🇩🇪"},
+	"+33":  {CountryCode: "+33", CountryName: "Prancis", Region: "Eropa Barat", Flag: "🇫🇷"},
+	"+31":  {CountryCode: "+31", CountryName: "Belanda", Region: "Eropa Barat", Flag: "🇳🇱"},
+	"+90":  {CountryCode: "+90", CountryName: "Turki", Region: "Eurasia", Flag: "🇹🇷"},
+	"+55":  {CountryCode: "+55", CountryName: "Brasil", Region: "Amerika Selatan", Flag: "🇧🇷"},
+}
+
 // AnalyzePhone normalizes phone metadata. Prefix and country data are context, not fraud evidence.
 func AnalyzePhone(rawPhone string) PhoneScanResult {
 	input := strings.TrimSpace(rawPhone)
 	clean := regexp.MustCompile(`[^0-9+]`).ReplaceAllString(input, "")
-	countryCode, countryName := "+62", "Indonesia"
-	if strings.HasPrefix(clean, "+62") {
-		clean = "0" + clean[3:]
+	countryCode, countryName, region := "+62", "Indonesia", "Indonesia"
+
+	if strings.HasPrefix(clean, "+") {
+		matched := false
+		for _, prefixLen := range []int{4, 3, 2} {
+			if len(clean) >= prefixLen {
+				cand := clean[:prefixLen]
+				if dial, ok := globalDialCatalog[cand]; ok {
+					countryCode = dial.CountryCode
+					countryName = dial.CountryName
+					region = dial.Region
+					matched = true
+					break
+				}
+			}
+		}
+		if !matched {
+			countryCode, countryName, region = "Internasional", "Luar Indonesia", "Internasional"
+		}
+		if strings.HasPrefix(clean, "+62") {
+			clean = "0" + clean[3:]
+			countryCode, countryName, region = "+62", "Indonesia", "Indonesia"
+		}
 	} else if strings.HasPrefix(clean, "62") && len(clean) > 8 {
+		countryCode, countryName, region = "+62", "Indonesia", "Indonesia"
 		clean = "0" + clean[2:]
-	} else if strings.HasPrefix(clean, "+") {
-		countryCode, countryName = "Internasional", "Luar Indonesia"
+	} else if strings.HasPrefix(clean, "08") || strings.HasPrefix(clean, "02") {
+		countryCode, countryName, region = "+62", "Indonesia", "Indonesia"
 	}
 
 	result := PhoneScanResult{
 		OriginalInput: rawPhone, CleanNumber: clean, CountryCode: countryCode, CountryName: countryName,
-		Operator: "Tidak teridentifikasi dari katalog prefix", HLRRegion: "Tidak tersedia",
+		Operator: "Tidak teridentifikasi dari katalog prefix", HLRRegion: region,
 		NumberType: "Prabayar / Seluler", RiskScore: 0, ThreatLevel: "BERSIH / BELUM PERNAH DILAPORKAN",
 		Coverage: CoverageComplete, Sources: []SourceResult{}, RedFlags: []RedFlag{}, Recommendations: []string{
 			"Format nomor valid dan belum pernah dilaporkan dalam catatan penipuan.",
 			"Tetap jaga kerahasiaan OTP, PIN, dan kata sandi pribadi Anda.",
 		},
 	}
-	if len(clean) < 8 {
+	if len(clean) < 7 {
 		result.RiskScore = 35
 		result.ThreatLevel = "INPUT NOMOR TIDAK LENGKAP"
 		result.RedFlags = append(result.RedFlags, RedFlag{Level: "MEDIUM", Title: "Nomor tidak lengkap", Explanation: "Nomor terlalu pendek untuk dikorelasikan secara andal.", Snippet: clean})
 	}
 	if countryName == "Indonesia" && len(clean) >= 4 {
-		if info, ok := telcoPrefixCatalog[clean[:4]]; ok {
-			result.Operator = info.Operator
-			result.HLRRegion = info.Region
-			result.NumberType = "Prefix seluler Indonesia"
+		if strings.HasPrefix(clean, "0") {
+			if info, ok := telcoPrefixCatalog[clean[:4]]; ok {
+				result.Operator = info.Operator
+				result.HLRRegion = info.Region
+				result.NumberType = "Prefix seluler Indonesia"
+			}
 		}
+	} else if countryName != "Indonesia" {
+		result.Operator = "Operator Seluler Internasional (" + countryName + ")"
+		result.NumberType = "Nomor Seluler Luar Negeri"
 	}
 	result.CoverageSummary = "Metadata nomor tersedia. Pemeriksaan riwayat laporan eksternal Indonesia memerlukan akses resmi AduanNomor; PANDU tidak menganggap ketiadaan data sebagai aman."
 	return result

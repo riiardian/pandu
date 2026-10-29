@@ -62,6 +62,42 @@ const BANK_CATALOG: BankOption[] = [
 const BANK_LIST = BANK_CATALOG.filter((b) => b.category === "bank");
 const EWALLET_LIST = BANK_CATALOG.filter((b) => b.category === "ewallet");
 
+interface CountryOption {
+  code: string;
+  name: string;
+  flag: string;
+  dialCode: string;
+}
+
+const COUNTRY_CATALOG: CountryOption[] = [
+  { code: "ID", name: "Indonesia", flag: "🇮🇩", dialCode: "+62" },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾", dialCode: "+60" },
+  { code: "SG", name: "Singapura", flag: "🇸🇬", dialCode: "+65" },
+  { code: "PH", name: "Filipina", flag: "🇵🇭", dialCode: "+63" },
+  { code: "TH", name: "Thailand", flag: "🇹🇭", dialCode: "+66" },
+  { code: "VN", name: "Vietnam", flag: "🇻🇳", dialCode: "+84" },
+  { code: "KH", name: "Kamboja (Cambodia)", flag: "🇰🇭", dialCode: "+855" },
+  { code: "MM", name: "Myanmar (Burma)", flag: "🇲🇲", dialCode: "+95" },
+  { code: "LA", name: "Laos", flag: "🇱🇦", dialCode: "+856" },
+  { code: "US", name: "Amerika Serikat", flag: "🇺🇸", dialCode: "+1" },
+  { code: "GB", name: "Inggris Raya (UK)", flag: "🇬🇧", dialCode: "+44" },
+  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
+  { code: "JP", name: "Jepang", flag: "🇯🇵", dialCode: "+81" },
+  { code: "KR", name: "Korea Selatan", flag: "🇰🇷", dialCode: "+82" },
+  { code: "CN", name: "Tiongkok (China)", flag: "🇨🇳", dialCode: "+86" },
+  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
+  { code: "SA", name: "Arab Saudi", flag: "🇸🇦", dialCode: "+966" },
+  { code: "AE", name: "Uni Emirat Arab", flag: "🇦🇪", dialCode: "+971" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬", dialCode: "+234" },
+  { code: "RU", name: "Rusia", flag: "🇷🇺", dialCode: "+7" },
+  { code: "UA", name: "Ukraina", flag: "🇺🇦", dialCode: "+380" },
+  { code: "DE", name: "Jerman", flag: "🇩🇪", dialCode: "+49" },
+  { code: "FR", name: "Prancis", flag: "🇫🇷", dialCode: "+33" },
+  { code: "NL", name: "Belanda", flag: "🇳🇱", dialCode: "+31" },
+  { code: "TR", name: "Turki", flag: "🇹🇷", dialCode: "+90" },
+  { code: "BR", name: "Brasil", flag: "🇧🇷", dialCode: "+55" },
+];
+
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
   const [scanType, setScanType] = useState<ScanCategory>("text");
@@ -74,6 +110,16 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const [inputBankAcc, setInputBankAcc] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(COUNTRY_CATALOG[0]);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countryFilterQuery, setCountryFilterQuery] = useState("");
+
+  const filteredCountries = COUNTRY_CATALOG.filter((c) => {
+    if (!countryFilterQuery.trim()) return true;
+    const q = countryFilterQuery.toLowerCase();
+    return c.name.toLowerCase().includes(q) || c.dialCode.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
+  });
 
   const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
   const [bankFilterQuery, setBankFilterQuery] = useState("");
@@ -122,7 +168,16 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         return;
       }
       endpoint = "/api/v1/scan/phone";
-      payload = { phone: inputPhone };
+      const raw = inputPhone.trim();
+      let formattedPhone = raw;
+      if (!raw.startsWith("+")) {
+        if (selectedCountry.dialCode === "+62") {
+          formattedPhone = raw.startsWith("0") ? raw : "0" + raw;
+        } else {
+          formattedPhone = `${selectedCountry.dialCode}${raw.replace(/^0+/, "")}`;
+        }
+      }
+      payload = { phone: formattedPhone };
     } else if (scanType === "bank") {
       if (!inputBankAcc.trim()) {
         setErrorMsg("Masukkan nomor rekening bank atau nomor akun e-wallet.");
@@ -241,6 +296,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   setResult(null);
                   setErrorMsg("");
                   setIsBankDropdownOpen(false);
+                  setIsCountryDropdownOpen(false);
                 }}
                 className={`flex items-center gap-2 py-2 px-3.5 rounded-full text-xs transition-all duration-200 cursor-pointer shrink-0 ${
                   isActive
@@ -291,17 +347,69 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           )}
 
           {scanType === "phone" && (
-            <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
-              <span className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-slate-300 bg-white/5 border-r border-white/10 font-mono font-bold shrink-0 select-none">
-                <span>🇮🇩 +62</span>
-              </span>
-              <input
-                type="text"
-                value={inputPhone}
-                onChange={(e) => setInputPhone(e.target.value)}
-                placeholder="85819238491 atau 08..."
-                className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
-              />
+            <div className="relative">
+              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+                {/* Global Country Code Dropdown Trigger (OSINT Industries style) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCountryDropdownOpen(!isCountryDropdownOpen);
+                    setIsBankDropdownOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                >
+                  <span className="text-base leading-none">{selectedCountry.flag}</span>
+                  <span>{selectedCountry.dialCode}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
+                </button>
+
+                {/* Phone Input */}
+                <input
+                  type="text"
+                  value={inputPhone}
+                  onChange={(e) => setInputPhone(e.target.value)}
+                  placeholder="85819238491..."
+                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
+                />
+              </div>
+
+              {/* Country Dropdown Menu Anchored Beneath */}
+              {isCountryDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
+                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
+                    <input
+                      type="text"
+                      value={countryFilterQuery}
+                      onChange={(e) => setCountryFilterQuery(e.target.value)}
+                      placeholder="Cari negara atau kode (+62, +855...)"
+                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  {filteredCountries.map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCountry(c);
+                        setIsCountryDropdownOpen(false);
+                        setCountryFilterQuery("");
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
+                        selectedCountry.code === c.code
+                          ? "bg-blue-600/20 text-blue-300 font-bold"
+                          : "text-slate-300 hover:bg-white/5"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-base leading-none">{c.flag}</span>
+                        <span className="truncate">{c.name}</span>
+                      </div>
+                      <span className="text-[11px] font-mono text-slate-400 ml-2 shrink-0">{c.dialCode}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -311,7 +419,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 {/* Integrated Bank Dropdown Trigger (OSINT Industries style) */}
                 <button
                   type="button"
-                  onClick={() => setIsBankDropdownOpen(!isBankDropdownOpen)}
+                  onClick={() => {
+                    setIsBankDropdownOpen(!isBankDropdownOpen);
+                    setIsCountryDropdownOpen(false);
+                  }}
                   className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
                 >
                   <CreditCard className="h-3.5 w-3.5 text-blue-400" />
@@ -368,9 +479,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
           {scanType === "email" && (
             <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
-              <span className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono shrink-0 select-none">
+              <span className="flex items-center px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 shrink-0 select-none">
                 <Mail className="h-3.5 w-3.5 text-blue-400" />
-                <span>@</span>
               </span>
               <input
                 type="email"
