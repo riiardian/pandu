@@ -910,7 +910,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 }}
                 className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all w-full sm:w-auto cursor-pointer"
               >
-                <span>Bawa ke Pusat Laporan &amp; Dossier</span>
+                <span>Buat Laporan Aduan</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
