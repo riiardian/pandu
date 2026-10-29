@@ -110,3 +110,11 @@ func TestAnalyzeURL_OfficialDomain(t *testing.T) {
 		t.Fatalf("Expected low risk score for official domain, got %d", res.RiskScore)
 	}
 }
+
+func TestAnalyzeURL_NoRiskDoesNotClaimAbsoluteSafety(t *testing.T) {
+	res := AnalyzeURL("https://example.com", false)
+	level := strings.ToLower(res.ThreatLevel)
+	if strings.Contains(level, "aman /") || strings.Contains(level, "tervalidasi") {
+		t.Fatalf("zero indicators must not become an absolute safety claim: %q", res.ThreatLevel)
+	}
+}

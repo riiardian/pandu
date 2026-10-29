@@ -128,7 +128,7 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.RedFlags = append(result.RedFlags, RedFlag{
 			Level:       "CRITICAL",
 			Title:       "Menggunakan Alamat IP Langsung (Bukan Nama Domain)",
-			Explanation: "Layanan resmi perbankan dan instansi terpercaya selalu menggunakan nama domain resmi dengan sertifikat SSL valid. Penggunaan IP mentah di browser hampir 100% adalah server eksploit atau phishing.",
+			Explanation: "Layanan resmi perbankan dan instansi umumnya menggunakan nama domain resmi dan sertifikat TLS. Alamat IP langsung adalah indikator teknis yang perlu diperiksa lebih lanjut, tetapi bukan bukti tunggal phishing.",
 			Snippet:     host,
 		})
 	}
@@ -252,6 +252,15 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		for i := 0; i < 3; i++ {
 			s := (<-ch).source
 			result.Sources = append(result.Sources, s)
+			if s.ID == "urlscan" && s.Outcome == OutcomeMatch {
+				score += 60
+				result.RedFlags = append(result.RedFlags, RedFlag{
+					Level:       "CRITICAL",
+					Title:       "Domain Tercatat pada Feed Phishing Terstruktur",
+					Explanation: "Riwayat pemindaian publik urlscan.io menunjukkan entri yang berasal dari feed OpenPhish. Kecocokan ini adalah bukti sumber eksternal, bukan sekadar domain pernah dipindai.",
+					Snippet:     host,
+				})
+			}
 			if s.ID == "web_footprint" && s.Outcome == OutcomeMatch && len(s.Evidence) > 0 {
 				score += 35
 				result.RedFlags = append(result.RedFlags, RedFlag{
@@ -341,8 +350,8 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 		result.ThreatLevel = "WASPADA / MENCURIGAKAN"
 		result.Recommendations = append(result.Recommendations, "Periksa kembali ejaan domain di address bar sebelum melanjutkan.", "Pastikan Anda hanya mengakses situs resmi instansi terkait.")
 	default:
-		result.ThreatLevel = "AMAN / STRUKTUR RESMI & TERVALIDASI"
-		result.Recommendations = append(result.Recommendations, "Website memiliki struktur keamanan terverifikasi dan tidak ditemukan indikasi penipuan atau pencatutan identitas resmi.")
+		result.ThreatLevel = "TIDAK DITEMUKAN INDIKATOR ANCAMAN PADA SUMBER YANG DIPERIKSA"
+		result.Recommendations = append(result.Recommendations, "Tidak ditemukannya indikator pada sumber yang berhasil diperiksa bukan jaminan bahwa website aman.")
 	}
 	result.Coverage, result.CoverageSummary = SummarizeCoverage(result.Sources)
 	return result

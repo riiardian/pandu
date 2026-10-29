@@ -55,6 +55,53 @@ func TestStopForumSpamProviderKeepsProviderFailureSeparateFromMiss(t *testing.T)
 	}
 }
 
+func TestURLScanTreatsOpenPhishHistoryAsThreatEvidence(t *testing.T) {
+	oldBase := urlscanSearchBaseURL
+	oldClient := threatHTTPClient
+	t.Cleanup(func() {
+		urlscanSearchBaseURL = oldBase
+		threatHTTPClient = oldClient
+	})
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"total":1,"results":[{"task":{"uuid":"scan-1","time":"2026-10-29T01:00:00Z","url":"https://phish.example/","source":"openphish"},"page":{"domain":"phish.example","status":"200","ip":"203.0.113.10"}}]}`))
+	}))
+	defer server.Close()
+	urlscanSearchBaseURL = server.URL
+	threatHTTPClient = server.Client()
+
+	result := QueryURLScan(context.Background(), "phish.example")
+	if result.Status != SourceQueried || result.Outcome != OutcomeMatch {
+		t.Fatalf("OpenPhish-backed history must be explicit threat evidence, got status=%q outcome=%q", result.Status, result.Outcome)
+	}
+	if result.Matches != 1 {
+		t.Fatalf("expected one threat-backed scan, got %d", result.Matches)
+	}
+}
+
+func TestURLScanOrdinaryHistoryIsContextOnly(t *testing.T) {
+	oldBase := urlscanSearchBaseURL
+	oldClient := threatHTTPClient
+	t.Cleanup(func() {
+		urlscanSearchBaseURL = oldBase
+		threatHTTPClient = oldClient
+	})
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"total":1,"results":[{"task":{"uuid":"scan-2","time":"2026-10-29T01:00:00Z","url":"https://example.com/","source":"api"},"page":{"domain":"example.com","status":"200","ip":"93.184.216.34"}}]}`))
+	}))
+	defer server.Close()
+	urlscanSearchBaseURL = server.URL
+	threatHTTPClient = server.Client()
+
+	result := QueryURLScan(context.Background(), "example.com")
+	if result.Status != SourceQueried || result.Outcome != OutcomeContext {
+		t.Fatalf("ordinary public scan history must stay neutral context, got status=%q outcome=%q", result.Status, result.Outcome)
+	}
+}
+
 func TestCIRCLHashLookupHitAndMiss(t *testing.T) {
 	oldBase := circlHashlookupBaseURL
 	oldClient := threatHTTPClient

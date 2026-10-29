@@ -300,9 +300,10 @@ func QueryURLScan(ctx context.Context, domain string) SourceResult {
 		Total   int `json:"total"`
 		Results []struct {
 			Task struct {
-				UUID string `json:"uuid"`
-				Time string `json:"time"`
-				URL  string `json:"url"`
+				UUID   string `json:"uuid"`
+				Time   string `json:"time"`
+				URL    string `json:"url"`
+				Source string `json:"source"`
 			} `json:"task"`
 			Page struct {
 				Domain string `json:"domain"`
@@ -321,6 +322,17 @@ func QueryURLScan(ctx context.Context, domain string) SourceResult {
 		result.Outcome = OutcomeContext
 		result.Matches = data.Total
 		result.Evidence = append(result.Evidence, EvidenceItem{Label: "Pemindaian publik ditemukan", Value: fmt.Sprintf("%d", data.Total)})
+		threatFeedMatches := 0
+		for _, item := range data.Results {
+			if strings.EqualFold(strings.TrimSpace(item.Task.Source), "openphish") {
+				threatFeedMatches++
+				result.Evidence = append(result.Evidence, EvidenceItem{Label: "Sumber feed ancaman", Value: "OpenPhish", ObservedAt: item.Task.Time})
+			}
+		}
+		if threatFeedMatches > 0 {
+			result.Outcome = OutcomeMatch
+			result.Matches = threatFeedMatches
+		}
 		if len(data.Results) > 0 {
 			item := data.Results[0]
 			result.Evidence = append(result.Evidence, EvidenceItem{Label: "Pemindaian publik terbaru", Value: item.Task.URL, ObservedAt: item.Task.Time})

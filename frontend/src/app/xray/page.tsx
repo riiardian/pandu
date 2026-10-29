@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Investigasi Ancaman Digital — PANDU",
-  description: "Verifikasi nomor kontak, rekening bank, tautan web, email, dan berkas mencurigakan berbasis data intelijen terbuka dan analisis rekayasa sosial.",
+  description: "Pemeriksaan tautan, email, dan hash berkas terhadap sumber intelijen eksternal yang dapat dikueri dan ditampilkan buktinya.",
 };
 
 export default function XrayPage() {

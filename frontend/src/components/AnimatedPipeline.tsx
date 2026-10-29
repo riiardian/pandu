@@ -7,13 +7,13 @@ const PIPELINE_STEPS = [
     idx: 0,
     step: "1",
     title: "Identifikasi Target",
-    desc: "Sistem menerima pesan, nomor telepon, rekening, email, tautan, atau berkas yang dicurigai, lalu membedah parameter data secara aman tanpa menyimpan identitas pengguna.",
+    desc: "Sistem menerima email, tautan, atau berkas yang dicurigai, lalu menormalkan parameter secara aman sebelum pemeriksaan eksternal.",
   },
   {
     idx: 1,
     step: "2",
-    title: "Analisis Pola Manipulasi",
-    desc: "Engine keamanan PANDU mengevaluasi pola manipulasi psikologis, entropi teks, validasi struktur rekening bank, hingga audit izin bahaya berkas.",
+    title: "Korelasi Intelijen",
+    desc: "PANDU memeriksa reputasi email, rekam pemindaian domain, registrasi RDAP, dan kecocokan hash berkas pada sumber eksternal.",
   },
   {
     idx: 2,

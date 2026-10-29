@@ -149,7 +149,7 @@ export default function HomeTab() {
                   Investigasi Ancaman Digital
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Investigasi otomatis pesan chat, nomor telepon, rekening bank, email, tautan web, hingga berkas APK dan gambar untuk menelusuri rekam jejak digital kejahatan siber secara menyeluruh.
+                  Periksa tautan, alamat email, dan hash berkas menggunakan sumber intelijen eksternal yang dapat dikueri serta ditampilkan buktinya.
                 </p>
               </div>
             </div>

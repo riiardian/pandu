@@ -26,12 +26,12 @@ type ScanURLRequest struct {
 	FollowRedirects bool   `json:"follow_redirects"`
 }
 
-// ScanPhoneRequest payload
+// ScanPhoneRequest payload (legacy handler kept for compatibility tests; route is intentionally not exposed)
 type ScanPhoneRequest struct {
 	Phone string `json:"phone"`
 }
 
-// ScanBankRequest payload
+// ScanBankRequest payload (legacy handler kept for compatibility tests; route is intentionally not exposed)
 type ScanBankRequest struct {
 	BankName      string `json:"bank_name"`
 	AccountNumber string `json:"account_number"`
@@ -90,10 +90,8 @@ func RegisterRoutes(app *fiber.App) {
 	})
 
 	// Pillar 1: Recognize (Scanner)
-	v1.Post("/scan/text", handleScanText)
+	// Only expose scanners backed by structured external intelligence sources.
 	v1.Post("/scan/url", handleScanURL)
-	v1.Post("/scan/phone", handleScanPhone)
-	v1.Post("/scan/bank", handleScanBank)
 	v1.Post("/scan/email", handleScanEmail)
 	v1.Post("/scan/file", handleScanFile)
 

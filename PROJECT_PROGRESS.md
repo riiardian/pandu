@@ -118,3 +118,9 @@
   - StopForumSpam (Global Email Spam Network) via hash MD5 & DNS MX query.
   - RDAP registry domain & urlscan.io public search untuk investigasi URL/domain.
   - Upload berkas nyata (multipart hingga 5 MB) dengan hashing SHA-256/MD5 asli dari byte berkas, korelasi CIRCL hashlookup, dan inspeksi permission AndroidManifest.xml pada paket .APK.
+- **Audit Integritas Sumber Eksternal — Scanner Tanpa Klaim Asal**:
+  - Menghapus Pesan Chat, Nomor Telepon, dan Rekening Bank dari UI Investigasi Ancaman Digital serta menonaktifkan route pemindaiannya; ketiganya belum memiliki basis data eksternal terstruktur yang bisa dikueri PANDU secara konsisten.
+  - Menyisakan Tautan Web, Alamat Email, dan Berkas/APK karena tersedia sumber terstruktur: RDAP + urlscan.io/OpenPhish, StopForumSpam + DNS MX, dan CIRCL hashlookup.
+  - Riwayat urlscan biasa tetap dianggap konteks netral; hanya entri urlscan yang menyebut sumber feed OpenPhish dinaikkan menjadi kecocokan ancaman.
+  - Nomor/rekening yang dilaporkan masyarakat tetap dikelola terpisah di Pusat Laporan PANDU dan tidak disamarkan sebagai intelijen internet eksternal.
+  - Menambahkan regression test agar route `/scan/text`, `/scan/phone`, dan `/scan/bank` tetap tidak terekspos sampai sumber eksternal yang sah tersedia.

@@ -11,14 +11,10 @@ import {
   FileCode,
   ArrowRight,
   Flame,
-  MessageSquare,
   Globe,
-  Phone,
-  CreditCard,
   Mail,
   Upload,
   FileText,
-  ChevronDown,
 } from "lucide-react";
 
 interface ScannerTabProps {
@@ -29,113 +25,16 @@ interface ScannerTabProps {
   }) => void;
 }
 
-type ScanCategory = "text" | "url" | "phone" | "bank" | "email" | "file";
-
-interface BankOption {
-  id: string;
-  code: string;
-  name: string;
-  fullName: string;
-  type: string;
-  category: "bank" | "ewallet";
-  routingCode: string;
-}
-
-const BANK_CATALOG: BankOption[] = [
-  { id: "BCA", code: "BCA", name: "BCA", fullName: "Bank Central Asia (BCA)", type: "Bank Swasta", category: "bank", routingCode: "014" },
-  { id: "BRI", code: "BRI", name: "BRI", fullName: "Bank Rakyat Indonesia (BRI)", type: "Bank BUMN", category: "bank", routingCode: "002" },
-  { id: "Mandiri", code: "MANDIRI", name: "Bank Mandiri", fullName: "Bank Mandiri (Persero)", type: "Bank BUMN", category: "bank", routingCode: "008" },
-  { id: "BNI", code: "BNI", name: "BNI", fullName: "Bank Negara Indonesia (BNI)", type: "Bank BUMN", category: "bank", routingCode: "009" },
-  { id: "BSI", code: "BSI", name: "BSI", fullName: "Bank Syariah Indonesia (BSI)", type: "Bank Syariah", category: "bank", routingCode: "451" },
-  { id: "CIMB", code: "CIMB", name: "CIMB Niaga", fullName: "Bank CIMB Niaga", type: "Bank Swasta", category: "bank", routingCode: "022" },
-  { id: "Danamon", code: "DANAMON", name: "Bank Danamon", fullName: "Bank Danamon Indonesia", type: "Bank Swasta", category: "bank", routingCode: "011" },
-  { id: "Permata", code: "PERMATA", name: "Bank Permata", fullName: "Bank Permata", type: "Bank Swasta", category: "bank", routingCode: "013" },
-  { id: "BTN", code: "BTN", name: "BTN", fullName: "Bank Tabungan Negara (BTN)", type: "Bank BUMN", category: "bank", routingCode: "200" },
-  { id: "Jago", code: "JAGO", name: "Bank Jago", fullName: "Bank Jago Digital", type: "Bank Digital", category: "bank", routingCode: "542" },
-  { id: "SeaBank", code: "SEABANK", name: "SeaBank", fullName: "SeaBank Indonesia", type: "Bank Digital", category: "bank", routingCode: "535" },
-  { id: "DANA", code: "DANA", name: "DANA", fullName: "DANA (Dompet Digital)", type: "E-Wallet", category: "ewallet", routingCode: "014 / 002 (VA)" },
-  { id: "GoPay", code: "GOPAY", name: "GoPay", fullName: "GoPay (Gojek Ecosystem)", type: "E-Wallet", category: "ewallet", routingCode: "70001 (VA)" },
-  { id: "OVO", code: "OVO", name: "OVO", fullName: "OVO (Payment)", type: "E-Wallet", category: "ewallet", routingCode: "39358 (VA)" },
-  { id: "ShopeePay", code: "SHOPEEPAY", name: "ShopeePay", fullName: "ShopeePay Indonesia", type: "E-Wallet", category: "ewallet", routingCode: "122 (VA)" },
-];
-
-const BANK_LIST = BANK_CATALOG.filter((b) => b.category === "bank");
-const EWALLET_LIST = BANK_CATALOG.filter((b) => b.category === "ewallet");
-
-interface CountryOption {
-  code: string;
-  name: string;
-  flag: string;
-  dialCode: string;
-}
-
-const COUNTRY_CATALOG: CountryOption[] = [
-  { code: "ID", name: "Indonesia", flag: "🇮🇩", dialCode: "+62" },
-  { code: "MY", name: "Malaysia", flag: "🇲🇾", dialCode: "+60" },
-  { code: "SG", name: "Singapura", flag: "🇸🇬", dialCode: "+65" },
-  { code: "PH", name: "Filipina", flag: "🇵🇭", dialCode: "+63" },
-  { code: "TH", name: "Thailand", flag: "🇹🇭", dialCode: "+66" },
-  { code: "VN", name: "Vietnam", flag: "🇻🇳", dialCode: "+84" },
-  { code: "KH", name: "Kamboja (Cambodia)", flag: "🇰🇭", dialCode: "+855" },
-  { code: "MM", name: "Myanmar (Burma)", flag: "🇲🇲", dialCode: "+95" },
-  { code: "LA", name: "Laos", flag: "🇱🇦", dialCode: "+856" },
-  { code: "US", name: "Amerika Serikat", flag: "🇺🇸", dialCode: "+1" },
-  { code: "GB", name: "Inggris Raya (UK)", flag: "🇬🇧", dialCode: "+44" },
-  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
-  { code: "JP", name: "Jepang", flag: "🇯🇵", dialCode: "+81" },
-  { code: "KR", name: "Korea Selatan", flag: "🇰🇷", dialCode: "+82" },
-  { code: "CN", name: "Tiongkok (China)", flag: "🇨🇳", dialCode: "+86" },
-  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
-  { code: "SA", name: "Arab Saudi", flag: "🇸🇦", dialCode: "+966" },
-  { code: "AE", name: "Uni Emirat Arab", flag: "🇦🇪", dialCode: "+971" },
-  { code: "NG", name: "Nigeria", flag: "🇳🇬", dialCode: "+234" },
-  { code: "RU", name: "Rusia", flag: "🇷🇺", dialCode: "+7" },
-  { code: "UA", name: "Ukraina", flag: "🇺🇦", dialCode: "+380" },
-  { code: "DE", name: "Jerman", flag: "🇩🇪", dialCode: "+49" },
-  { code: "FR", name: "Prancis", flag: "🇫🇷", dialCode: "+33" },
-  { code: "NL", name: "Belanda", flag: "🇳🇱", dialCode: "+31" },
-  { code: "TR", name: "Turki", flag: "🇹🇷", dialCode: "+90" },
-  { code: "BR", name: "Brasil", flag: "🇧🇷", dialCode: "+55" },
-];
+type ScanCategory = "url" | "email" | "file";
 
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
-  const [scanType, setScanType] = useState<ScanCategory>("text");
+  const [scanType, setScanType] = useState<ScanCategory>("url");
 
   // Form states
-  const [inputText, setInputText] = useState("");
   const [inputURL, setInputURL] = useState("");
-  const [inputPhone, setInputPhone] = useState("");
-  const [inputBankName, setInputBankName] = useState("BCA");
-  const [inputBankAcc, setInputBankAcc] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(COUNTRY_CATALOG[0]);
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
-  const [countryFilterQuery, setCountryFilterQuery] = useState("");
-
-  const filteredCountries = COUNTRY_CATALOG.filter((c) => {
-    if (!countryFilterQuery.trim()) return true;
-    const q = countryFilterQuery.toLowerCase();
-    return c.name.toLowerCase().includes(q) || c.dialCode.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
-  });
-
-  const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
-  const [bankFilterQuery, setBankFilterQuery] = useState("");
-
-  const selectedBankObj = BANK_CATALOG.find((b) => b.id.toLowerCase() === inputBankName.toLowerCase()) || BANK_CATALOG[0];
-
-  const filteredBanks = BANK_CATALOG.filter((b) => {
-    if (!bankFilterQuery.trim()) return true;
-    const q = bankFilterQuery.toLowerCase();
-    return (
-      b.name.toLowerCase().includes(q) ||
-      b.fullName.toLowerCase().includes(q) ||
-      b.code.toLowerCase().includes(q) ||
-      b.type.toLowerCase().includes(q)
-    );
-  });
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -148,43 +47,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
     let endpoint = "";
     let payload: any = {};
 
-    if (scanType === "text") {
-      if (!inputText.trim()) {
-        setErrorMsg("Masukkan teks pesan atau chat yang ingin Anda periksa.");
-        return;
-      }
-      endpoint = "/api/v1/scan/text";
-      payload = { text: inputText };
-    } else if (scanType === "url") {
+    if (scanType === "url") {
       if (!inputURL.trim()) {
         setErrorMsg("Masukkan tautan atau domain website yang ingin Anda periksa.");
         return;
       }
       endpoint = "/api/v1/scan/url";
       payload = { url: inputURL, follow_redirects: true };
-    } else if (scanType === "phone") {
-      if (!inputPhone.trim()) {
-        setErrorMsg("Masukkan nomor telepon atau nomor WhatsApp yang ingin diperiksa.");
-        return;
-      }
-      endpoint = "/api/v1/scan/phone";
-      const raw = inputPhone.trim();
-      let formattedPhone = raw;
-      if (!raw.startsWith("+")) {
-        if (selectedCountry.dialCode === "+62") {
-          formattedPhone = raw.startsWith("0") ? raw : "0" + raw;
-        } else {
-          formattedPhone = `${selectedCountry.dialCode}${raw.replace(/^0+/, "")}`;
-        }
-      }
-      payload = { phone: formattedPhone };
-    } else if (scanType === "bank") {
-      if (!inputBankAcc.trim()) {
-        setErrorMsg("Masukkan nomor rekening bank atau nomor akun e-wallet.");
-        return;
-      }
-      endpoint = "/api/v1/scan/bank";
-      payload = { bank_name: inputBankName, account_number: inputBankAcc };
     } else if (scanType === "email") {
       if (!inputEmail.trim()) {
         setErrorMsg("Masukkan alamat email yang ingin diperiksa.");
@@ -260,10 +129,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   };
 
   const TABS = [
-    { id: "text", label: "Pesan Chat", icon: MessageSquare },
     { id: "url", label: "Tautan Web", icon: Globe },
-    { id: "phone", label: "No. Telepon", icon: Phone },
-    { id: "bank", label: "Rekening Bank", icon: CreditCard },
     { id: "email", label: "Alamat Email", icon: Mail },
     { id: "file", label: "Berkas / APK", icon: FileCode },
   ];
@@ -276,7 +142,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           Investigasi Ancaman Digital
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Verifikasi nomor kontak, rekening bank, tautan web, email, dan berkas mencurigakan berbasis data intelijen terbuka dan analisis rekayasa sosial.
+          Pemeriksaan tautan, email, dan hash berkas terhadap sumber intelijen eksternal yang dapat dikueri dan ditampilkan buktinya.
         </p>
       </section>
 
@@ -295,8 +161,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   setScanType(tab.id as ScanCategory);
                   setResult(null);
                   setErrorMsg("");
-                  setIsBankDropdownOpen(false);
-                  setIsCountryDropdownOpen(false);
                 }}
                 className={`flex items-center gap-2 py-2 px-3.5 rounded-full text-xs transition-all duration-200 cursor-pointer shrink-0 ${
                   isActive
@@ -316,20 +180,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           })}
         </div>
 
+        <div className="rounded-xl border border-blue-500/20 bg-blue-950/15 px-3.5 py-3 text-xs text-slate-300 leading-relaxed">
+          Nomor telepon, rekening, dan analisis pesan tidak ditampilkan karena PANDU belum memiliki sumber eksternal terstruktur yang dapat membuktikan riwayat laporannya secara konsisten. Data laporan masyarakat tetap dikelola terpisah di Pusat Laporan.
+        </div>
+
         {/* Input Form Fields by Active Tab (OSINT Industries Unified Input Style) */}
         <div className="pt-1">
-          {scanType === "text" && (
-            <div className="rounded-xl border border-white/10 bg-[#060a14] p-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
-              <textarea
-                rows={3}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Tempel atau ketik muatan teks pesan WhatsApp, SMS, atau Telegram di sini..."
-                className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none resize-none font-sans"
-              />
-            </div>
-          )}
-
           {scanType === "url" && (
             <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all overflow-hidden">
               <span className="flex items-center gap-1 px-3.5 py-3 text-xs text-slate-400 bg-white/5 border-r border-white/10 font-mono shrink-0 select-none">
@@ -343,137 +199,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 placeholder="bca-tarif-transaksi.xyz/login atau link bansos..."
                 className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
-            </div>
-          )}
-
-          {scanType === "phone" && (
-            <div className="relative">
-              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
-                {/* Global Country Code Dropdown Trigger (OSINT Industries style) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCountryDropdownOpen(!isCountryDropdownOpen);
-                    setIsBankDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
-                >
-                  <span className="text-base leading-none">{selectedCountry.flag}</span>
-                  <span>{selectedCountry.dialCode}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
-                </button>
-
-                {/* Phone Input */}
-                <input
-                  type="text"
-                  value={inputPhone}
-                  onChange={(e) => setInputPhone(e.target.value)}
-                  placeholder="85819238491..."
-                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
-                />
-              </div>
-
-              {/* Country Dropdown Menu Anchored Beneath */}
-              {isCountryDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
-                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
-                    <input
-                      type="text"
-                      value={countryFilterQuery}
-                      onChange={(e) => setCountryFilterQuery(e.target.value)}
-                      placeholder="Cari negara atau kode (+62, +855...)"
-                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
-                  {filteredCountries.map((c) => (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => {
-                        setSelectedCountry(c);
-                        setIsCountryDropdownOpen(false);
-                        setCountryFilterQuery("");
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                        selectedCountry.code === c.code
-                          ? "bg-blue-600/20 text-blue-300 font-bold"
-                          : "text-slate-300 hover:bg-white/5"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-base leading-none">{c.flag}</span>
-                        <span className="truncate">{c.name}</span>
-                      </div>
-                      <span className="text-[11px] font-mono text-slate-400 ml-2 shrink-0">{c.dialCode}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {scanType === "bank" && (
-            <div className="relative">
-              <div className="flex items-center rounded-xl border border-white/10 bg-[#060a14] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
-                {/* Integrated Bank Dropdown Trigger (OSINT Industries style) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsBankDropdownOpen(!isBankDropdownOpen);
-                    setIsCountryDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
-                >
-                  <CreditCard className="h-3.5 w-3.5 text-blue-400" />
-                  <span>{selectedBankObj?.code}</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-400 ml-0.5" />
-                </button>
-
-                {/* Account Input */}
-                <input
-                  type="text"
-                  value={inputBankAcc}
-                  onChange={(e) => setInputBankAcc(e.target.value)}
-                  placeholder={`Masukkan nomor rekening / akun ${selectedBankObj?.code}...`}
-                  className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
-                />
-              </div>
-
-              {/* Dropdown Menu Anchored Beneath */}
-              {isBankDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1.5 w-72 max-h-72 overflow-y-auto rounded-xl border border-white/15 bg-[#0d0e12] shadow-2xl z-50 divide-y divide-white/5 animate-in fade-in duration-150">
-                  <div className="p-2 sticky top-0 bg-[#0d0e12] border-b border-white/10 z-10">
-                    <input
-                      type="text"
-                      value={bankFilterQuery}
-                      onChange={(e) => setBankFilterQuery(e.target.value)}
-                      placeholder="Cari bank atau e-wallet..."
-                      className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
-                  {filteredBanks.map((b) => (
-                    <button
-                      key={b.id}
-                      type="button"
-                      onClick={() => {
-                        setInputBankName(b.id);
-                        setIsBankDropdownOpen(false);
-                        setBankFilterQuery("");
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                        inputBankName.toLowerCase() === b.id.toLowerCase()
-                          ? "bg-blue-600/20 text-blue-300 font-bold"
-                          : "text-slate-300 hover:bg-white/5"
-                      }`}
-                    >
-                      <span className="truncate">{b.fullName}</span>
-                      <span className="text-[10px] font-mono text-slate-500 ml-2 shrink-0">{b.type}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           )}
 
@@ -553,17 +278,11 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <span>
               {loading
                 ? "Memeriksa..."
-                : scanType === "phone"
-                ? "Periksa Nomor"
-                : scanType === "bank"
-                ? "Periksa Rekening"
                 : scanType === "url"
                 ? "Periksa Tautan"
                 : scanType === "email"
                 ? "Periksa Email"
-                : scanType === "file"
-                ? "Periksa Berkas"
-                : "Periksa Pesan"}
+                : "Periksa Berkas"}
             </span>
           </button>
         </div>

@@ -12,6 +12,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func TestUnsupportedCredentialScannersAreNotExposed(t *testing.T) {
+	app := fiber.New()
+	RegisterRoutes(app)
+
+	for _, path := range []string{"/api/v1/scan/text", "/api/v1/scan/phone", "/api/v1/scan/bank"} {
+		req := httptest.NewRequest("POST", path, strings.NewReader(`{}`))
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatalf("%s: %v", path, err)
+		}
+		if resp.StatusCode != fiber.StatusNotFound {
+			t.Fatalf("%s must not be exposed without a structured external intelligence source; got %d", path, resp.StatusCode)
+		}
+	}
+}
+
 func TestScanFileRequiresMultipartBytes(t *testing.T) {
 	app := fiber.New(fiber.Config{BodyLimit: 6 * 1024 * 1024})
 	RegisterRoutes(app)
