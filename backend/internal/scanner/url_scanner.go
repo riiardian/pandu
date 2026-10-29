@@ -52,19 +52,22 @@ var suspiciousTLDs = map[string]string{
 
 // URLScanResult holds diagnostic analysis for a URL.
 type URLScanResult struct {
-	OriginalURL        string    `json:"original_url"`
-	NormalizedURL      string    `json:"normalized_url"`
-	Hostname           string    `json:"hostname"`
-	TLD                string    `json:"tld"`
-	IsIPAddress        bool      `json:"is_ip_address"`
-	RiskScore          int       `json:"risk_score"`         // 0 - 100
-	ThreatLevel        string    `json:"threat_level"`       // "AMAN / RESMI", "WASPADA / MENCURIGAKAN", "BAHAYA / PHISHING"
-	ImpersonatedBrand  string    `json:"impersonated_brand"` // Name of brand being spoofed (if any)
-	RedFlags           []RedFlag `json:"red_flags"`
-	RedirectChain      []string  `json:"redirect_chain"`
-	FinalDestination   string    `json:"final_destination"`
-	IsShortlink        bool      `json:"is_shortlink"`
-	Recommendations    []string  `json:"recommendations"`
+	OriginalURL        string        `json:"original_url"`
+	NormalizedURL      string        `json:"normalized_url"`
+	Hostname           string        `json:"hostname"`
+	TLD                string        `json:"tld"`
+	IsIPAddress        bool          `json:"is_ip_address"`
+	RiskScore          int           `json:"risk_score"`         // 0 - 100
+	ThreatLevel        string        `json:"threat_level"`       // "AMAN / RESMI", "WASPADA / MENCURIGAKAN", "BAHAYA / PHISHING"
+	ImpersonatedBrand  string        `json:"impersonated_brand"` // Name of brand being spoofed (if any)
+	ResolvedIPs        []string      `json:"resolved_ips,omitempty"`
+	GeoLocation        *IPGeoIntel   `json:"geolocation,omitempty"`
+	TLSCert            *TLSCertIntel `json:"tls_cert,omitempty"`
+	RedFlags           []RedFlag     `json:"red_flags"`
+	RedirectChain      []string      `json:"redirect_chain"`
+	FinalDestination   string        `json:"final_destination"`
+	IsShortlink        bool          `json:"is_shortlink"`
+	Recommendations    []string      `json:"recommendations"`
 }
 
 // AnalyzeURL evaluates a web URL against heuristic deception rules.
@@ -215,6 +218,31 @@ func AnalyzeURL(rawInput string, followRedirects bool) URLScanResult {
 
 	if result.FinalDestination == "" {
 		result.FinalDestination = input
+	}
+
+	// 7. Live DNS Resolution & Host Geolocation Intelligence
+	ips, _, _ := LiveDNSLookup(host)
+	if len(ips) > 0 {
+		result.ResolvedIPs = ips
+		geo := QueryIPGeolocation(ips[0])
+		if geo != nil {
+			result.GeoLocation = geo
+		}
+	}
+
+	// 8. Live TLS / SSL Certificate Inspection
+	cert := InspectTLSCertificate(host)
+	if cert != nil {
+		result.TLSCert = cert
+		if cert.IsRecent {
+			score += 25
+			result.RedFlags = append(result.RedFlags, RedFlag{
+				Level:       "HIGH",
+				Title:       "Sertifikat SSL Sangat Baru (< 14 Hari)",
+				Explanation: fmt.Sprintf("Sertifikat SSL untuk host ini baru diterbitkan pada %s oleh '%s'. Domain phishing umumnya berumur sangat pendek dan baru dibuat.", cert.ValidFrom, cert.Issuer),
+				Snippet:     cert.Issuer,
+			})
+		}
 	}
 
 	// Cap score

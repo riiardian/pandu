@@ -452,8 +452,47 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
             )}
 
+            {/* Global Threat Intelligence Box (StopForumSpam) */}
+            {result.global_intel && result.global_intel.found && (
+              <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 space-y-2">
+                <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
+                  <Flame className="h-4 w-4 shrink-0" />
+                  <span>Terdeteksi di Jaringan Intelijen Kejahatan Siber Global ({result.global_intel.source})</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1 text-slate-300">
+                  <div>
+                    <span className="text-slate-500 block">Total Laporan Global:</span>
+                    <span className="font-bold text-rose-300 font-mono">
+                      {result.global_intel.frequency} Kali Terdeteksi
+                    </span>
+                  </div>
+                  {result.global_intel.last_seen && (
+                    <div>
+                      <span className="text-slate-500 block">Terakhir Aktif:</span>
+                      <span className="font-bold text-white font-mono">
+                        {result.global_intel.last_seen}
+                      </span>
+                    </div>
+                  )}
+                  {result.global_intel.confidence !== undefined && (
+                    <div>
+                      <span className="text-slate-500 block">Indeks Keyakinan Sensor:</span>
+                      <span className="font-bold text-rose-400 font-mono">
+                        {result.global_intel.confidence}%
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {result.global_intel.risk_summary && (
+                  <p className="text-xs text-slate-300 pt-1 border-t border-rose-500/20 leading-relaxed">
+                    {result.global_intel.risk_summary}
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Technical Detail Badges */}
-            {(result.operator || result.institution_type || result.domain || result.dangerous_perms) && (
+            {(result.operator || result.hlr_region || result.institution_type || result.bank_routing_code || result.domain || result.geolocation || result.tls_cert || result.sha256) && (
               <div className="pt-2 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 {result.operator && (
                   <div className="rounded-xl bg-white/5 p-3">
@@ -461,9 +500,15 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="font-bold text-white">{result.operator}</span>
                   </div>
                 )}
+                {result.hlr_region && (
+                  <div className="rounded-xl bg-white/5 p-3">
+                    <span className="text-slate-500 block">Wilayah Distribusi HLR:</span>
+                    <span className="font-bold text-white">{result.hlr_region}</span>
+                  </div>
+                )}
                 {result.country_name && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Wilayah Asal:</span>
+                    <span className="text-slate-500 block">Negara Asal:</span>
                     <span className="font-bold text-white">{result.country_name}</span>
                   </div>
                 )}
@@ -473,9 +518,15 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="font-bold text-white">{result.institution_type}</span>
                   </div>
                 )}
+                {result.bank_routing_code && (
+                  <div className="rounded-xl bg-white/5 p-3">
+                    <span className="text-slate-500 block">Kode Kliring BI Fast / SKNBI:</span>
+                    <span className="font-bold text-blue-400 font-mono">{result.bank_routing_code}</span>
+                  </div>
+                )}
                 {result.standard_digits && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Standar Digit Rekening:</span>
+                    <span className="text-slate-500 block">Standar Format Digit:</span>
                     <span className="font-bold text-white">{result.standard_digits}</span>
                   </div>
                 )}
@@ -485,12 +536,42 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     <span className="font-bold text-white font-mono">@{result.domain}</span>
                   </div>
                 )}
-                {result.file_type_category && (
+                {result.geolocation && (
                   <div className="rounded-xl bg-white/5 p-3">
-                    <span className="text-slate-500 block">Klasifikasi File:</span>
-                    <span className="font-bold text-white font-mono">{result.file_type_category}</span>
+                    <span className="text-slate-500 block">Server Hosting &amp; ASN:</span>
+                    <span className="font-bold text-white">{result.geolocation.isp} ({result.geolocation.country})</span>
+                    <span className="block text-[10px] text-slate-500 font-mono mt-0.5">{result.geolocation.asn}</span>
                   </div>
                 )}
+                {result.tls_cert && (
+                  <div className="rounded-xl bg-white/5 p-3">
+                    <span className="text-slate-500 block">Penerbit Sertifikat SSL:</span>
+                    <span className="font-bold text-white">{result.tls_cert.issuer}</span>
+                    <span className="block text-[10px] text-slate-500 font-mono mt-0.5">Berlaku s/d {result.tls_cert.valid_until}</span>
+                  </div>
+                )}
+                {result.sha256 && (
+                  <div className="rounded-xl bg-white/5 p-3 sm:col-span-3">
+                    <span className="text-slate-500 block">Sidik Jari Kriptografi (SHA-256):</span>
+                    <span className="font-bold text-slate-300 font-mono text-[11px] break-all">{result.sha256}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Live DNS MX Records (if email) */}
+            {result.mx_records && result.mx_records.length > 0 && (
+              <div className="pt-2 border-t border-white/10 space-y-1.5">
+                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Server Mail Exchange (MX) Aktif di DNS Publik:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {result.mx_records.map((mx: string, mxidx: number) => (
+                    <div key={mxidx} className="rounded-lg bg-black/60 border border-white/10 p-2 font-mono text-[11px] text-slate-300">
+                      {mx}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </section>
