@@ -264,8 +264,8 @@ function RiskGaugeDial({ score }: { score: number }) {
             <rect x="146.75" y="83" width="6.5" height="52" rx="1.5" fill="#ffffff" />
           </g>
 
-          {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
-          <circle cx="150" cy="135" r="12" fill="#000000" stroke="#334155" strokeWidth="1.5" />
+          {/* CLEAN, SIMPLE, SOLID FLAT BLUE CENTER HUB */}
+          <circle cx="150" cy="135" r="12" fill="#2563eb" stroke="#1d4ed8" strokeWidth="1.5" />
         </svg>
       </div>
     </div>
