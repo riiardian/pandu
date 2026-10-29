@@ -908,10 +908,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     router.push("/aksi");
                   }
                 }}
-                className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all w-full sm:w-auto cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"
               >
                 <span>Buat Laporan Aduan</span>
-                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
