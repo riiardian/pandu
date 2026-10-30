@@ -27,6 +27,33 @@ interface ScenarioSummary {
   description: string;
 }
 
+const SCENARIO_TRANSLATIONS: Record<string, { title: string; description: string }> = {
+  "kurir-paket-apk": {
+    title: "Courier Package Receipt / Traffic Fine .APK Malware",
+    description: "Learn to detect malicious .APK traps disguised as courier delivery receipts or wedding invitations.",
+  },
+  "kurir-malware-apk": {
+    title: "Courier Package Receipt / Traffic Fine .APK Malware",
+    description: "Learn to detect malicious .APK traps disguised as courier delivery receipts or wedding invitations.",
+  },
+  "bank-kenaikan-tarif": {
+    title: "Official Bank Fee Increase Letter Rp 150,000",
+    description: "Encounter deceptive official bank notices demanding cancellation forms on phishing links.",
+  },
+  "loker-like-video": {
+    title: "Part-Time Job Scam: Video Liking & Review Tasks",
+    description: "Test instincts against fraudsters promising daily income through video likes and store follow tasks.",
+  },
+  "cs-palsu-otp": {
+    title: "Spoofed Call Center: E-Wallet Transaction Cancellation",
+    description: "Resist impostors claiming to be official customer service urging you to share OTP codes.",
+  },
+  "teman-pinjam-uang": {
+    title: "Impersonated Relative Urgently Requesting Emergency Funds",
+    description: "Train cognitive immunity against sympathy manipulation when an acquaintance claims sudden hardship.",
+  },
+};
+
 export default function SandboxTab() {
   const lang = useLanguage();
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
@@ -190,28 +217,32 @@ export default function SandboxTab() {
       {!activeScenarioID ? (
         /* Scenario Selection Grid (Clean, Obsidian Dark, Human-crafted, 5 Real Vectors) */
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {scenarios.map((sc) => (
-            <div
-              key={sc.id}
-              onClick={() => startScenario(sc.id)}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/50 hover:bg-[#16181d] transition-all cursor-pointer text-left"
-            >
-              <div className="space-y-2">
-                <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
-                  {sc.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  {sc.description}
-                </p>
-              </div>
+          {scenarios.map((sc) => {
+            const displayTitle = (lang === "en" && SCENARIO_TRANSLATIONS[sc.id]?.title) || sc.title;
+            const displayDesc = (lang === "en" && SCENARIO_TRANSLATIONS[sc.id]?.description) || sc.description;
+            return (
+              <div
+                key={sc.id}
+                onClick={() => startScenario(sc.id)}
+                className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/50 hover:bg-[#16181d] transition-all cursor-pointer text-left"
+              >
+                <div className="space-y-2">
+                  <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
+                    {displayTitle}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    {displayDesc}
+                  </p>
+                </div>
 
-              <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-                <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
-                  {lang === "en" ? "Start Simulation" : "Mulai Simulasi"}
-                </span>
+                <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
+                  <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                    {lang === "en" ? "Start Simulation" : "Mulai Simulasi"}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         /* Active Simulation Sandbox (Refined Obsidian Dark Theme) */
@@ -224,10 +255,10 @@ export default function SandboxTab() {
                 <HackerAvatar className="h-10 w-10 shrink-0" />
                 <div className="min-w-0">
                   <h4 className="text-sm font-bold text-white leading-tight">
-                    {currentStep?.sender_name || currentStep?.SenderName || activeScenario?.title}
+                    {currentStep?.sender_name || currentStep?.SenderName || (lang === "en" && activeScenarioID && SCENARIO_TRANSLATIONS[activeScenarioID]?.title) || activeScenario?.title}
                   </h4>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    {currentStep?.sender_role || currentStep?.SenderRole || "Entitas Asing"} · <span className="text-emerald-400 font-semibold">Online</span>
+                    {currentStep?.sender_role || currentStep?.SenderRole || (lang === "en" ? "Foreign Entity" : "Entitas Asing")} · <span className="text-emerald-400 font-semibold">Online</span>
                   </p>
                 </div>
               </div>

@@ -102,7 +102,7 @@ interface PipelineStep {
   desc: string;
 }
 
-const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
+const TOOL_PIPELINES_ID: Record<ScanCategory, PipelineStep[]> = {
   text: [
     { title: "Membaca Muatan Pesan", desc: "" },
     { title: "Mendeteksi Pola Manipulasi", desc: "" },
@@ -138,6 +138,45 @@ const TOOL_PIPELINES: Record<ScanCategory, PipelineStep[]> = {
     { title: "Memeriksa Struktur Berkas", desc: "" },
     { title: "Membedah Teks & Kejanggalan Visual", desc: "" },
     { title: "Menghitung Indeks Risiko", desc: "" },
+  ],
+};
+
+const TOOL_PIPELINES_EN: Record<ScanCategory, PipelineStep[]> = {
+  text: [
+    { title: "Parsing Message Payload", desc: "" },
+    { title: "Detecting Manipulation Heuristics", desc: "" },
+    { title: "Correlating Scam Patterns", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
+  ],
+  url: [
+    { title: "Checking Address & Redirect Chain", desc: "" },
+    { title: "Auditing Encryption & Server Infra", desc: "" },
+    { title: "Dissecting Page DOM & Data Flows", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
+  ],
+  phone: [
+    { title: "Identifying Number Origin & Carrier", desc: "" },
+    { title: "Tracing Digital Footprints", desc: "" },
+    { title: "Checking Threat Blacklist History", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
+  ],
+  bank: [
+    { title: "Validating Banking Institution", desc: "" },
+    { title: "Querying Financial Crime Logs", desc: "" },
+    { title: "Cross-checking Suspicious Accounts", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
+  ],
+  email: [
+    { title: "Validating Header & Domain Format", desc: "" },
+    { title: "Checking Global Spam Reputation", desc: "" },
+    { title: "Testing Inbound Mail Servers", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
+  ],
+  file: [
+    { title: "Reading File Bytes & Checksum Hashes", desc: "" },
+    { title: "Auditing Package Structure & Perms", desc: "" },
+    { title: "Dissecting Text & Visual Anomalies", desc: "" },
+    { title: "Computing Risk Index", desc: "" },
   ],
 };
 
@@ -276,6 +315,7 @@ function RiskGaugeDial({ score }: { score: number }) {
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
   const lang = useLanguage();
+  const TOOL_PIPELINES = lang === "en" ? TOOL_PIPELINES_EN : TOOL_PIPELINES_ID;
   const [scanType, setScanType] = useState<ScanCategory>("text");
 
   // Form states
@@ -327,21 +367,21 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
     if (scanType === "text") {
       if (!inputText.trim()) {
-        setErrorMsg("Masukkan teks pesan atau chat yang ingin diperiksa.");
+        setErrorMsg(lang === "en" ? "Please enter message text to inspect." : "Masukkan teks pesan atau chat yang ingin diperiksa.");
         return;
       }
       endpoint = "/api/v1/scan/text";
       payload = { text: inputText };
     } else if (scanType === "url") {
       if (!inputURL.trim()) {
-        setErrorMsg("Masukkan tautan atau domain website yang ingin diperiksa.");
+        setErrorMsg(lang === "en" ? "Please enter a web link or domain to inspect." : "Masukkan tautan atau domain website yang ingin diperiksa.");
         return;
       }
       endpoint = "/api/v1/scan/url";
       payload = { url: inputURL, follow_redirects: true };
     } else if (scanType === "phone") {
       if (!inputPhone.trim()) {
-        setErrorMsg("Masukkan nomor telepon atau WhatsApp yang ingin diperiksa.");
+        setErrorMsg(lang === "en" ? "Please enter a phone or WhatsApp number to inspect." : "Masukkan nomor telepon atau WhatsApp yang ingin diperiksa.");
         return;
       }
       endpoint = "/api/v1/scan/phone";
@@ -357,25 +397,25 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       payload = { phone: formattedPhone };
     } else if (scanType === "bank") {
       if (!inputBankAcc.trim()) {
-        setErrorMsg("Masukkan nomor rekening bank atau nomor akun e-wallet.");
+        setErrorMsg(lang === "en" ? "Please enter bank account or e-wallet number." : "Masukkan nomor rekening bank atau nomor akun e-wallet.");
         return;
       }
       endpoint = "/api/v1/scan/bank";
       payload = { bank_name: inputBankName, account_number: inputBankAcc };
     } else if (scanType === "email") {
       if (!inputEmail.trim()) {
-        setErrorMsg("Masukkan alamat email yang ingin diperiksa.");
+        setErrorMsg(lang === "en" ? "Please enter an email address to inspect." : "Masukkan alamat email yang ingin diperiksa.");
         return;
       }
       endpoint = "/api/v1/scan/email";
       payload = { email: inputEmail };
     } else if (scanType === "file") {
       if (!selectedFile) {
-        setErrorMsg("Pilih berkas, gambar bukti transfer, atau APK yang ingin diperiksa.");
+        setErrorMsg(lang === "en" ? "Please choose a file, transfer receipt image, or APK to inspect." : "Pilih berkas, gambar bukti transfer, atau APK yang ingin diperiksa.");
         return;
       }
       if (selectedFile.size > 5 * 1024 * 1024) {
-        setErrorMsg("Ukuran berkas maksimal 5 MB.");
+        setErrorMsg(lang === "en" ? "Maximum file size is 5 MB." : "Ukuran berkas maksimal 5 MB.");
         return;
       }
       endpoint = "/api/v1/scan/file";

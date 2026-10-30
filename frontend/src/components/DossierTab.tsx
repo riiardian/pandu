@@ -414,10 +414,12 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-5 shadow-xl">
             <div>
               <h3 className="text-base font-bold text-white">
-                Formulir Pelaporan Entitas Berbahaya
+                {lang === "en" ? "Malicious Entity Reporting Form" : "Formulir Pelaporan Entitas Berbahaya"}
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed mt-1">
-                Laporan Anda akan langsung dicatat ke basis data daftar hitam PANDU dan memperingatkan pengguna lain yang melakukan pencarian terhadap nomor, rekening, atau tautan ini.
+                {lang === "en"
+                  ? "Your report will be immediately recorded into PANDU's blacklist registry to warn other users investigating this target."
+                  : "Laporan Anda akan langsung dicatat ke basis data daftar hitam PANDU dan memperingatkan pengguna lain yang melakukan pencarian terhadap nomor, rekening, atau tautan ini."}
               </p>
             </div>
 
@@ -431,7 +433,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   onClick={() => setActiveTab("search")}
                   className="rounded bg-emerald-600 px-3 py-1 font-semibold text-white hover:bg-emerald-500 text-[11px] shrink-0"
                 >
-                  Lihat di Daftar Hitam
+                  {lang === "en" ? "View in Blacklist" : "Lihat di Daftar Hitam"}
                 </button>
               </div>
             )}
@@ -440,14 +442,14 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               {/* Type Selector */}
               <div>
                 <label className="block font-semibold text-slate-300 mb-1.5">
-                  Tipe Entitas yang Dilaporkan:
+                  {lang === "en" ? "Reported Entity Type:" : "Tipe Entitas yang Dilaporkan:"}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: "phone", label: "No. Telepon / WA", icon: Phone },
-                    { id: "bank_account", label: "Rekening / E-Wallet", icon: CreditCard },
-                    { id: "url", label: "Tautan / Website", icon: Globe },
-                    { id: "apk_hash", label: "File APK Jahat", icon: FileCode },
+                    { id: "phone", label: lang === "en" ? "Phone / WA" : "No. Telepon / WA", icon: Phone },
+                    { id: "bank_account", label: lang === "en" ? "Bank / E-Wallet" : "Rekening / E-Wallet", icon: CreditCard },
+                    { id: "url", label: lang === "en" ? "Link / Website" : "Tautan / Website", icon: Globe },
+                    { id: "apk_hash", label: lang === "en" ? "Malicious APK" : "File APK Jahat", icon: FileCode },
                   ].map((t) => {
                     const IconComp = t.icon;
                     return (
@@ -472,17 +474,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               {/* Identifier Target */}
               <div>
                 <label className="block font-semibold text-slate-300 mb-1.5">
-                  Nomor / Akun / Tautan Target:
+                  {lang === "en" ? "Target Number / Account / Link:" : "Nomor / Akun / Tautan Target:"}
                 </label>
                 <input
                   type="text"
                   required
                   placeholder={
                     reportType === "phone"
-                      ? "Contoh: 085812345678"
+                      ? (lang === "en" ? "Example: 085812345678" : "Contoh: 085812345678")
                       : reportType === "bank_account"
-                      ? "Contoh: 8271039481 atau 0858xxxx (DANA)"
-                      : "Contoh: https://shopee-vip-toko.site"
+                      ? (lang === "en" ? "Example: 8271039481 or 0858xxxx (DANA)" : "Contoh: 8271039481 atau 0858xxxx (DANA)")
+                      : (lang === "en" ? "Example: https://shopee-vip-toko.site" : "Contoh: https://shopee-vip-toko.site")
                   }
                   value={reportTarget}
                   onChange={(e) => setReportTarget(e.target.value)}
@@ -494,38 +496,38 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1.5">
-                    Modus Penipuan:
+                    {lang === "en" ? "Scam Modus Category:" : "Modus Penipuan:"}
                   </label>
                   <select
                     value={reportCategory}
                     onChange={(e) => setReportCategory(e.target.value)}
                     className="w-full rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white focus:border-blue-500 focus:outline-none"
                   >
-                    <option value="loker_freelance">Loker Freelance (Misi Like Video / Deposit)</option>
-                    <option value="kurir_apk">Penyebaran APK Kurir / Surat Tilang ETLE</option>
-                    <option value="phishing_bank">Phishing Bank (Pencurian OTP &amp; Saldo)</option>
-                    <option value="impersonasi">Impersonasi Kerabat / WhatsApp Hijacking</option>
-                    <option value="pinjol_ilegal">Pinjol Ilegal &amp; Pemerasan Kontak</option>
-                    <option value="investasi_bodong">Investasi Bodong / Trading Palsu</option>
+                    <option value="loker_freelance">{lang === "en" ? "Freelance Task Scam (Video Likes / Deposit)" : "Loker Freelance (Misi Like Video / Deposit)"}</option>
+                    <option value="kurir_apk">{lang === "en" ? "Malicious APK (Courier / Traffic Fine ETLE)" : "Penyebaran APK Kurir / Surat Tilang ETLE"}</option>
+                    <option value="phishing_bank">{lang === "en" ? "Bank Phishing (OTP & Balance Theft)" : "Phishing Bank (Pencurian OTP & Saldo)"}</option>
+                    <option value="impersonasi">{lang === "en" ? "Relative Impersonation / WhatsApp Hijack" : "Impersonasi Kerabat / WhatsApp Hijacking"}</option>
+                    <option value="pinjol_ilegal">{lang === "en" ? "Illegal Loan / Contact Extortion" : "Pinjol Ilegal & Pemerasan Kontak"}</option>
+                    <option value="investasi_bodong">{lang === "en" ? "Fake Investment / Fraudulent Trading" : "Investasi Bodong / Trading Palsu"}</option>
                   </select>
                 </div>
 
                 {reportType === "bank_account" && (
                   <div>
                     <label className="block font-semibold text-slate-300 mb-1.5">
-                      Nama Bank / E-Wallet &amp; Atas Nama:
+                      {lang === "en" ? "Bank Name & Account Holder:" : "Nama Bank / E-Wallet & Atas Nama:"}
                     </label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        placeholder="Bank (BCA/BRI/DANA)"
+                        placeholder={lang === "en" ? "Bank (BCA/BRI/DANA)" : "Bank (BCA/BRI/DANA)"}
                         value={reportBank}
                         onChange={(e) => setReportBank(e.target.value)}
                         className="w-1/2 rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       />
                       <input
                         type="text"
-                        placeholder="Atas Nama Pemilik"
+                        placeholder={lang === "en" ? "Account Holder Name" : "Atas Nama Pemilik"}
                         value={reportAccountHolder}
                         onChange={(e) => setReportAccountHolder(e.target.value)}
                         className="w-1/2 rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
@@ -538,12 +540,12 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               {/* Chronology / Story */}
               <div>
                 <label className="block font-semibold text-slate-300 mb-1.5">
-                  Kronologi Singkat / Catatan Modus:
+                  {lang === "en" ? "Incident Chronology / Summary:" : "Kronologi Singkat / Catatan Modus:"}
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="Ceritakan singkat bagaimana pelaku menghubungi Anda dan apa yang mereka minta..."
+                  placeholder={lang === "en" ? "Briefly explain how the scammer contacted you and what was requested..." : "Ceritakan singkat bagaimana pelaku menghubungi Anda dan apa yang mereka minta..."}
                   value={reportChronology}
                   onChange={(e) => setReportChronology(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
@@ -555,7 +557,9 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 disabled={reportSubmitting}
                 className="w-full rounded-xl bg-blue-600 py-3 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40 disabled:opacity-50"
               >
-                {reportSubmitting ? "Mencatat ke Basis Data..." : "Simpan ke Basis Data Daftar Hitam PANDU"}
+                {reportSubmitting
+                  ? (lang === "en" ? "Saving to Database..." : "Mencatat ke Basis Data...")
+                  : (lang === "en" ? "Save to PANDU Threat Blacklist" : "Simpan ke Basis Data Daftar Hitam PANDU")}
               </button>
             </form>
           </div>
@@ -569,35 +573,61 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2 text-rose-400 font-bold text-sm sm:text-base">
               <ShieldAlert className="h-5 w-5" />
-              <span>Prosedur Isolasi Darurat 5 Menit Pertama</span>
+              <span>{lang === "en" ? "First 5-Minute Emergency Account Isolation Protocol" : "Prosedur Isolasi Darurat 5 Menit Pertama"}</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Jika Anda terlanjur menginstal file .APK kurir atau mentransfer uang kepada penipu, lakukan 4 langkah isolasi darurat ini secara berurutan sekarang juga:
+              {lang === "en"
+                ? "If you have accidentally installed a malicious .APK file or transferred funds to a fraudster, execute these 4 isolation steps immediately in sequence:"
+                : "Jika Anda terlanjur menginstal file .APK kurir atau mentransfer uang kepada penipu, lakukan 4 langkah isolasi darurat ini secara berurutan sekarang juga:"}
             </p>
 
             <div className="space-y-2.5">
-              {[
-                {
-                  step: "01",
-                  title: "Putus Koneksi Internet (Aktifkan Mode Pesawat)",
-                  desc: "Matikan WiFi dan Data Seluler segera. Trojan penyadap SMS memerlukan koneksi internet untuk mengirimkan kode OTP m-banking Anda ke server penipu.",
-                },
-                {
-                  step: "02",
-                  title: "Hubungi Call Center Resmi Bank / E-Wallet Anda",
-                  desc: "Minta pemblokiran rekening darurat atau pembekuan akses m-banking Anda agar penipu tidak dapat melakukan transaksi pengurasan saldo.",
-                },
-                {
-                  step: "03",
-                  title: "Cek & Uninstall Aplikasi Mencurigakan",
-                  desc: "Buka Pengaturan HP > Aplikasi. Cari aplikasi tanpa ikon atau bernama aneh (misal: 'Surat Paket', 'Konfirmasi ETLE') lalu copot pemasangannya.",
-                },
-                {
-                  step: "04",
-                  title: "Ganti Password Email & Kredensial Perbankan",
-                  desc: "Lakukan pergantian kata sandi dari perangkat lain yang aman (bukan dari ponsel yang terinfeksi malware).",
-                },
-              ].map((item) => (
+              {(lang === "en"
+                ? [
+                    {
+                      step: "01",
+                      title: "Sever Internet Connection (Enable Airplane Mode)",
+                      desc: "Turn off WiFi and Cellular Data immediately. SMS-stealing trojans require an active internet connection to forward your banking OTP codes to attacker servers.",
+                    },
+                    {
+                      step: "02",
+                      title: "Contact Your Official Bank / E-Wallet Call Center",
+                      desc: "Request an emergency account freeze or m-banking lock to prevent scammers from executing fund draining transactions.",
+                    },
+                    {
+                      step: "03",
+                      title: "Identify & Uninstall Suspicious Applications",
+                      desc: "Open Phone Settings > Apps. Search for iconless apps or unfamiliar names (e.g. 'Package Receipt', 'ETLE Confirmation') and uninstall them immediately.",
+                    },
+                    {
+                      step: "04",
+                      title: "Reset Email Passwords & Banking Credentials",
+                      desc: "Perform password resets from another secure device (not from the infected smartphone).",
+                    },
+                  ]
+                : [
+                    {
+                      step: "01",
+                      title: "Putus Koneksi Internet (Aktifkan Mode Pesawat)",
+                      desc: "Matikan WiFi dan Data Seluler segera. Trojan penyadap SMS memerlukan koneksi internet untuk mengirimkan kode OTP m-banking Anda ke server penipu.",
+                    },
+                    {
+                      step: "02",
+                      title: "Hubungi Call Center Resmi Bank / E-Wallet Anda",
+                      desc: "Minta pemblokiran rekening darurat atau pembekuan akses m-banking Anda agar penipu tidak dapat melakukan transaksi pengurasan saldo.",
+                    },
+                    {
+                      step: "03",
+                      title: "Cek & Uninstall Aplikasi Mencurigakan",
+                      desc: "Buka Pengaturan HP > Aplikasi. Cari aplikasi tanpa ikon atau bernama aneh (misal: 'Surat Paket', 'Konfirmasi ETLE') lalu copot pemasangannya.",
+                    },
+                    {
+                      step: "04",
+                      title: "Ganti Password Email & Kredensial Perbankan",
+                      desc: "Lakukan pergantian kata sandi dari perangkat lain yang aman (bukan dari ponsel yang terinfeksi malware).",
+                    },
+                  ]
+              ).map((item) => (
                 <div key={item.step} className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 flex gap-3 text-xs">
                   <span className="font-mono font-bold text-rose-400 text-sm shrink-0">{item.step}</span>
                   <div className="space-y-0.5">
@@ -613,12 +643,14 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3 shadow-xl">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-bold text-white">
-                Draf Peringatan untuk Grup WhatsApp Keluarga
+                {lang === "en" ? "Family WhatsApp Security Warning Draft" : "Draf Peringatan untuk Grup WhatsApp Keluarga"}
               </h4>
               <button
                 onClick={() =>
                   copyToClipboard(
-                    `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`,
+                    lang === "en"
+                      ? `Security alert for family: Please stay vigilant if you receive messages from unknown numbers sending .APK files (disguised as package receipts / traffic tickets) or claiming to be relatives in emergency distress. Never click or install them as they intercept mobile banking SMS OTPs. Always verify directly with the person. Stay safe!`
+                      : `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`,
                     "family"
                   )
                 }
@@ -627,19 +659,21 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 {copiedKey === "family" ? (
                   <>
                     <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Tersalin</span>
+                    <span className="text-emerald-400">{lang === "en" ? "Copied" : "Tersalin"}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="h-3.5 w-3.5 text-slate-300" />
-                    <span>Salin Pesan WA</span>
+                    <span>{lang === "en" ? "Copy Message" : "Salin Pesan WA"}</span>
                   </>
                 )}
               </button>
             </div>
 
             <pre className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 font-sans text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
-              Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!
+              {lang === "en"
+                ? `Security alert for family: Please stay vigilant if you receive messages from unknown numbers sending .APK files (disguised as package receipts / traffic tickets) or claiming to be relatives in emergency distress. Never click or install them as they intercept mobile banking SMS OTPs. Always verify directly with the person. Stay safe!`
+                : `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`}
             </pre>
           </div>
         </div>
