@@ -355,21 +355,24 @@ html.light section > div[style*="rotateX"] {
 }
 
 .terminal-feed-card {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  transition: none !important;
 }
 
 html.light .terminal-feed-card {
   border-color: #cbd5e1 !important;
   box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.08) !important;
   background-color: #06070a !important;
+  transition: none !important;
 }
 
 /* Authentic Terminal Titlebar: Stays Consistently Dark & Flat (No White Flash or Shadow Popping on Theme Switch) */
 .terminal-feed-card .terminal-titlebar,
 html.light .terminal-feed-card .terminal-titlebar {
   background-color: #0d0f15 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: none !important;
+  transition: none !important;
 }
 
 .terminal-feed-card .terminal-titlebar .titlebar-text,
