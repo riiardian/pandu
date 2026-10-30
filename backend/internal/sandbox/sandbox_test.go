@@ -15,8 +15,8 @@ func TestProcessTurn_SafeChoice(t *testing.T) {
 	req := SimulationTurnRequest{
 		ScenarioID: "loker-like-video",
 		StepID:     "step_1",
-		ChoiceID:   "c1_b", // Ask for company registration
-		ScoreSoFar: 50,
+		ChoiceID:   "loker_c1_safe",
+		ScoreSoFar: 0,
 	}
 
 	res, err := ProcessTurn(req)
@@ -24,8 +24,8 @@ func TestProcessTurn_SafeChoice(t *testing.T) {
 		t.Fatalf("ProcessTurn failed: %v", err)
 	}
 
-	if res.NewTotalScore <= 50 {
-		t.Fatalf("Expected score to increase for safe choice, got %d", res.NewTotalScore)
+	if res.NewTotalScore != 25 {
+		t.Fatalf("Expected score to be 25 for safe choice starting from 0, got %d", res.NewTotalScore)
 	}
 
 	if res.NextStep == nil {
@@ -37,8 +37,8 @@ func TestProcessTurn_FatalChoice(t *testing.T) {
 	req := SimulationTurnRequest{
 		ScenarioID: "kurir-paket-apk",
 		StepID:     "step_1",
-		ChoiceID:   "apk_c1_a", // Install APK blindly
-		ScoreSoFar: 50,
+		ChoiceID:   "apk_c1_fatal",
+		ScoreSoFar: 0,
 	}
 
 	res, err := ProcessTurn(req)
@@ -46,11 +46,11 @@ func TestProcessTurn_FatalChoice(t *testing.T) {
 		t.Fatalf("ProcessTurn failed: %v", err)
 	}
 
-	if res.NewTotalScore >= 50 {
-		t.Fatalf("Expected score to decrease for fatal choice, got %d", res.NewTotalScore)
+	if res.NewTotalScore != 0 {
+		t.Fatalf("Expected score to remain 0 for fatal choice, got %d", res.NewTotalScore)
 	}
 
-	if !res.IsCompleted {
-		t.Fatal("Expected fatal malware scenario to complete/end")
+	if res.NextStep == nil {
+		t.Fatal("Expected next step to exist for 4-turn sequence")
 	}
 }

@@ -84,7 +84,7 @@ export default function SandboxTab() {
   const [activeScenario, setActiveScenario] = useState<any>(null);
   const [currentStepID, setCurrentStepID] = useState<string>("step_1");
   const [chatHistory, setChatHistory] = useState<Array<{ sender: "bot" | "user"; text: string; attachment?: any; tactic?: string }>>([]);
-  const [currentScore, setCurrentScore] = useState<number>(50);
+  const [currentScore, setCurrentScore] = useState<number>(0);
   const [turnFeedback, setTurnFeedback] = useState<any>(null);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [finalResult, setFinalResult] = useState<any>(null);
@@ -116,7 +116,7 @@ export default function SandboxTab() {
         setActiveScenario(sc);
         setActiveScenarioID(id);
         setCurrentStepID(sc.initial_step);
-        setCurrentScore(50); // Base starting score
+        setCurrentScore(0); // Score starts from 0 across 4 steps
         setIsCompleted(false);
         setFinalResult(null);
         setTurnFeedback(null);
@@ -375,17 +375,21 @@ export default function SandboxTab() {
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase tracking-wider font-mono">
                       {turnFeedback.rating === "SAFE"
-                        ? (lang === "en" ? "Safe Decision" : "Keputusan Aman")
-                        : (lang === "en" ? "Risky Decision" : "Keputusan Berisiko")}
+                        ? (lang === "en" ? "Best Decision (+25)" : "Keputusan Tepat (+25)")
+                        : turnFeedback.rating === "RISKY"
+                        ? (lang === "en" ? "Suboptimal Decision (+15)" : "Kurang Tepat (+15)")
+                        : (lang === "en" ? "Incorrect Decision (+0)" : "Keputusan Salah (+0)")}
                     </span>
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                        turnFeedback.scoreDelta > 0
+                        turnFeedback.scoreDelta >= 25
                           ? "bg-emerald-500/20 text-emerald-300"
+                          : turnFeedback.scoreDelta > 0
+                          ? "bg-amber-500/20 text-amber-300"
                           : "bg-rose-500/20 text-rose-300"
                       }`}
                     >
-                      {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : turnFeedback.scoreDelta}
+                      {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : "+0"}
                     </span>
                   </div>
                   <p className="leading-relaxed text-slate-200">{turnFeedback.feedback}</p>
@@ -410,8 +414,8 @@ export default function SandboxTab() {
                         className="group flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-medium text-slate-200 hover:border-blue-500/60 hover:bg-[#1a1d25] hover:text-white transition-all disabled:opacity-50 cursor-pointer"
                       >
                         <span className="leading-relaxed pr-3">{c.text}</span>
-                        <span className="text-[11px] font-semibold text-blue-400 shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
-                          {lang === "en" ? "Select →" : "Pilih →"}
+                        <span className="shrink-0 rounded-full bg-blue-600 px-3.5 py-1 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors select-none shadow-sm">
+                          {lang === "en" ? "Select" : "Pilih"}
                         </span>
                       </button>
                     ))}
@@ -459,8 +463,8 @@ export default function SandboxTab() {
               </div>
               <p className="mt-3 text-xs text-slate-400 leading-relaxed">
                 {lang === "en"
-                  ? "Score increases when demanding official verification, and drops drastically if persuaded to deposit money, click unauthorized links, or share OTPs."
-                  : "Skor meningkat ketika Anda menuntut verifikasi resmi, dan anjlok drastis jika Anda terbujuk menyetor uang, mengklik tautan tidak resmi, atau menyerahkan kode OTP."}
+                  ? "Score starts from 0 across 4 evaluation steps. Correct safe decisions earn +25 points, suboptimal earn +15, and fatal errors earn 0."
+                  : "Skor dimulai dari 0 melintasi 4 tahap evaluasi. Jawaban tepat bernilai +25 poin, kurang tepat +15 poin, dan salah bernilai 0."}
               </p>
             </div>
 
