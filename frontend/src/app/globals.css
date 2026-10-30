@@ -173,6 +173,12 @@ html.light header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
+html.light header button,
+html.light header svg,
+html.light header span {
+  color: #0f172a !important;
+}
+
 /* Light Theme Card Containers */
 html.light .bg-\[\#121316\]\/90,
 html.light .bg-\[\#121316\],

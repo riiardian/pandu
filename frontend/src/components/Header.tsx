@@ -190,42 +190,42 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Header Controls (Language, Theme, Menu) */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Header Controls (Language, Theme, Menu) - Floating, Borderless, Zero-Background */}
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
               aria-label="Ubah Bahasa / Switch Language"
-              className="flex items-center gap-1 h-8 px-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-mono font-bold text-slate-200 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
+              className="flex items-center gap-1 h-9 px-1 text-xs font-mono font-bold text-white hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
               title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
             >
-              <Globe className="h-3.5 w-3.5 text-blue-400" />
+              <Globe className="h-4 w-4 text-white hover:text-blue-400 transition-colors" />
               <span>{lang === "id" ? "EN" : "ID"}</span>
             </button>
 
-            {/* Light / Dark Theme Switcher */}
+            {/* Light / Dark Theme Switcher (Pure White Icon, No Background) */}
             <button
               onClick={toggleTheme}
               aria-label="Ubah Tema / Toggle Theme"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-amber-400 transition-all active:scale-95 cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center text-white hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
               title={theme === "dark" ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
             >
               {theme === "dark" ? (
-                <Sun className="h-4 w-4 text-amber-400" />
+                <Sun className="h-4.5 w-4.5 text-white" />
               ) : (
-                <Moon className="h-4 w-4 text-blue-400" />
+                <Moon className="h-4.5 w-4.5 text-white" />
               )}
             </button>
 
-            {/* Minimalist Hamburger Menu Button */}
+            {/* Minimalist Hamburger Menu Button (No Background) */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle Navigation Menu"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-95 cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center text-white hover:text-blue-400 focus:outline-none transition-colors cursor-pointer select-none"
             >
               {isOpen ? (
                 <svg
-                  className="h-4 w-4"
+                  className="h-5 w-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -238,7 +238,7 @@ export default function Header() {
                 </svg>
               ) : (
                 <svg
-                  className="h-4 w-4"
+                  className="h-5 w-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"

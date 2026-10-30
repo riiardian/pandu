@@ -1,35 +1,60 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
-const PIPELINE_STEPS = [
+const PIPELINE_STEPS_ID = [
   {
-    idx: 0,
     step: "1",
     title: "Identifikasi Target",
     desc: "Sistem menerima email, tautan, atau berkas yang dicurigai, lalu menormalkan parameter secara aman sebelum pemeriksaan eksternal.",
   },
   {
-    idx: 1,
     step: "2",
     title: "Korelasi Intelijen",
     desc: "PANDU memeriksa reputasi email, rekam pemindaian domain, registrasi RDAP, dan kecocokan hash berkas pada sumber eksternal.",
   },
   {
-    idx: 2,
     step: "3",
     title: "Verifikasi Jejak Digital",
     desc: "Sistem menelusuri kecocokan data ke basis data PANDU dan jaringan intelijen terbuka untuk menemukan indikasi rekam jejak kejahatan digital.",
   },
   {
-    idx: 3,
     step: "4",
     title: "Laporan & Mitigasi",
     desc: "Menerbitkan skor risiko transparan, checklist tindakan darurat isolasi akun 5 menit, dan secara otomatis mencatat entitas ke basis data daftar hitam PANDU.",
   },
 ];
 
+const PIPELINE_STEPS_EN = [
+  {
+    step: "1",
+    title: "Target Identification",
+    desc: "The system ingests suspicious emails, links, or files, safely normalizing parameters prior to external inspection.",
+  },
+  {
+    step: "2",
+    title: "Intelligence Correlation",
+    desc: "PANDU audits email reputation, domain scan records, RDAP registration, and file hash matches against external threat sources.",
+  },
+  {
+    step: "3",
+    title: "Digital Footprint Verification",
+    desc: "Cross-references data against PANDU's blacklist database and open intelligence networks to uncover digital crime indicators.",
+  },
+  {
+    step: "4",
+    title: "Report & Mitigation",
+    desc: "Issues a transparent risk score, a 5-minute emergency account isolation checklist, and automatically indexes confirmed threats into the blacklist.",
+  },
+];
+
 export default function AnimatedPipeline() {
+  const lang = useLanguage();
+  const PIPELINE_STEPS = (lang === "en" ? PIPELINE_STEPS_EN : PIPELINE_STEPS_ID).map((item, idx) => ({
+    ...item,
+    idx,
+  }));
   const [activeStep, setActiveStep] = useState(0);
   const [phase, setPhase] = useState<"igniting" | "active" | "receding" | "traveling">("igniting");
 
