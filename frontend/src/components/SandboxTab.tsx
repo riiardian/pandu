@@ -171,20 +171,17 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Hero Section (Borderless & Clean, directly on canvas) */}
+      {/* Intro Hero Section (Clean & Borderless) */}
       {!activeScenarioID && (
-        <section className="pt-2 pb-4">
-          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 sm:gap-8">
-            <div className="space-y-3 max-w-xl text-left">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+        <section className="pt-1 pb-1">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 sm:gap-6">
+            <div className="max-w-md sm:max-w-lg text-left">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight text-white leading-snug">
                 Kenali Modus Social Engineering Sebelum Menjadi Sasaran
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg">
-                Masuk ke arena simulasi sekarang, pelajari ciri jebakannya, dan buktikan seberapa jeli Anda menolak manipulasi sebelum berhadapan dengan ancaman aslinya.
-              </p>
             </div>
 
-            <CyberRadarAnimation className="w-48 h-32 sm:w-60 sm:h-40 shrink-0" />
+            <CyberRadarAnimation className="w-64 h-40 sm:w-80 sm:h-52 shrink-0" />
           </div>
         </section>
       )}
