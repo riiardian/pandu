@@ -876,7 +876,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               </div>
               <p className="text-slate-300 leading-relaxed">{result.ai_vision_result.explanation}</p>
               {result.ai_vision_result.extracted_text_summary && (
-                <p className="text-[11px] text-slate-400 font-mono">Teks: {result.ai_vision_result.extracted_text_summary}</p>
+                <p className="text-[11px] text-slate-400 font-mono">{lang === "en" ? "Text: " : "Teks: "}{result.ai_vision_result.extracted_text_summary}</p>
               )}
             </div>
           )}
@@ -910,23 +910,57 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                           const ips = (e.value || "").split(", ").filter((ip: string) => !ip.includes(":")).slice(0, 2).join(", ");
                           return `IP: ${ips || e.value}`;
                         }
-                        if (e.label === "Umur Domain Aktif") return `Umur: ${e.value}`;
+                        if (e.label === "Umur Domain Aktif") return `${lang === "en" ? "Domain Age" : "Umur"}: ${e.value}`;
                         if (e.label === "Domain registry") return `Registry: ${e.value}`;
-                        if (e.label === "Penerbit") return `Penerbit: ${e.value}`;
+                        if (e.label === "Penerbit") return `${lang === "en" ? "Issuer" : "Penerbit"}: ${e.value}`;
                         if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
+                        if (e.label === "Kategori") return `${lang === "en" ? "Category" : "Kategori"}: ${e.value}`;
+                        if (e.label === "Laporan terverifikasi") return `${lang === "en" ? "Verified reports" : "Laporan terverifikasi"}: ${e.value}`;
                         return `${e.label}: ${e.value}`;
                       });
                     evidenceText = cleanItems.join(" • ");
                   }
 
                   if (!evidenceText) {
-                    evidenceText = isMatch ? "Ditemukan catatan kecurigaan." : "Tidak ditemukan riwayat kejahatan / aduan.";
+                    evidenceText = isMatch
+                      ? (lang === "en" ? "Suspicious records or threat indicators detected." : "Ditemukan catatan kecurigaan.")
+                      : (lang === "en" ? "No crime history or public complaints found." : "Tidak ditemukan riwayat kejahatan / aduan.");
+                  } else if (lang === "en") {
+                    evidenceText = evidenceText
+                      .replace(/Tidak ditemukan riwayat kejahatan \/ aduan\.?/gi, "No crime history or public complaints found.")
+                      .replace(/Tidak ditemukan catatan kecurigaan\.?/gi, "No suspicious records found.")
+                      .replace(/Ditemukan catatan kecurigaan\.?/gi, "Suspicious records or threat indicators detected.")
+                      .replace(/Tidak ada rekaman insiden atau aduan penipuan\.?/gi, "No incident records or scam complaints found.")
+                      .replace(/Tidak ada riwayat aduan publik\.?/gi, "No public complaint records found.")
+                      .replace(/Tidak ada cuplikan halaman publik yang ditemukan pada indeks mesin pencari\.?/gi, "No public complaint records found in search index.")
+                      .replace(/Terdaftar dalam aduan publik/gi, "Listed in public complaint records")
+                      .replace(/Terindikasi penipuan/gi, "Indicated as fraudulent")
+                      .replace(/Entitas berisiko tinggi/gi, "High-risk entity")
+                      .replace(/Aman \/ belum ada aduan/gi, "Safe / no complaints recorded")
+                      .replace(/Konten judi online \/ taruhan ilegal/gi, "Online gambling / illegal betting content")
+                      .replace(/Indikator phishing \/ pencurian data/gi, "Phishing indicators / data harvesting")
+                      .replace(/Situs web phishing/gi, "Phishing website")
+                      .replace(/Rekening terindikasi penipuan/gi, "Bank account indicated in fraud")
+                      .replace(/Nomor terindikasi penipuan/gi, "Phone number indicated in fraud")
+                      .replace(/Ditemukan riwayat laporan/gi, "Complaint report history found");
                   }
+
+                  const displayName = lang === "en"
+                    ? (source.name === "Registri Ancaman & Rekam Laporan"
+                        ? "Threat Registry & Report Records"
+                        : source.name === "Intelijen Jejak & Riwayat Siber"
+                        ? "Footprint Intelligence & Cyber History"
+                        : source.name.includes("Registri Ancaman")
+                        ? "Threat Registry & Report Records"
+                        : source.name.includes("Intelijen Jejak")
+                        ? "Footprint Intelligence & Cyber History"
+                        : source.name)
+                    : source.name;
 
                   return (
                     <div key={source.id} className="space-y-1">
                       <div className="text-sm font-semibold text-white">
-                        {source.name}
+                        {displayName}
                       </div>
                       <p className={`text-xs leading-relaxed ${isMatch ? "text-rose-300 font-medium" : "text-slate-400"}`}>
                         {evidenceText}

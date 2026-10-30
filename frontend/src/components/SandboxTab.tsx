@@ -303,7 +303,7 @@ export default function SandboxTab() {
                                 {msg.attachment.data.split(" ")[0]}
                               </p>
                               <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                                4.8 MB · Berkas Aplikasi
+                                4.8 MB · {lang === "en" ? "Application Package" : "Berkas Aplikasi"}
                               </span>
                             </div>
                           </div>
@@ -318,7 +318,7 @@ export default function SandboxTab() {
                         )}
                         {msg.attachment.type === "IMAGE" && (
                           <div className="text-xs text-slate-500 dark:text-slate-400 italic">
-                            [Lampiran Gambar: {msg.attachment.data}]
+                            [{lang === "en" ? "Image Attachment: " : "Lampiran Gambar: "}{msg.attachment.data}]
                           </div>
                         )}
                       </div>
@@ -347,7 +347,9 @@ export default function SandboxTab() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase tracking-wider font-mono">
-                      {turnFeedback.rating === "SAFE" ? "Keputusan Aman" : "Keputusan Berisiko"}
+                      {turnFeedback.rating === "SAFE"
+                        ? (lang === "en" ? "Safe Decision" : "Keputusan Aman")
+                        : (lang === "en" ? "Risky Decision" : "Keputusan Berisiko")}
                     </span>
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
@@ -360,7 +362,7 @@ export default function SandboxTab() {
                     </span>
                   </div>
                   <p className="leading-relaxed text-slate-200">{turnFeedback.feedback}</p>
-                  <p className="text-[11px] opacity-80 italic">Catatan: {turnFeedback.psychology}</p>
+                  <p className="text-[11px] opacity-80 italic">{lang === "en" ? "Psychological Note: " : "Catatan: "}{turnFeedback.psychology}</p>
                 </div>
               </div>
             )}

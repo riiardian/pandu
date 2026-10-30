@@ -258,49 +258,49 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   <div className="flex items-center justify-between border-b border-rose-500/20 pb-3">
                     <div className="flex items-center gap-2.5 text-rose-400 font-bold text-sm sm:text-base">
                       <Flame className="h-5 w-5 animate-pulse" />
-                      <span>PERINGATAN: TERDAFTAR DALAM DAFTAR HITAM PANDU</span>
+                      <span>{lang === "en" ? "WARNING: REGISTERED IN PANDU THREAT BLACKLIST" : "PERINGATAN: TERDAFTAR DALAM DAFTAR HITAM PANDU"}</span>
                     </div>
                     <span className="rounded bg-rose-600/30 border border-rose-500/50 px-2 py-0.5 text-[10px] font-mono font-bold text-rose-200">
-                      RISIKO {searchResult.data?.risk_level || "CRITICAL"}
+                      {lang === "en" ? "RISK" : "RISIKO"} {searchResult.data?.risk_level || "CRITICAL"}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">Identitas Target</span>
+                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Target Identity" : "Identitas Target"}</span>
                       <p className="text-sm font-bold text-white font-mono break-all">
                         {searchResult.data?.identifier}
                       </p>
                       {searchResult.data?.account_holder && (
                         <p className="text-[11px] text-rose-200">
-                          a.n {searchResult.data?.account_holder} ({searchResult.data?.reported_bank})
+                          {lang === "en" ? "o/b" : "a.n"} {searchResult.data?.account_holder} ({searchResult.data?.reported_bank})
                         </p>
                       )}
                     </div>
 
                     <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">Jumlah Laporan Korban</span>
+                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Report Count" : "Jumlah Laporan Korban"}</span>
                       <p className="text-xl font-black text-rose-400 font-mono">
-                        {searchResult.data?.report_count} Laporan
+                        {searchResult.data?.report_count} {lang === "en" ? "Reports" : "Laporan"}
                       </p>
                       <p className="text-[10px] text-rose-200">
-                        Pertama: {searchResult.data?.first_reported?.split(" ")[0]}
+                        {lang === "en" ? "First:" : "Pertama:"} {searchResult.data?.first_reported?.split(" ")[0]}
                       </p>
                     </div>
 
                     <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">Kategori Modus</span>
+                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Modus Category" : "Kategori Modus"}</span>
                       <p className="text-sm font-bold text-white capitalize">
                         {searchResult.data?.category?.replace("_", " ")}
                       </p>
                       <p className="text-[10px] text-rose-200">
-                        Status: Terverifikasi Berbahaya
+                        {lang === "en" ? "Status: Verified Dangerous" : "Status: Terverifikasi Berbahaya"}
                       </p>
                     </div>
                   </div>
 
                   <div className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 space-y-1">
-                    <span className="text-[10px] font-mono text-slate-400 uppercase">Keterangan / Kronologi Kejadian:</span>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase">{lang === "en" ? "Notes / Chronology:" : "Keterangan / Kronologi Kejadian:"}</span>
                     <p className="text-xs text-slate-200 leading-relaxed">
                       {searchResult.data?.description}
                     </p>
@@ -308,7 +308,9 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
                   <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-2">
                     <p className="text-[11px] text-rose-300">
-                      Jangan lakukan transfer uang atau unduh file apa pun dari nomor/link ini.
+                      {lang === "en"
+                        ? "Do not transfer money or download any files from this number/link."
+                        : "Jangan lakukan transfer uang atau unduh file apa pun dari nomor/link ini."}
                     </p>
                     <button
                       onClick={() => {
@@ -317,7 +319,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                       }}
                       className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 transition-colors shrink-0"
                     >
-                      + Tambahkan Laporan Baru
+                      {lang === "en" ? "+ Add New Report" : "+ Tambahkan Laporan Baru"}
                     </button>
                   </div>
                 </div>
@@ -326,13 +328,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-md p-5 sm:p-6 space-y-3 shadow-xl">
                   <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-sm sm:text-base">
                     <CheckCircle2 className="h-5 w-5" />
-                    <span>Belum Terdaftar dalam Basis Data Daftar Hitam PANDU</span>
+                    <span>{lang === "en" ? "Not Listed in PANDU Threat Blacklist" : "Belum Terdaftar dalam Basis Data Daftar Hitam PANDU"}</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Target <span className="font-mono text-white font-bold">"{searchResult.query}"</span> saat ini belum pernah dilaporkan oleh komunitas PANDU.
+                    {lang === "en"
+                      ? <>Target <span className="font-mono text-white font-bold">"{searchResult.query}"</span> has not been reported by the PANDU community yet.</>
+                      : <>Target <span className="font-mono text-white font-bold">"{searchResult.query}"</span> saat ini belum pernah dilaporkan oleh komunitas PANDU.</>}
                   </p>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Catatan Keamanan: Belum terdaftar bukan jaminan 100% aman. Penipu kerap berganti nomor baru atau menggunakan domain baru setiap beberapa hari. Tetap waspadai permintaan transfer uang atau penginstalan file format .APK.
+                    {lang === "en"
+                      ? "Security Note: Not being listed does not guarantee 100% safety. Scammers frequently switch phone numbers or spin up new domains every few days. Always remain vigilant against requests for wire transfers or APK app installations."
+                      : "Catatan Keamanan: Belum terdaftar bukan jaminan 100% aman. Penipu kerap berganti nomor baru atau menggunakan domain baru setiap beberapa hari. Tetap waspadai permintaan transfer uang atau penginstalan file format .APK."}
                   </p>
                   <div className="pt-2">
                     <button
@@ -342,7 +348,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                       }}
                       className="rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
                     >
-                      Apakah Anda Menemukan Indikasi Mencurigakan? Laporkan Target Ini
+                      {lang === "en" ? "Found Suspicious Activity? Report This Target" : "Apakah Anda Menemukan Indikasi Mencurigakan? Laporkan Target Ini"}
                     </button>
                   </div>
                 </div>
