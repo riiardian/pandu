@@ -171,17 +171,15 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Hero Section (Clean, Space Grotesk, 1-Line Everywhere) */}
+      {/* Intro Hero Section (Centered, Borderless, Translucent Shimmer Text) */}
       {!activeScenarioID && (
-        <section className="pt-2 pb-2">
-          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 sm:gap-8">
-            <div className="text-left w-full sm:w-auto">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white leading-snug whitespace-nowrap">
-                Kenali Modus Social Engineering
-              </h2>
-            </div>
+        <section className="pt-1 pb-2 flex flex-col items-center justify-center text-center">
+          <CyberRadarAnimation className="w-56 h-36 sm:w-72 sm:h-44 lg:w-80 lg:h-48 shrink-0 mb-1" />
 
-            <CyberRadarAnimation className="w-64 h-40 sm:w-80 sm:h-52 lg:w-[340px] lg:h-[215px] shrink-0" />
+          <div className="w-full text-center">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight inline-block whitespace-nowrap animate-text-shimmer">
+              Kenali Modus Social Engineering
+            </h2>
           </div>
         </section>
       )}
