@@ -55,47 +55,26 @@ const SCENARIO_TRANSLATIONS: Record<string, { title: string; description: string
 };
 
 function formatSenderRole(rawRole: string, lang: "id" | "en"): string {
-  if (!rawRole) return lang === "en" ? "Unknown Entity" : "Entitas Tak Dikenal";
+  if (!rawRole) return lang === "en" ? "Unknown Contact" : "Nomor Tak Dikenal";
 
-  // Check if role contains a phone number inside parentheses e.g. (+62 821-4402-1922)
-  const phoneMatch = rawRole.match(/\(?\+?62\s*([\d\s-]+)\)?/);
-  if (phoneMatch) {
-    const rawDigits = "0" + phoneMatch[1].replace(/[\s-]/g, "");
-    // Dynamically mask digits (preserve 08, mask 2, keep 2, mask 2, keep 1, mask 2, keep 1)
-    let masked = "";
-    for (let i = 0; i < rawDigits.length; i++) {
-      if (i < 2) {
-        masked += rawDigits[i]; // '08'
-      } else if (i === 2 || i === 3) {
-        masked += "x";
-      } else if (i === 4 || i === 5) {
-        masked += rawDigits[i];
-      } else if (i === 6 || i === 7) {
-        masked += "x";
-      } else if (i === 8) {
-        masked += rawDigits[i];
-      } else if (i === rawDigits.length - 1) {
-        masked += rawDigits[i]; // last digit
-      } else {
-        masked += "x";
-      }
-    }
+  // Remove phone numbers, parenthesized content, and excess whitespace
+  let label = rawRole
+    .replace(/\s*\(.*?\)/g, "")
+    .replace(/\+?62[\d\s-]+/g, "")
+    .replace(/08[\dxX\s-]+/g, "")
+    .trim();
 
-    // Extract label part before parentheses
-    let label = rawRole.replace(/\s*\(.*?\)/, "").trim();
-    if (lang === "en") {
-      label = label
-        .replace(/Nomor Tak Dikenal/gi, "Unknown Number")
-        .replace(/Nomor Asing/gi, "Foreign Number")
-        .replace(/Kontak Baru/gi, "New Contact")
-        .replace(/Akun Bisnis Tiruan/gi, "Spoofed Business Account")
-        .replace(/Panggilan Call Center/gi, "Call Center Voice");
-    }
-    // Return without parentheses
-    return `${label} ${masked}`;
+  if (lang === "en") {
+    label = label
+      .replace(/Nomor Tak Dikenal/gi, "Unknown Contact")
+      .replace(/Nomor Asing/gi, "Foreign Contact")
+      .replace(/Kontak Baru/gi, "New Contact")
+      .replace(/Akun Bisnis Tiruan/gi, "Spoofed Business Account")
+      .replace(/Panggilan Call Center/gi, "Call Center Voice")
+      .replace(/Entitas Asing/gi, "Foreign Entity");
   }
 
-  return rawRole;
+  return label || (lang === "en" ? "Unknown Contact" : "Nomor Tak Dikenal");
 }
 
 export default function SandboxTab() {
@@ -343,9 +322,9 @@ export default function SandboxTab() {
                       <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
                         {msg.attachment.type === "FILE_APK" && (
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400 font-mono text-xs font-bold shrink-0">
+                            <span className="font-mono text-xs font-black text-rose-500 dark:text-rose-400 tracking-wider shrink-0 select-none">
                               APK
-                            </div>
+                            </span>
                             <div className="min-w-0">
                               <p className="font-bold text-xs truncate text-slate-900 dark:text-white">
                                 {msg.attachment.data.split(" ")[0]}
