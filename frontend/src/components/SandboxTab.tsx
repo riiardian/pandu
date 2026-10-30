@@ -6,8 +6,6 @@ import HackerAvatar from "@/components/HackerAvatar";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   MessageSquare,
-  ShieldCheck,
-  AlertTriangle,
   RotateCcw,
   Send,
   FileBox,
@@ -355,45 +353,37 @@ export default function SandboxTab() {
               ))}
             </div>
 
-            {/* Tactical Feedback Bar */}
+            {/* Natural & Clean Feedback Note */}
             {turnFeedback && (
-              <div
-                className={`border-t p-4 text-xs flex items-start gap-3 ${
-                  turnFeedback.rating === "SAFE"
-                    ? "bg-emerald-950/25 border-emerald-500/30 text-emerald-300"
-                    : turnFeedback.rating === "RISKY"
-                    ? "bg-amber-950/25 border-amber-500/30 text-amber-300"
-                    : "bg-rose-950/25 border-rose-500/30 text-rose-300"
-                }`}
-              >
-                {turnFeedback.rating === "SAFE" ? (
-                  <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                ) : (
-                  <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
-                )}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold uppercase tracking-wider font-mono">
-                      {turnFeedback.rating === "SAFE"
-                        ? (lang === "en" ? "Best Decision (+25)" : "Keputusan Tepat (+25)")
+              <div className="border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0c0d12] px-4 py-3 text-xs flex items-start gap-2.5">
+                <span
+                  className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
+                    turnFeedback.rating === "SAFE"
+                      ? "bg-emerald-500"
+                      : turnFeedback.rating === "RISKY"
+                      ? "bg-amber-500"
+                      : "bg-rose-500"
+                  }`}
+                />
+                <div className="space-y-0.5 min-w-0">
+                  <span
+                    className={`font-semibold block ${
+                      turnFeedback.rating === "SAFE"
+                        ? "text-emerald-600 dark:text-emerald-400"
                         : turnFeedback.rating === "RISKY"
-                        ? (lang === "en" ? "Suboptimal Decision (+15)" : "Kurang Tepat (+15)")
-                        : (lang === "en" ? "Incorrect Decision (+0)" : "Keputusan Salah (+0)")}
-                    </span>
-                    <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                        turnFeedback.scoreDelta >= 25
-                          ? "bg-emerald-500/20 text-emerald-300"
-                          : turnFeedback.scoreDelta > 0
-                          ? "bg-amber-500/20 text-amber-300"
-                          : "bg-rose-500/20 text-rose-300"
-                      }`}
-                    >
-                      {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : "+0"}
-                    </span>
-                  </div>
-                  <p className="leading-relaxed text-slate-200">{turnFeedback.feedback}</p>
-                  <p className="text-[11px] opacity-80 italic">{lang === "en" ? "Psychological Note: " : "Catatan: "}{turnFeedback.psychology}</p>
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-rose-600 dark:text-rose-400"
+                    }`}
+                  >
+                    {turnFeedback.rating === "SAFE"
+                      ? (lang === "en" ? "Correct Decision (+25)" : "Keputusan Tepat (+25)")
+                      : turnFeedback.rating === "RISKY"
+                      ? (lang === "en" ? "Suboptimal (+15)" : "Kurang Tepat (+15)")
+                      : (lang === "en" ? "Incorrect (+0)" : "Keputusan Keliru (+0)")}
+                  </span>
+                  <p className="leading-relaxed text-slate-600 dark:text-slate-300 text-xs">
+                    {turnFeedback.feedback}
+                  </p>
                 </div>
               </div>
             )}
