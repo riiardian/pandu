@@ -190,7 +190,7 @@ func handleScanPhone(c *fiber.Ctx) error {
 
 	reg := blacklist.GetRegistry()
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypePhone, req.Phone)
-	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Sources = append(result.Sources, registrySource("Registri Ancaman & Rekam Laporan", "https://pandu.web.id/aksi", matchedEntry, found))
 
 	// Live Web Footprint OSINT (Real-time public scam & fraud search)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -248,7 +248,7 @@ func handleScanBank(c *fiber.Ctx) error {
 	reg := blacklist.GetRegistry()
 	checkKey := req.AccountNumber
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeBank, checkKey)
-	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Sources = append(result.Sources, registrySource("Registri Ancaman & Rekam Laporan", "https://pandu.web.id/aksi", matchedEntry, found))
 
 	// Live Web Footprint OSINT (Real-time public complaint lookup for account)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -311,7 +311,7 @@ func handleScanEmail(c *fiber.Ctx) error {
 	// Cross-check against PostgreSQL Blacklist Registry
 	reg := blacklist.GetRegistry()
 	matchedEntry, found := reg.CheckBlacklistByType(blacklist.TypeEmail, req.Email)
-	result.Sources = append(result.Sources, registrySource("PANDU Threat Registry", "https://pandu.web.id/aksi", matchedEntry, found))
+	result.Sources = append(result.Sources, registrySource("Registri Ancaman & Rekam Laporan", "https://pandu.web.id/aksi", matchedEntry, found))
 
 	// Live Web Footprint OSINT for email address
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

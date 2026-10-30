@@ -343,7 +343,7 @@ func QueryURLScan(ctx context.Context, domain string) SourceResult {
 
 // QueryWebFootprint searches open internet indexing for live scam and fraud footprints.
 func QueryWebFootprint(ctx context.Context, category, identifier string) SourceResult {
-	result := NewSourceResult("web_footprint", "Penelusuran Jejak Digital Publik (OSINT Web)")
+	result := NewSourceResult("web_footprint", "Intelijen Jejak & Riwayat Siber")
 	result.AttributionURL = "https://pandu.web.id"
 	result.Limitation = "Penelusuran jejak digital memindai indeks aduan masyarakat, forum publik, dan direktori terbuka di internet."
 
