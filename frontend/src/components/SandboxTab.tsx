@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import CyberRadarAnimation from "@/components/CyberRadarAnimation";
 import {
   MessageSquare,
   ShieldCheck,
@@ -170,17 +171,27 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Banner */}
-      <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-4 sm:p-6 shadow-sm">
-        <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-          Arena Simulasi & Pengambilan Keputusan
-        </h2>
-        <p className="mt-1.5 text-sm text-slate-400 leading-relaxed">
-          Ruang latihan interaktif menghadapi persona penipu digital dalam format chat simulasi. Latih
-          keberanian menolak intimidasi waktu, memverifikasi identitas, dan membangun imunitas
-          kognitif di ruang digital.
-        </p>
-      </div>
+      {/* Intro Banner with Lottie Cyber Radar */}
+      {!activeScenarioID && (
+        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-6 sm:p-7 shadow-xl">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-2.5 max-w-xl text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                Arena Simulasi Siber
+              </div>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight">
+                Kenali Modus Social Engineering Sebelum Menjadi Sasaran
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Masuk ke arena simulasi sekarang, pelajari ciri jebakannya, dan buktikan seberapa jeli Anda menolak manipulasi sebelum berhadapan dengan ancaman aslinya.
+              </p>
+            </div>
+
+            <CyberRadarAnimation className="w-32 h-32 sm:w-40 sm:h-40 shrink-0" />
+          </div>
+        </section>
+      )}
 
       {!activeScenarioID ? (
         /* Scenario Selection Grid */
