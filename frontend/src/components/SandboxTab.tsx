@@ -177,7 +177,7 @@ export default function SandboxTab() {
           <CyberRadarAnimation className="w-56 h-36 sm:w-72 sm:h-44 lg:w-80 lg:h-48 shrink-0 mb-3.5 sm:mb-4.5" />
 
           <div className="w-full text-center">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight inline-block whitespace-nowrap animate-text-shimmer">
+            <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight inline-block whitespace-nowrap animate-text-shimmer">
               Kenali Modus Social Engineering
             </h2>
           </div>
@@ -185,43 +185,41 @@ export default function SandboxTab() {
       )}
 
       {!activeScenarioID ? (
-        /* Scenario Selection Grid */
+        /* Scenario Selection Grid (Clean, Obsidian Dark, Human-crafted) */
         <div className="grid gap-4 sm:grid-cols-3">
           {scenarios.map((sc) => (
             <div
               key={sc.id}
-              className="flex flex-col justify-between rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm hover:border-slate-700 transition-all"
+              className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/40 hover:bg-[#16181d] transition-all"
             >
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="rounded bg-[#131f3d] px-2 py-0.5 text-[11px] font-semibold text-slate-300">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+                  <span className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-slate-300">
                     {sc.platform}
                   </span>
-                  <span
-                    className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                      sc.difficulty === "Mudah"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : sc.difficulty === "Sedang"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-rose-100 text-rose-800"
-                    }`}
-                  >
-                    {sc.difficulty}
+                  <span>
+                    Tingkat:{" "}
+                    <span className="font-bold text-slate-200">
+                      {sc.difficulty}
+                    </span>
                   </span>
                 </div>
 
-                <h3 className="text-base font-bold text-white leading-snug">{sc.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{sc.description}</p>
+                <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                  {sc.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  {sc.description}
+                </p>
               </div>
 
-              <div className="pt-5 border-t border-slate-800/80 mt-4">
+              <div className="pt-5 mt-4">
                 <button
                   onClick={() => startScenario(sc.id)}
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
+                  className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"
                 >
                   <span>Mulai Simulasi</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
