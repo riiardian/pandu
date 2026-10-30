@@ -461,11 +461,6 @@ export default function SandboxTab() {
                   style={{ width: `${currentScore}%` }}
                 />
               </div>
-              <p className="mt-3 text-xs text-slate-400 leading-relaxed">
-                {lang === "en"
-                  ? "Score starts from 0 across 4 evaluation steps. Correct safe decisions earn +25 points, suboptimal earn +15, and fatal errors earn 0."
-                  : "Skor dimulai dari 0 melintasi 4 tahap evaluasi. Jawaban tepat bernilai +25 poin, kurang tepat +15 poin, dan salah bernilai 0."}
-              </p>
             </div>
 
             {/* Final Result Card when finished */}
