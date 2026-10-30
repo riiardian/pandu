@@ -185,8 +185,8 @@ export default function SandboxTab() {
       )}
 
       {!activeScenarioID ? (
-        /* Scenario Selection Grid (Clean, Obsidian Dark, Human-crafted) */
-        <div className="grid gap-4 sm:grid-cols-3">
+        /* Scenario Selection Grid (Clean, Obsidian Dark, Human-crafted, 5 Real Vectors) */
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {scenarios.map((sc) => (
             <div
               key={sc.id}
@@ -226,14 +226,14 @@ export default function SandboxTab() {
           ))}
         </div>
       ) : (
-        /* Active Simulation Sandbox */
-        <div className="grid gap-6 lg:grid-cols-3">
+        /* Active Simulation Sandbox (Refined Obsidian Dark Theme) */
+        <div className="grid gap-6 lg:grid-cols-3 text-left">
           {/* Left Column: Chat Container Mockup */}
-          <div className="lg:col-span-2 flex flex-col rounded-xl border border-slate-700 bg-[#131f3d] shadow-sm overflow-hidden min-h-[580px]">
+          <div className="lg:col-span-2 flex flex-col rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md shadow-2xl overflow-hidden min-h-[580px]">
             {/* Chat App Header */}
-            <div className="flex items-center justify-between border-b border-slate-800/80 bg-[#0b1329]/90 px-4 py-3">
+            <div className="flex items-center justify-between border-b border-white/10 bg-[#0f1014] px-4 sm:px-5 py-3.5">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-zinc-200 overflow-hidden border border-slate-700">
+                <div className="h-9 w-9 rounded-full bg-slate-800 overflow-hidden border border-white/10">
                   <img
                     src={currentStep?.SenderAvatar || "https://api.dicebear.com/7.x/personas/svg?seed=Bot"}
                     alt="avatar"
@@ -245,14 +245,14 @@ export default function SandboxTab() {
                     {currentStep?.SenderName || activeScenario.title}
                   </h4>
                   <p className="text-[11px] text-slate-400">
-                    {currentStep?.SenderRole || "Kontak Asing"} · <span className="text-emerald-600 font-semibold">Online</span>
+                    {currentStep?.SenderRole || "Kontak Asing"} · <span className="text-emerald-400 font-semibold">Online</span>
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setActiveScenarioID(null)}
-                className="flex items-center gap-1 rounded-md border border-slate-800/80 bg-[#0d162d] px-2.5 py-1 text-xs font-medium text-slate-300 hover:bg-[#131f3d] transition-colors"
+                className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>Pilih Modus Lain</span>
@@ -260,7 +260,7 @@ export default function SandboxTab() {
             </div>
 
             {/* Chat Body Messages */}
-            <div className="flex-1 space-y-4 p-4 overflow-y-auto max-h-[440px] bg-[#efeae2]/40">
+            <div className="flex-1 space-y-4 p-4 sm:p-5 overflow-y-auto max-h-[440px] bg-[#090a0d]">
               {chatHistory.map((msg, idx) => (
                 <div
                   key={idx}
@@ -268,38 +268,38 @@ export default function SandboxTab() {
                 >
                   {/* Tactic Banner for Scammer Message */}
                   {msg.sender === "bot" && msg.tactic && msg.tactic !== "Selesai" && (
-                    <div className="mb-1 rounded bg-rose-100/90 border border-rose-300 px-2 py-0.5 text-[10px] font-bold text-rose-900">
-                      Taktik Terdeteksi: {msg.tactic}
+                    <div className="mb-1 rounded-md bg-rose-500/10 border border-rose-500/25 px-2.5 py-0.5 text-[10px] font-mono font-bold text-rose-300">
+                      Taktik: {msg.tactic}
                     </div>
                   )}
 
                   <div
-                    className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm shadow-sm leading-relaxed ${
+                    className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
                       msg.sender === "user"
-                        ? "bg-emerald-600 text-white rounded-tr-none"
-                        : "bg-[#0b1329]/90 text-white rounded-tl-none border border-slate-800/80"
+                        ? "bg-blue-600 text-white rounded-tr-none shadow-md shadow-blue-600/20"
+                        : "bg-[#15171d] text-slate-100 rounded-tl-none border border-white/10"
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
 
                     {/* Dangerous Attachment Rendering */}
                     {msg.attachment && (
-                      <div className="mt-2.5 rounded-lg border border-slate-700 bg-[#0d162d] p-2.5">
+                      <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0d0e12] p-3">
                         {msg.attachment.type === "FILE_APK" && (
-                          <div className="flex items-center gap-2.5 text-rose-800">
-                            <FileBox className="h-6 w-6 text-rose-600 shrink-0" />
+                          <div className="flex items-center gap-2.5 text-rose-400">
+                            <FileBox className="h-6 w-6 text-rose-400 shrink-0" />
                             <div className="min-w-0">
-                              <p className="font-bold text-xs truncate">{msg.attachment.data}</p>
-                              <span className="text-[10px] text-rose-600 font-semibold uppercase">
+                              <p className="font-bold text-xs truncate text-white">{msg.attachment.data}</p>
+                              <span className="text-[10px] text-rose-400 font-semibold uppercase">
                                 Berkas Aplikasi Android (.APK)
                               </span>
                             </div>
                           </div>
                         )}
                         {msg.attachment.type === "LINK" && (
-                          <div className="flex items-center gap-2 text-blue-800">
-                            <Link2 className="h-5 w-5 text-blue-600 shrink-0" />
-                            <span className="text-xs font-mono truncate">{msg.attachment.data}</span>
+                          <div className="flex items-center gap-2 text-blue-400">
+                            <Link2 className="h-5 w-5 text-blue-400 shrink-0" />
+                            <span className="text-xs font-mono truncate text-blue-300">{msg.attachment.data}</span>
                           </div>
                         )}
                         {msg.attachment.type === "IMAGE" && (
@@ -317,34 +317,34 @@ export default function SandboxTab() {
             {/* Tactical Feedback Bar */}
             {turnFeedback && (
               <div
-                className={`border-t p-3 text-xs flex items-start gap-2.5 ${
+                className={`border-t p-3.5 text-xs flex items-start gap-2.5 ${
                   turnFeedback.rating === "SAFE"
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                    ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"
                     : turnFeedback.rating === "RISKY"
-                    ? "bg-amber-50 border-amber-200 text-amber-900"
-                    : "bg-rose-50 border-rose-200 text-rose-900"
+                    ? "bg-amber-500/10 border-amber-500/25 text-amber-300"
+                    : "bg-rose-500/10 border-rose-500/25 text-rose-300"
                 }`}
               >
                 {turnFeedback.rating === "SAFE" ? (
-                  <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
                 )}
                 <div>
                   <span className="font-bold uppercase tracking-wider block">
                     {turnFeedback.rating === "SAFE" ? "Keputusan Aman" : "Keputusan Berisiko"} (Skor: {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : turnFeedback.scoreDelta})
                   </span>
-                  <p className="mt-0.5">{turnFeedback.feedback}</p>
+                  <p className="mt-0.5 leading-relaxed">{turnFeedback.feedback}</p>
                   <p className="text-[10px] opacity-75 mt-0.5 italic">Catatan: {turnFeedback.psychology}</p>
                 </div>
               </div>
             )}
 
             {/* Input Action Panel */}
-            <div className="border-t border-slate-800/80 bg-[#0b1329]/90 p-3.5">
+            <div className="border-t border-white/10 bg-[#0f1014] p-4">
               {!isCompleted && currentStep && currentStep.choices && currentStep.choices.length > 0 ? (
-                <div className="space-y-2">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <div className="space-y-2.5">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
                     Pilih Tindakan atau Jawaban Anda:
                   </p>
                   <div className="grid gap-2">
@@ -353,20 +353,20 @@ export default function SandboxTab() {
                         key={c.id}
                         disabled={loading}
                         onClick={() => handleMakeChoice(c)}
-                        className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#0d162d] p-2.5 text-left text-xs font-medium text-white hover:border-blue-500 hover:bg-blue-950/40 transition-all disabled:opacity-50"
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 text-left text-xs sm:text-sm font-semibold text-white hover:border-blue-500/50 hover:bg-[#1a1c23] transition-all disabled:opacity-50 cursor-pointer"
                       >
-                        <span className="pr-2">{c.text}</span>
-                        <Send className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                        <span className="pr-3 leading-relaxed">{c.text}</span>
+                        <Send className="h-4 w-4 text-blue-400 shrink-0" />
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">Skenario Latihan Telah Selesai.</span>
+                  <span className="text-xs font-semibold text-slate-300">Skenario Latihan Telah Selesai.</span>
                   <button
                     onClick={() => startScenario(activeScenarioID)}
-                    className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 transition-colors cursor-pointer"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     <span>Ulangi Latihan</span>
@@ -379,15 +379,15 @@ export default function SandboxTab() {
           {/* Right Column: Live Diagnostic Scorecard */}
           <div className="space-y-4">
             {/* Immunity Score Card */}
-            <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
                 Imunitas Kognitif Digital
               </span>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-4xl font-black text-white">{currentScore}</span>
-                <span className="text-sm font-semibold text-slate-400">/ 100</span>
+                <span className="text-sm font-semibold text-slate-500">/ 100</span>
               </div>
-              <div className="mt-3 w-full rounded-full bg-zinc-200 h-2.5 overflow-hidden">
+              <div className="mt-3.5 w-full rounded-full bg-white/10 h-2 overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
                     currentScore >= 70
@@ -401,24 +401,24 @@ export default function SandboxTab() {
               </div>
               <p className="mt-3 text-xs text-slate-400 leading-relaxed">
                 Skor meningkat ketika Anda menuntut verifikasi resmi, dan anjlok drastis jika Anda
-                terbujuk menyetor uang atau menginstal file asing.
+                terbujuk menyetor uang, mengklik tautan tidak resmi, atau menyerahkan kode OTP.
               </p>
             </div>
 
             {/* Final Result Card when finished */}
             {isCompleted && finalResult && (
-              <div className="rounded-xl border border-slate-800/80 bg-[#0b1329]/90 p-5 shadow-sm space-y-3 animate-in fade-in duration-300">
-                <div className="flex items-center gap-2 text-blue-500">
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-3.5 animate-in fade-in duration-300">
+                <div className="flex items-center gap-2 text-blue-400">
                   <Trophy className="h-5 w-5" />
-                  <h4 className="text-sm font-bold uppercase tracking-wider">Evaluasi Akhir</h4>
+                  <h4 className="text-sm font-bold uppercase tracking-wider font-mono">Evaluasi Akhir</h4>
                 </div>
-                <div className="rounded-lg bg-[#0d162d] p-3 border border-slate-800/80">
-                  <span className="text-xs font-bold text-slate-100">{finalResult.verdict}</span>
+                <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+                  <span className="text-xs sm:text-sm font-bold text-white">{finalResult.verdict}</span>
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="text-xs font-bold text-slate-300">Pelajaran Penting:</span>
-                  <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1">
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Pelajaran Penting:</span>
+                  <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1.5 leading-relaxed">
                     {finalResult.lessons &&
                       finalResult.lessons.map((ls: string, lidx: number) => (
                         <li key={lidx}>{ls}</li>

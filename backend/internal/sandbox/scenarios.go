@@ -39,8 +39,10 @@ type Scenario struct {
 // GetCatalog returns all available training scenarios.
 func GetCatalog() []Scenario {
 	return []Scenario{
-		getLokerTaskScamScenario(),
 		getKurirMalwareApkScenario(),
+		getBankKenaikanTarifScenario(),
+		getLokerTaskScamScenario(),
+		getCSPalsuOTPScenario(),
 		getTemanImpersonasiPinjolScenario(),
 	}
 }
@@ -396,6 +398,155 @@ func getTemanImpersonasiPinjolScenario() Scenario {
 		Difficulty:  "Mudah",
 		Platform:    "WhatsApp",
 		Description: "Latih ketahanan psikologis Anda terhadap rasa sungkan dan empati saat ada teman yang mengaku tertimpa musibah mendadak.",
+		InitialStep: "step_1",
+		Steps:       steps,
+	}
+}
+
+func getBankKenaikanTarifScenario() Scenario {
+	steps := make(map[string]DialogueStep)
+
+	steps["step_1"] = DialogueStep{
+		StepID:          "step_1",
+		SenderName:      "Customer Service Bank BCA",
+		SenderAvatar:    "https://api.dicebear.com/7.x/bottts/svg?seed=BankCareBCA",
+		SenderRole:      "Akun Bisnis Tiruan (+62 878-1102-3901)",
+		Message:         "PENGUMUMAN RESMI PERBANKAN: Mulai malam ini pukul 00.00 WIB, tarif transaksi antarbank dan biaya administrasi bulanan rekening Anda akan disesuaikan menjadi Rp 150.000/bulan (auto-debet). Jika Anda TIDAK SETUJU dengan skema tarif baru dan ingin tetap menggunakan tarif normal (Rp 6.500/bulan), Anda WAJIB melakukan konfirmasi pembatalan dalam waktu 30 menit melalui tautan resmi kami: https://bca-tarif-pembatalan.site/konfirmasi",
+		AttachmentType:  "LINK",
+		AttachmentData:  "https://bca-tarif-pembatalan.site/konfirmasi",
+		DeceptionTactic: "Urgency + Fear of Financial Loss (Menakut-nakuti biaya bulanan mahal agar korban tergesa-gesa klik link)",
+		Choices: []ScenarioChoice{
+			{
+				ID:             "bank_c1_a",
+				Text:           "Langsung klik link pembatalan dan masukkan nomor kartu ATM serta PIN agar saldo tidak terpotong 150 ribu.",
+				SafetyRating:   "FATAL",
+				Feedback:       "JEBAKAN PHISHING FATAL! Bank resmi tidak pernah mengumumkan perubahan tarif via pesan chat pribadi dengan ancaman auto-debet. Situs tersebut adalah web tiruan (.site) yang mencuri nomor kartu dan PIN Anda untuk membobol m-Banking.",
+				ScoreDelta:     -50,
+				NextStepID:     "step_end_phished",
+				PsychologyNote: "Kepanikan finansial mengalahkan kewaspadaan domain.",
+			},
+			{
+				ID:             "bank_c1_b",
+				Text:           "Periksa domain: Link berakhiran domain .site palsu, bukan website resmi bank (bca.co.id). Ini jelas phishing.",
+				SafetyRating:   "SAFE",
+				Feedback:       "Analisis forensik luar biasa! Anda sangat jeli mengamati TLD domain (.site). Bank perbankan resmi di Indonesia selalu menggunakan domain korporat .co.id atau .com.",
+				ScoreDelta:     35,
+				NextStepID:     "step_end_bank_safe",
+				PsychologyNote: "OSINT Domain Forensics & Imunitas Phishing.",
+			},
+			{
+				ID:             "bank_c1_c",
+				Text:           "Abaikan pesan, lalu telepon Halo BCA resmi di 1500888 untuk mengonfirmasi kebenaran informasi.",
+				SafetyRating:   "SAFE",
+				Feedback:       "Protokol verifikasi standar industri yang sangat tepat. Mengonfirmasi langsung ke call center resmi memutus 100% upaya rekayasa sosial penipu.",
+				ScoreDelta:     30,
+				NextStepID:     "step_end_bank_safe",
+				PsychologyNote: "Verifikasi saluran resmi otoritatif.",
+			},
+		},
+	}
+
+	steps["step_end_phished"] = DialogueStep{
+		StepID:          "step_end_phished",
+		SenderName:      "Sistem Keamanan PANDU",
+		SenderAvatar:    "https://api.dicebear.com/7.x/bottts/svg?seed=PanduAlert",
+		SenderRole:      "Peringatan Evaluasi",
+		Message:         "Kerugian Rekening Terjadi! Modus kenaikan tarif Rp 150.000 adalah salah satu modus phishing paling banyak memakan korban di Indonesia. Bank resmi TIDAK PERNAH meminta nasabah mengisi PIN atau nomor kartu di link eksternal!",
+		DeceptionTactic: "Selesai",
+		Choices:         []ScenarioChoice{},
+	}
+
+	steps["step_end_bank_safe"] = DialogueStep{
+		StepID:          "step_end_bank_safe",
+		SenderName:      "Sistem Keamanan PANDU",
+		SenderAvatar:    "https://api.dicebear.com/7.x/bottts/svg?seed=PanduShield",
+		SenderRole:      "Evaluasi Kemenangan",
+		Message:         "Pertahanan Sempurna! Anda berhasil menyelamatkan data perbankan Anda dari kejahatan phishing terstruktur. Saldo dan kredensial Anda 100% terlindungi.",
+		DeceptionTactic: "Selesai",
+		Choices:         []ScenarioChoice{},
+	}
+
+	return Scenario{
+		ID:          "bank-kenaikan-tarif",
+		Title:       "Surat Edaran Kenaikan Tarif Bank Rp 150.000",
+		Category:    "Phishing & Impersonasi Bank",
+		Difficulty:  "Tantangan",
+		Platform:    "WhatsApp / Instagram",
+		Description: "Hadapi modus surat resmi pengumuman kenaikan biaya admin bank yang menekan korban mengisi form pembatalan di link palsu.",
+		InitialStep: "step_1",
+		Steps:       steps,
+	}
+}
+
+func getCSPalsuOTPScenario() Scenario {
+	steps := make(map[string]DialogueStep)
+
+	steps["step_1"] = DialogueStep{
+		StepID:          "step_1",
+		SenderName:      "Helpdesk Pusat Layanan E-Wallet",
+		SenderAvatar:    "https://api.dicebear.com/7.x/personas/svg?seed=OfficerHelpdesk",
+		SenderRole:      "Panggilan Call Center (+62 821-9941-8012)",
+		Message:         "Halo selamat siang bapak/ibu. Sistem monitoring fraud kami mendeteksi adanya transaksi mencurigakan penarikan saldo Rp 2.500.000 pada akun e-wallet Anda dari perangkat di luar kota. Untuk membatalkan transaksi penarikan tersebut dan mengamankan kembali saldo Anda, sistem kami baru saja mengirimkan 6 digit kode pembatalan darurat ke SMS Anda. Mohon sebutkan 6 digit kodenya sekarang ya pak/bu agar transaksi segera kami batalkan!",
+		AttachmentType:  "NONE",
+		DeceptionTactic: "Vishing + False Hero Relief (Menyaru jadi pahlawan penyelamat dana fiktif untuk memancing kode OTP)",
+		Choices: []ScenarioChoice{
+			{
+				ID:             "cs_c1_a",
+				Text:           "Langsung bacakan 6 digit kode SMS tersebut kepada petugas agar saldo 2,5 juta tidak hilang.",
+				SafetyRating:   "FATAL",
+				Feedback:       "AKUN ANDA TELAH DIBOBOl! 'Kode pembatalan' yang diminta petugas gadungan tersebut sebenarnya adalah kode OTP login akun Anda. Begitu diberikan, penipu langsung menguasai akun dan menguras habis seluruh saldo dompet digital Anda.",
+				ScoreDelta:     -50,
+				NextStepID:     "step_end_otp_stolen",
+				PsychologyNote: "Termakan manipulasi figur penyelamat (False Hero Trap).",
+			},
+			{
+				ID:             "cs_c1_b",
+				Text:           "Tolak tegas: 'Di SMS tertulis jelas kode OTP RAHASIA dan pihak aplikasi TIDAK PERNAH meminta kode ini dengan alasan apapun!'",
+				SafetyRating:   "SAFE",
+				Feedback:       "Refleks keamanan tingkat dewa! Anda mengingat hukum mutlak keamanan digital: OTP dan PIN bersifat rahasia dan TIDAK BOLEH dibagikan kepada siapa pun, termasuk pihak yang mengaku petugas resmi.",
+				ScoreDelta:     35,
+				NextStepID:     "step_end_cs_safe",
+				PsychologyNote: "Disiplin proteksi kredensial Zero-Trust.",
+			},
+			{
+				ID:             "cs_c1_c",
+				Text:           "Tutup panggilan telepon sepihak, lalu buka aplikasi resmi e-wallet secara mandiri untuk memeriksa riwayat transaksi dan mengganti PIN.",
+				SafetyRating:   "SAFE",
+				Feedback:       "Tindakan penyelamatan terbaik! Menutup telepon sepihak dan memverifikasi mandiri langsung di aplikasi resmi seketika mematahkan seluruh skenario rekayasa sosial pelaku.",
+				ScoreDelta:     35,
+				NextStepID:     "step_end_cs_safe",
+				PsychologyNote: "Pemutusan kontak manipulatif & audit mandiri.",
+			},
+		},
+	}
+
+	steps["step_end_otp_stolen"] = DialogueStep{
+		StepID:          "step_end_otp_stolen",
+		SenderName:      "Sistem Keamanan PANDU",
+		SenderAvatar:    "https://api.dicebear.com/7.x/bottts/svg?seed=PanduAlert",
+		SenderRole:      "Peringatan Evaluasi",
+		Message:         "Kerugian Finansial Terjadi! Petugas resmi perbankan atau e-wallet TIDAK PERNAH meminta kode OTP, PIN, ataupun password melalui telepon atau chat. Jangan pernah menyerahkan kode SMS OTP Anda kepada siapa pun!",
+		DeceptionTactic: "Selesai",
+		Choices:         []ScenarioChoice{},
+	}
+
+	steps["step_end_cs_safe"] = DialogueStep{
+		StepID:          "step_end_cs_safe",
+		SenderName:      "Sistem Keamanan PANDU",
+		SenderAvatar:    "https://api.dicebear.com/7.x/bottts/svg?seed=PanduShield",
+		SenderRole:      "Evaluasi Kemenangan",
+		Message:         "Kemenangan Mutlak! Anda berhasil mematahkan taktik Vishing (Voice Phishing) paling berbahaya. Memegang teguh kerahasiaan OTP adalah kunci utama keamanan akun finansial di era digital.",
+		DeceptionTactic: "Selesai",
+		Choices:         []ScenarioChoice{},
+	}
+
+	return Scenario{
+		ID:          "cs-palsu-otp",
+		Title:       "Call Center Gadungan Pembatalan Transaksi E-Wallet",
+		Category:    "Vishing & Pencurian OTP",
+		Difficulty:  "Sedang",
+		Platform:    "Panggilan Suara & WhatsApp",
+		Description: "Latih ketahanan menghadapi penipu yang menyamar sebagai petugas call center resmi dan mendesak Anda memberikan kode OTP.",
 		InitialStep: "step_1",
 		Steps:       steps,
 	}
