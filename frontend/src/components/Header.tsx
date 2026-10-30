@@ -312,7 +312,9 @@ export default function Header() {
                         item.active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
                       }`}
                     />
-                    <span>{item.label}</span>
+                    <span className={item.active ? "text-blue-600 dark:text-white font-semibold" : "text-slate-600 dark:text-slate-300"}>
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}

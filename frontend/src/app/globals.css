@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #000000;
   --foreground: #f8fafc;
@@ -290,6 +292,16 @@ html.light div.text-white:not(.bg-blue-600 *):not([class*="bg-blue-"]) {
 /* Attachment card text contrast in Light Mode */
 html.light .bg-\[\#0c0d11\] p {
   color: #0f172a !important;
+}
+
+/* Mobile Drawer Links in Light Mode */
+html.light nav a.bg-blue-600\/10,
+html.light nav a.bg-blue-600\/10 span {
+  color: #2563eb !important;
+}
+
+html.light nav a:not(.bg-blue-600\/10) span {
+  color: #334155 !important;
 }
 
 html.light .text-slate-100 {
