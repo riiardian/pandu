@@ -115,6 +115,16 @@ export default function SandboxTab() {
     }
   };
 
+  const shuffleChoices = (choices: any[]) => {
+    if (!choices || choices.length <= 1) return choices;
+    const shuffled = [...choices];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const startScenario = async (id: string) => {
     setLoading(true);
     try {
@@ -122,6 +132,13 @@ export default function SandboxTab() {
       const json = await res.json();
       if (json.success) {
         const sc = json.data;
+        if (sc && sc.steps) {
+          Object.keys(sc.steps).forEach((stepKey) => {
+            if (Array.isArray(sc.steps[stepKey]?.choices)) {
+              sc.steps[stepKey].choices = shuffleChoices(sc.steps[stepKey].choices);
+            }
+          });
+        }
         setActiveScenario(sc);
         setActiveScenarioID(id);
         setCurrentStepID(sc.initial_step);
@@ -204,18 +221,35 @@ export default function SandboxTab() {
           setChatHistory((prev) => [...prev, systemFeedbackMsg]);
         }
       } else if (turnData.next_step) {
-        setCurrentStepID(turnData.next_step.step_id);
+        const nextStep = turnData.next_step;
+        if (Array.isArray(nextStep.choices)) {
+          nextStep.choices = shuffleChoices(nextStep.choices);
+        }
+        setActiveScenario((prev: any) => {
+          if (!prev || !prev.steps) return prev;
+          return {
+            ...prev,
+            steps: {
+              ...prev.steps,
+              [nextStep.step_id]: {
+                ...prev.steps[nextStep.step_id],
+                ...nextStep,
+              },
+            },
+          };
+        });
+        setCurrentStepID(nextStep.step_id);
         setChatHistory((prev) => [
           ...prev,
           systemFeedbackMsg,
           {
             sender: "bot",
-            text: turnData.next_step.message,
-            attachment: turnData.next_step.attachment_type !== "NONE" ? {
-              type: turnData.next_step.attachment_type,
-              data: turnData.next_step.attachment_data,
+            text: nextStep.message,
+            attachment: nextStep.attachment_type !== "NONE" ? {
+              type: nextStep.attachment_type,
+              data: nextStep.attachment_data,
             } : null,
-            tactic: turnData.next_step.deception_tactic,
+            tactic: nextStep.deception_tactic,
           },
         ]);
       }

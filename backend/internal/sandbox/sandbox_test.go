@@ -54,3 +54,23 @@ func TestProcessTurn_FatalChoice(t *testing.T) {
 		t.Fatal("Expected next step to exist for 4-turn sequence")
 	}
 }
+
+func TestRandomizedChoicesOrder(t *testing.T) {
+	// Call GetScenarioByID multiple times.
+	// Since 3 choices have 3! = 6 permutations, with 20 trials we should observe variation in the first choice.
+	firstChoices := make(map[string]bool)
+	for i := 0; i < 30; i++ {
+		sc := GetScenarioByID("kurir-paket-apk")
+		if sc == nil {
+			t.Fatal("Scenario kurir-paket-apk not found")
+		}
+		step1 := sc.Steps["step_1"]
+		if len(step1.Choices) > 0 {
+			firstChoices[step1.Choices[0].ID] = true
+		}
+	}
+
+	if len(firstChoices) < 2 {
+		t.Fatalf("Expected choices to be randomized across runs, but first choice never varied: %v", firstChoices)
+	}
+}

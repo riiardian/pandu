@@ -1,5 +1,9 @@
 package sandbox
 
+import (
+	"math/rand"
+)
+
 // ScenarioChoice represents an action option a user can take during the simulation.
 type ScenarioChoice struct {
 	ID             string `json:"id"`
@@ -47,11 +51,26 @@ func GetCatalog() []Scenario {
 	}
 }
 
-// GetScenarioByID fetches a specific scenario by ID.
+// GetScenarioByID fetches a specific scenario by ID with randomized choice order.
 func GetScenarioByID(id string) *Scenario {
 	for _, s := range GetCatalog() {
 		if s.ID == id {
-			return &s
+			// Clone scenario steps and randomize choices order for each step
+			clonedSteps := make(map[string]DialogueStep, len(s.Steps))
+			for stepKey, step := range s.Steps {
+				if len(step.Choices) > 1 {
+					shuffledChoices := make([]ScenarioChoice, len(step.Choices))
+					copy(shuffledChoices, step.Choices)
+					rand.Shuffle(len(shuffledChoices), func(i, j int) {
+						shuffledChoices[i], shuffledChoices[j] = shuffledChoices[j], shuffledChoices[i]
+					})
+					step.Choices = shuffledChoices
+				}
+				clonedSteps[stepKey] = step
+			}
+			scCopy := s
+			scCopy.Steps = clonedSteps
+			return &scCopy
 		}
 	}
 	return nil
