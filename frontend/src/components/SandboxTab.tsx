@@ -171,24 +171,20 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Banner with Lottie Cyber Radar */}
+      {/* Intro Hero Section (Borderless & Clean, directly on canvas) */}
       {!activeScenarioID && (
-        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-6 sm:p-7 shadow-xl">
-          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6">
-            <div className="space-y-2.5 max-w-xl text-left">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-                Arena Simulasi Siber
-              </div>
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight">
+        <section className="pt-2 pb-4">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 sm:gap-8">
+            <div className="space-y-3 max-w-xl text-left">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
                 Kenali Modus Social Engineering Sebelum Menjadi Sasaran
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg">
                 Masuk ke arena simulasi sekarang, pelajari ciri jebakannya, dan buktikan seberapa jeli Anda menolak manipulasi sebelum berhadapan dengan ancaman aslinya.
               </p>
             </div>
 
-            <CyberRadarAnimation className="w-52 h-32 sm:w-64 sm:h-40 shrink-0" />
+            <CyberRadarAnimation className="w-48 h-32 sm:w-60 sm:h-40 shrink-0" />
           </div>
         </section>
       )}
