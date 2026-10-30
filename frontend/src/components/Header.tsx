@@ -120,16 +120,16 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-40 w-full bg-transparent border-none">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3.5 sm:px-6">
-          {/* Brand & Identity */}
+          {/* Brand & Identity (Logo replaces letter P, fused into [Logo]ANDU) */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 sm:gap-3 text-left focus:outline-none min-w-0 group"
+            className="flex items-center gap-[2px] text-left focus:outline-none min-w-0 group"
           >
             <div className="flex shrink-0 items-center justify-center text-white group-hover:text-blue-400 transition-colors">
               <PanduLogo className="h-[18px] sm:h-[20px] w-auto" />
             </div>
             <span className="text-xl sm:text-2xl font-black tracking-tight text-white block leading-tight group-hover:text-blue-400 transition-colors">
-              PANDU
+              ANDU
             </span>
           </Link>
 
