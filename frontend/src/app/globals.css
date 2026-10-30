@@ -368,21 +368,41 @@ html.light .bg-\[\#0c0d12\]\/70 {
   border-color: #e2e8f0 !important;
 }
 
-/* Light Theme Shimmer Text (Dark Gradient for High Contrast) */
+/* Light Theme Shimmer Text (Vivid Cyber Gleam - Visible Luminous Pass) */
 html.light .animate-text-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(15, 23, 42, 0.70) 0%,
-    rgba(15, 23, 42, 0.70) 35%,
-    #2563eb 50%,
-    rgba(15, 23, 42, 0.70) 65%,
-    rgba(15, 23, 42, 0.70) 100%
+    #0f172a 0%,
+    #0f172a 25%,
+    #0284c7 40%,
+    #38bdf8 50%,
+    #0284c7 60%,
+    #0f172a 75%,
+    #0f172a 100%
   ) !important;
   background-size: 200% auto !important;
   color: transparent !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
+  animation: text-shimmer 6s linear infinite !important;
+}
+
+html.dark .animate-text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.65) 35%,
+    #ffffff 50%,
+    rgba(255, 255, 255, 0.65) 65%,
+    rgba(255, 255, 255, 0.65) 100%
+  ) !important;
+  background-size: 200% auto !important;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: text-shimmer 6s linear infinite !important;
 }
 
 /* Aurora Backdrop Softening in Light Mode */
@@ -416,5 +436,19 @@ html.light .bg-blue-500 *,
 html.light .bg-rose-600 *,
 html.light .bg-emerald-600 * {
   color: #ffffff !important;
-  fill: #ffffff !important;
+}
+
+/* Ensure stroke-based Lucide icons inside solid buttons retain transparent fill */
+html.light .bg-blue-600 svg,
+html.light .bg-blue-500 svg,
+html.light .bg-rose-600 svg,
+html.light .bg-emerald-600 svg,
+html.light [class*="bg-blue-600"] svg,
+html.light [class*="bg-blue-500"] svg,
+html.light .bg-blue-600 svg *,
+html.light .bg-blue-500 svg *,
+html.light .bg-rose-600 svg *,
+html.light .bg-emerald-600 svg * {
+  fill: none !important;
+  stroke: #ffffff !important;
 }
