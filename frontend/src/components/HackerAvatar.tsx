@@ -4,7 +4,7 @@ interface HackerAvatarProps {
   className?: string;
 }
 
-export default function HackerAvatar({ className = "h-9 w-9" }: HackerAvatarProps) {
+export default function HackerAvatar({ className = "h-10 w-10" }: HackerAvatarProps) {
   return (
     <div className={`relative shrink-0 select-none ${className}`}>
       <svg
@@ -14,22 +14,20 @@ export default function HackerAvatar({ className = "h-9 w-9" }: HackerAvatarProp
         className="h-full w-full"
       >
         <defs>
-          <linearGradient id="avatarBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0a0d14" />
-            <stop offset="100%" stopColor="#141923" />
+          <linearGradient id="hackerBgG" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <linearGradient id="avatarHoodGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#2b3346" />
-            <stop offset="100%" stopColor="#151922" />
+          <linearGradient id="hackerMaskG" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="#cbd5e1" />
           </linearGradient>
-          <linearGradient id="avatarVisorGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#00f2fe" stopOpacity="0.2" />
-            <stop offset="30%" stopColor="#00f2fe" stopOpacity="1" />
-            <stop offset="70%" stopColor="#38bdf8" stopOpacity="1" />
-            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.2" />
+          <linearGradient id="hackerHoodG" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#334155" />
+            <stop offset="100%" stopColor="#0f172a" />
           </linearGradient>
-          <filter id="avatarGlowFilter" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <filter id="hackerNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -37,69 +35,76 @@ export default function HackerAvatar({ className = "h-9 w-9" }: HackerAvatarProp
           </filter>
         </defs>
 
-        {/* Outer Circular Container & Subtle Border */}
-        <circle
-          cx="50"
-          cy="50"
-          r="48"
-          fill="url(#avatarBgGrad)"
-          stroke="#38bdf8"
-          strokeWidth="1.5"
-          strokeOpacity="0.4"
-        />
+        {/* Outer Circular Base & Glow Ring */}
+        <circle cx="50" cy="50" r="48" fill="url(#hackerBgG)" stroke="#38bdf8" strokeWidth="2" />
 
-        {/* Cyber Radar / Targeting Track */}
+        {/* Faint Cyber Reticle Background */}
+        <path d="M15 50 H85 M50 15 V85" stroke="#1e293b" strokeWidth="1" strokeDasharray="2,2" />
         <circle
           cx="50"
           cy="50"
-          r="38"
+          r="32"
           fill="none"
-          stroke="#38bdf8"
+          stroke="#0ea5e9"
           strokeWidth="0.75"
-          strokeOpacity="0.25"
-          strokeDasharray="2,3"
+          strokeOpacity="0.3"
+          strokeDasharray="3,3"
         />
 
-        {/* Shoulders / Torso */}
+        {/* Shoulders & Upper Chest */}
         <path
-          d="M18 90 C18 73 32 66 50 66 C68 66 82 73 82 90 Z"
-          fill="#161b24"
-          stroke="#2a3245"
+          d="M12 92 C12 74 26 68 50 68 C74 68 88 74 88 92 Z"
+          fill="#090d16"
+          stroke="#334155"
+          strokeWidth="1.5"
+        />
+
+        {/* Hoodie Outer Contour */}
+        <path
+          d="M50 14 C32 14 24 26 24 50 C24 64 34 71 44 72 C47 72.5 50 73 50 73 C50 73 53 72.5 56 72 C66 71 76 64 76 50 C76 26 68 14 50 14 Z"
+          fill="url(#hackerHoodG)"
+          stroke="#475569"
+          strokeWidth="1.5"
+        />
+
+        {/* Deep Black Inner Hood Shadow */}
+        <path
+          d="M50 20 C36 20 31 30 31 50 C31 62 38 66 50 67 C62 66 69 62 69 50 C69 30 64 20 50 20 Z"
+          fill="#020617"
+        />
+
+        {/* High-Contrast White/Silver Hacker Mask */}
+        <path
+          d="M38 38 C38 34 43 32 50 32 C57 32 62 34 62 38 C62 48 61 58 50 65 C39 58 38 48 38 38 Z"
+          fill="url(#hackerMaskG)"
+          stroke="#94a3b8"
           strokeWidth="1"
         />
 
-        {/* Outer Hoodie Silhouette */}
+        {/* Dark Eye Sockets */}
+        <path d="M41 42 C41 40 44 39 48 41 C46 44 43 45 41 42 Z" fill="#020617" />
+        <path d="M59 42 C59 40 56 39 52 41 C54 44 57 45 59 42 Z" fill="#020617" />
+
+        {/* Glowing Cyber Neon Cyan Eyes */}
+        <ellipse cx="45" cy="42" rx="2" ry="1.2" fill="#00f2fe" filter="url(#hackerNeonGlow)" />
+        <ellipse cx="55" cy="42" rx="2" ry="1.2" fill="#00f2fe" filter="url(#hackerNeonGlow)" />
+
+        {/* Hacker Mustache & Cyber Glitch Contour */}
         <path
-          d="M50 16 C34 16 28 28 28 48 C28 62 36 67 44 68 C47 68.5 50 69 50 69 C50 69 53 68.5 56 68 C64 67 72 62 72 48 C72 28 66 16 50 16 Z"
-          fill="url(#avatarHoodGrad)"
+          d="M43 51 C46 53 48 53 50 51 C52 53 54 53 57 51 C55 54 52 55 50 54 C48 55 45 54 43 51 Z"
+          fill="#0f172a"
         />
 
-        {/* Inner Hood Deep Black Void */}
+        {/* Goatee */}
+        <polygon points="50,56 48,60 52,60" fill="#0f172a" />
+
+        {/* Tech Neon Accent Collar */}
         <path
-          d="M50 22 C38 22 34 32 34 49 C34 60 40 64 50 65 C60 64 66 60 66 49 C66 32 62 22 50 22 Z"
-          fill="#060709"
-        />
-
-        {/* Faceless Mask Shadow */}
-        <ellipse cx="50" cy="46" rx="11" ry="14" fill="#0b0e14" />
-
-        {/* Glowing Cyber Hacker Visor */}
-        <path
-          d="M41 44 Q50 42 59 44 Q50 47 41 44 Z"
-          fill="url(#avatarVisorGlow)"
-          filter="url(#avatarGlowFilter)"
-        />
-
-        {/* Center Visor Glint */}
-        <ellipse cx="50" cy="44.2" rx="3" ry="1" fill="#ffffff" opacity="0.9" />
-
-        {/* Tech Collar Accent */}
-        <path
-          d="M44 68 L50 77 L56 68"
+          d="M46 72 L50 82 L54 72"
           fill="none"
-          stroke="#38bdf8"
-          strokeWidth="1.2"
-          strokeOpacity="0.6"
+          stroke="#00f2fe"
+          strokeWidth="1.5"
+          strokeLinecap="round"
         />
       </svg>
     </div>

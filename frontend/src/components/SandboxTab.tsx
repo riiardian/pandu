@@ -14,6 +14,7 @@ import {
   Trophy,
   ArrowRight,
   UserCheck,
+  X,
 } from "lucide-react";
 
 interface ScenarioSummary {
@@ -213,23 +214,8 @@ export default function SandboxTab() {
       ) : (
         /* Active Simulation Sandbox (Refined Obsidian Dark Theme) */
         <div className="grid gap-6 lg:grid-cols-3 text-left">
-          {/* Top Bar Navigation & Active Scenario Breadcrumb */}
-          <div className="lg:col-span-3 flex items-center justify-between gap-3">
-            <button
-              onClick={() => setActiveScenarioID(null)}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121316] px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:border-blue-500/40 hover:bg-[#18191f] hover:text-white transition-all cursor-pointer shadow-md shrink-0"
-            >
-              <RotateCcw className="h-3.5 w-3.5 text-blue-400" />
-              <span>Ganti Modus</span>
-            </button>
-            <div className="text-xs text-right truncate">
-              <span className="text-slate-400 hidden sm:inline">Latihan: </span>
-              <span className="font-bold text-slate-200 truncate">{activeScenario?.title}</span>
-            </div>
-          </div>
-
           {/* Left Column: Chat Container Mockup */}
-          <div className="lg:col-span-2 flex flex-col rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md shadow-2xl overflow-hidden min-h-[580px]">
+          <div className="lg:col-span-2 flex flex-col rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md shadow-2xl overflow-hidden min-h-[560px]">
             {/* Chat App Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-[#0f1014] px-4 sm:px-5 py-3.5">
               <div className="flex items-center gap-3 min-w-0">
@@ -243,6 +229,16 @@ export default function SandboxTab() {
                   </p>
                 </div>
               </div>
+
+              {/* Minimal Clean Exit Button */}
+              <button
+                onClick={() => setActiveScenarioID(null)}
+                aria-label="Tutup simulasi"
+                title="Tutup simulasi"
+                className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
             {/* Chat Body Messages */}
@@ -261,18 +257,20 @@ export default function SandboxTab() {
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
 
-                    {/* Dangerous Attachment Rendering */}
+                    {/* Dangerous Attachment Rendering (Authentic, No Spoilers) */}
                     {msg.attachment && (
                       <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
                         {msg.attachment.type === "FILE_APK" && (
-                          <div className="flex items-center gap-3 text-rose-400">
-                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
-                              <FileBox className="h-5 w-5 text-rose-400" />
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 font-mono text-xs font-bold shrink-0">
+                              APK
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-xs truncate text-white">{msg.attachment.data}</p>
-                              <span className="text-[10px] text-rose-400 font-mono font-semibold uppercase tracking-wider block mt-0.5">
-                                Berkas Android .APK (Potensi Sniffer)
+                              <p className="font-bold text-xs truncate text-white">
+                                {msg.attachment.data.split(" ")[0]}
+                              </p>
+                              <span className="text-[11px] text-slate-400 block mt-0.5">
+                                4.8 MB · Berkas Aplikasi
                               </span>
                             </div>
                           </div>
@@ -282,7 +280,7 @@ export default function SandboxTab() {
                             <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
                               <Link2 className="h-4 w-4 text-blue-400" />
                             </div>
-                            <span className="text-xs font-mono truncate text-blue-300">{msg.attachment.data}</span>
+                            <span className="text-xs font-mono truncate text-blue-300 underline">{msg.attachment.data}</span>
                           </div>
                         )}
                         {msg.attachment.type === "IMAGE" && (
@@ -334,32 +332,27 @@ export default function SandboxTab() {
               </div>
             )}
 
-            {/* Input Action Panel */}
+            {/* Input Action Panel (Conversational Quick Replies) */}
             <div className="border-t border-white/10 bg-[#0f1014] p-4">
               {!isCompleted && currentStep && currentStep.choices && currentStep.choices.length > 0 ? (
                 <div className="space-y-2.5">
-                  <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-                    Pilih Tindakan atau Jawaban Anda:
+                  <p className="text-xs font-medium text-slate-400">
+                    Pilih respon Anda:
                   </p>
                   <div className="grid gap-2">
-                    {currentStep.choices.map((c: any, cIdx: number) => {
-                      const letter = String.fromCharCode(65 + cIdx); // A, B, C
-                      return (
-                        <button
-                          key={c.id}
-                          disabled={loading}
-                          onClick={() => handleMakeChoice(c)}
-                          className="group flex items-start gap-3 rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-white hover:border-blue-500/50 hover:bg-[#1a1d24] transition-all disabled:opacity-50 cursor-pointer"
-                        >
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 font-mono text-[11px] font-bold text-slate-400 group-hover:border-blue-500/50 group-hover:bg-blue-600 group-hover:text-white transition-colors mt-0.5">
-                            {letter}
-                          </span>
-                          <span className="flex-1 leading-relaxed text-slate-200 group-hover:text-white">
-                            {c.text}
-                          </span>
-                        </button>
-                      );
-                    })}
+                    {currentStep.choices.map((c: any) => (
+                      <button
+                        key={c.id}
+                        disabled={loading}
+                        onClick={() => handleMakeChoice(c)}
+                        className="group flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-medium text-slate-200 hover:border-blue-500/60 hover:bg-[#1a1d25] hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+                      >
+                        <span className="leading-relaxed pr-3">{c.text}</span>
+                        <span className="text-[11px] font-semibold text-blue-400 shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                          Pilih →
+                        </span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               ) : (
