@@ -127,31 +127,31 @@ html, body {
   will-change: clip-path, opacity;
 }
 
-/* Elegant Text Shimmer Gleam (Transparan Berkilau Kiri ke Kanan) */
+/* Elegant Text Shimmer Gleam (Single Steady Pass, 100% Constant & Slow) */
 @keyframes text-shimmer {
   0% {
-    background-position: -200% 0;
+    background-position: 100% 0;
   }
   100% {
-    background-position: 200% 0;
+    background-position: -100% 0;
   }
 }
 
 .animate-text-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.68) 0%,
-    rgba(255, 255, 255, 0.68) 30%,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.65) 35%,
     #ffffff 50%,
-    rgba(255, 255, 255, 0.68) 70%,
-    rgba(255, 255, 255, 0.68) 100%
+    rgba(255, 255, 255, 0.65) 65%,
+    rgba(255, 255, 255, 0.65) 100%
   );
   background-size: 200% auto;
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: text-shimmer 7s ease-in-out infinite;
+  animation: text-shimmer 6s linear infinite;
 }
 
 

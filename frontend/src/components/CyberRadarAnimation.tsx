@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import lottie from "lottie-web";
 import animData from "@/assets/cyber-radar.json";
 
 interface CyberRadarAnimationProps {
@@ -9,30 +8,34 @@ interface CyberRadarAnimationProps {
 }
 
 export default function CyberRadarAnimation({
-  className = "w-52 h-32 sm:w-64 sm:h-40",
+  className = "w-56 h-36 sm:w-72 sm:h-44 lg:w-80 lg:h-48",
 }: CyberRadarAnimationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    const anim = lottie.loadAnimation({
-      container: containerRef.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      animationData: animData,
+    let anim: any = null;
+    import("lottie-web").then((lottieModule) => {
+      const lottie = lottieModule.default || lottieModule;
+      if (containerRef.current) {
+        anim = lottie.loadAnimation({
+          container: containerRef.current,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          animationData: animData,
+        });
+      }
     });
 
     return () => {
-      anim.destroy();
+      if (anim) anim.destroy();
     };
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className={`flex items-center justify-center shrink-0 overflow-hidden ${className}`}
+      className={`flex items-center justify-center shrink-0 ${className}`}
       aria-hidden="true"
     />
   );
