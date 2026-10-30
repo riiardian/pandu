@@ -140,18 +140,18 @@ html, body {
 .animate-text-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0.3) 25%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0.3) 75%,
-    rgba(255, 255, 255, 0.3) 100%
+    rgba(255, 255, 255, 0.68) 0%,
+    rgba(255, 255, 255, 0.68) 30%,
+    #ffffff 50%,
+    rgba(255, 255, 255, 0.68) 70%,
+    rgba(255, 255, 255, 0.68) 100%
   );
   background-size: 200% auto;
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: text-shimmer 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: text-shimmer 7s ease-in-out infinite;
 }
 
 

@@ -174,7 +174,7 @@ export default function SandboxTab() {
       {/* Intro Hero Section (Centered, Borderless, Translucent Shimmer Text) */}
       {!activeScenarioID && (
         <section className="pt-1 pb-2 flex flex-col items-center justify-center text-center">
-          <CyberRadarAnimation className="w-56 h-36 sm:w-72 sm:h-44 lg:w-80 lg:h-48 shrink-0 mb-1" />
+          <CyberRadarAnimation className="w-56 h-36 sm:w-72 sm:h-44 lg:w-80 lg:h-48 shrink-0 mb-3.5 sm:mb-4.5" />
 
           <div className="w-full text-center">
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight inline-block whitespace-nowrap animate-text-shimmer">
