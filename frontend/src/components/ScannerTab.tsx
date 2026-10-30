@@ -476,7 +476,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           Investigasi Ancaman Digital
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Mesin cerdas PANDU membedah rekayasa sosial, merayapi reputasi digital publik secara real-time, mengaudit alur interaksi web, dan menguji keaslian bukti transfer serta berkas mencurigakan sebelum Anda menjadi korban.
+          Cek riwayat aduan publik dan keaslian data sebelum Anda mentransfer uang, mengklik tautan, atau merespons pihak yang mencurigakan.
         </p>
       </section>
 
