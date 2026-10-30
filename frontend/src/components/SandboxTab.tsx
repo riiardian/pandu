@@ -171,17 +171,17 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Hero Section (Clean & Borderless) */}
+      {/* Intro Hero Section (Clean, Modern Plus Jakarta Sans, 1-Line on Desktop) */}
       {!activeScenarioID && (
-        <section className="pt-1 pb-1">
-          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 sm:gap-6">
-            <div className="max-w-md sm:max-w-lg text-left">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight text-white leading-snug">
+        <section className="pt-2 pb-2">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 sm:gap-8">
+            <div className="text-left w-full sm:w-auto">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight text-white leading-snug sm:whitespace-nowrap">
                 Kenali Modus Social Engineering Sebelum Menjadi Sasaran
               </h2>
             </div>
 
-            <CyberRadarAnimation className="w-64 h-40 sm:w-80 sm:h-52 shrink-0" />
+            <CyberRadarAnimation className="w-64 h-40 sm:w-80 sm:h-52 lg:w-[340px] lg:h-[215px] shrink-0" />
           </div>
         </section>
       )}
