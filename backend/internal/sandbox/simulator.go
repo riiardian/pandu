@@ -72,22 +72,22 @@ func ProcessTurn(req SimulationTurnRequest) (*SimulationTurnResponse, error) {
 		}
 
 		if newScore >= 70 {
-			resp.FinalVerdict = "IMUNITAS TINGGI / CYBER GUARDIAN PRO"
+			resp.FinalVerdict = "TINGKAT OPTIMAL"
 			resp.LessonsLearned = []string{
-				"Anda berhasil menahan manipulasi psikologis dan mengedepankan verifikasi saluran resmi.",
-				"Sikap skeptis yang sehat adalah pertahanan nomor satu di era kejahatan siber.",
+				"Menolak berkas mencurigakan dan memutus interaksi manipulatif secara tegas.",
+				"Verifikasi selalu diarahkan langsung melalui kanal atau aplikasi resmi.",
 			}
 		} else if newScore >= 40 {
-			resp.FinalVerdict = "WASPADA / BUTUH LATIHAN TAMBAHAN"
+			resp.FinalVerdict = "PERLU EVALUASI"
 			resp.LessonsLearned = []string{
-				"Anda sempat ragu atau mengambil keputusan berisiko, namun masih memiliki insting dasar.",
-				"Perbanyak latihan memperhatikan ekstensi file (.apk) dan domain web murah.",
+				"Sempat mengambil respon berisiko yang membuka celah manipulasi lanjutan.",
+				"Pertahankan prinsip verifikasi mandiri sebelum menanggapi desakan pelaku.",
 			}
 		} else {
-			resp.FinalVerdict = "RENTAN JEBAKAN / RAWAN MANIPULASI"
+			resp.FinalVerdict = "RENTAN PENIPUAN"
 			resp.LessonsLearned = []string{
-				"Anda sangat mudah tergiur iming-iming instan atau terintimidasi desakan waktu palsu.",
-				"Ingat prinsip emas: Perusahaan resmi TIDAK PERNAH meminta deposit, dan kurir TIDAK PERNAH mengirim file .APK!",
+				"Mudah terpengaruh ancaman darurat palsu dan mengabaikan peringatan keamanan berkas.",
+				"Jangan pernah membuka berkas aplikasi asing atau memberikan akses data lewat chat.",
 			}
 		}
 		return resp, nil

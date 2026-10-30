@@ -492,21 +492,45 @@ export default function SandboxTab() {
                 <div className="flex items-center gap-2 text-blue-400">
                   <Trophy className="h-5 w-5" />
                   <h4 className="text-sm font-bold uppercase tracking-wider font-mono">
-                    {lang === "en" ? "Final Evaluation" : "Evaluasi Akhir"}
+                    {lang === "en" ? "Inspection Summary" : "Ringkasan Pemeriksaan"}
                   </h4>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
-                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{finalResult.verdict}</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    {lang === "en"
+                      ? finalResult.verdict === "TINGKAT OPTIMAL"
+                        ? "OPTIMAL LEVEL"
+                        : finalResult.verdict === "PERLU EVALUASI"
+                        ? "NEEDS EVALUATION"
+                        : "VULNERABLE TO SCAMS"
+                      : finalResult.verdict}
+                  </span>
                 </div>
 
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
-                    {lang === "en" ? "Key Takeaways:" : "Pelajaran Penting:"}
+                    {lang === "en" ? "Analysis Conclusion:" : "Kesimpulan Analisis:"}
                   </span>
                   <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1.5 leading-relaxed">
                     {finalResult.lessons &&
                       finalResult.lessons.map((ls: string, lidx: number) => (
-                        <li key={lidx}>{ls}</li>
+                        <li key={lidx}>
+                          {lang === "en"
+                            ? ls === "Menolak berkas mencurigakan dan memutus interaksi manipulatif secara tegas."
+                              ? "Decisively rejected suspicious files and terminated manipulative interactions."
+                              : ls === "Verifikasi selalu diarahkan langsung melalui kanal atau aplikasi resmi."
+                              ? "Verification was consistently routed through official channels or authorized apps."
+                              : ls === "Sempat mengambil respon berisiko yang membuka celah manipulasi lanjutan."
+                              ? "Took risky responses that left vulnerabilities open for subsequent manipulation."
+                              : ls === "Pertahankan prinsip verifikasi mandiri sebelum menanggapi desakan pelaku."
+                              ? "Maintain independent verification protocols before reacting to artificial urgency."
+                              : ls === "Mudah terpengaruh ancaman darurat palsu dan mengabaikan peringatan keamanan berkas."
+                              ? "Vulnerable to false urgency threats and overlooked critical file security indicators."
+                              : ls === "Jangan pernah membuka berkas aplikasi asing atau memberikan akses data lewat chat."
+                              ? "Never execute unknown application packages or yield credential access via informal messaging."
+                              : ls
+                            : ls}
+                        </li>
                       ))}
                   </ul>
                 </div>
