@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   Search,
   AlertTriangle,
@@ -29,6 +30,7 @@ interface DossierTabProps {
 }
 
 export default function DossierTab({ initialData }: DossierTabProps) {
+  const lang = useLanguage();
   const [activeTab, setActiveTab] = useState<"search" | "report" | "firstaid">("search");
 
   // Search State
@@ -159,13 +161,15 @@ export default function DossierTab({ initialData }: DossierTabProps) {
       <div className="rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-2">
         <div className="flex items-center gap-2 text-blue-400 font-mono text-xs uppercase tracking-wider">
           <ShieldAlert className="h-4 w-4" />
-          <span>Basis Data Intelijen Siber</span>
+          <span>{lang === "en" ? "Cyber Threat Intelligence Database" : "Basis Data Intelijen Siber"}</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Pusat Laporan &amp; Daftar Hitam (Threat Registry)
+          {lang === "en" ? "Report Center & Blacklist Registry" : "Pusat Laporan & Daftar Hitam (Threat Registry)"}
         </h2>
         <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-          Verifikasi keabsahan nomor WhatsApp, rekening bank, atau link mencurigakan terhadap basis data kejahatan siber PANDU. Anda juga dapat melaporkan entitas penipuan baru untuk melindungi masyarakat secara real-time.
+          {lang === "en"
+            ? "Verify suspicious WhatsApp numbers, bank accounts, or links against PANDU's cybercrime threat registry. You can also report new fraudulent entities to protect the public in real time."
+            : "Verifikasi keabsahan nomor WhatsApp, rekening bank, atau link mencurigakan terhadap basis data kejahatan siber PANDU. Anda juga dapat melaporkan entitas penipuan baru untuk melindungi masyarakat secara real-time."}
         </p>
       </div>
 
@@ -180,7 +184,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           }`}
         >
           <Search className="h-4 w-4" />
-          <span>Periksa Daftar Hitam</span>
+          <span>{lang === "en" ? "Check Blacklist" : "Periksa Daftar Hitam"}</span>
         </button>
 
         <button
@@ -192,7 +196,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           }`}
         >
           <AlertTriangle className="h-4 w-4" />
-          <span>Lapor Penipuan Baru</span>
+          <span>{lang === "en" ? "Report New Scam" : "Lapor Penipuan Baru"}</span>
         </button>
 
         <button
@@ -204,7 +208,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           }`}
         >
           <ShieldCheck className="h-4 w-4" />
-          <span>Pertolongan Pertama</span>
+          <span>{lang === "en" ? "Emergency First-Aid" : "Pertolongan Pertama"}</span>
         </button>
       </div>
 
@@ -214,7 +218,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           {/* Search Box */}
           <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 space-y-4 shadow-xl">
             <h3 className="text-sm font-bold text-white">
-              Cek Status Nomor Telepon, Rekening, atau Tautan
+              {lang === "en" ? "Check Status of Phone Number, Bank Account, or Link" : "Cek Status Nomor Telepon, Rekening, atau Tautan"}
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -222,7 +226,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Masukkan no WA (08...), no rekening (BCA/BRI...), atau URL web..."
+                  placeholder={lang === "en" ? "Enter phone number (08...), bank account (BCA/BRI...), or web URL..." : "Masukkan no WA (08...), no rekening (BCA/BRI...), atau URL web..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -235,13 +239,13 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 disabled={searchLoading}
                 className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40 disabled:opacity-50 shrink-0"
               >
-                {searchLoading ? "Memeriksa..." : "Periksa Sekarang"}
+                {searchLoading ? (lang === "en" ? "Checking..." : "Memeriksa...") : (lang === "en" ? "Check Now" : "Periksa Sekarang")}
               </button>
             </div>
 
             {/* Quick Helper Note */}
             <p className="text-[11px] text-slate-500 pt-1">
-              Masukkan nomor kontak, rekening bank, atau tautan yang mencurigakan untuk memeriksa apakah sudah pernah dilaporkan masyarakat.
+              {lang === "en" ? "Input suspicious phone numbers, bank accounts, or web links to verify if they have been reported by the public." : "Masukkan nomor kontak, rekening bank, atau tautan yang mencurigakan untuk memeriksa apakah sudah pernah dilaporkan masyarakat."}
             </p>
           </div>
 
@@ -350,10 +354,10 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-                Laporan Ancaman Terkini di Basis Data PANDU
+                {lang === "en" ? "LATEST THREAT REPORTS IN PANDU DATABASE" : "Laporan Ancaman Terkini di Basis Data PANDU"}
               </h4>
               <span className="text-[11px] font-mono text-blue-400">
-                {recentThreats.length} Entitas Terdaftar
+                {recentThreats.length} {lang === "en" ? "Entities Registered" : "Entitas Terdaftar"}
               </span>
             </div>
 
@@ -373,7 +377,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                         {threat.identifier}
                       </span>
                       <span className="rounded bg-rose-950/60 border border-rose-800/40 px-2 py-0.2 text-[9px] font-mono font-bold text-rose-300 shrink-0">
-                        {threat.report_count} Laporan
+                        {threat.report_count} {lang === "en" ? "Reports" : "Laporan"}
                       </span>
                     </div>
 
@@ -383,7 +387,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
                     <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-white/5">
                       <span className="capitalize">{threat.category?.replace("_", " ")}</span>
-                      <span>Aktif: {threat.last_reported?.split(" ")[0]}</span>
+                      <span>{lang === "en" ? "Active:" : "Aktif:"} {threat.last_reported?.split(" ")[0]}</span>
                     </div>
                   </div>
                 ))}
@@ -391,10 +395,12 @@ export default function DossierTab({ initialData }: DossierTabProps) {
             ) : (
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6 text-center space-y-1.5">
                 <p className="text-xs text-slate-300 font-medium">
-                  Belum ada catatan laporan aduan pada basis data.
+                  {lang === "en" ? "No complaint report records in the database yet." : "Belum ada catatan laporan aduan pada basis data."}
                 </p>
                 <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed">
-                  PANDU tidak memuat data rekaan. Daftar hitam akan bertambah secara transparan saat ada laporan riil yang diajukan oleh masyarakat.
+                  {lang === "en"
+                    ? "PANDU does not load artificial mock data. Blacklist entries expand transparently upon genuine community reports."
+                    : "PANDU tidak memuat data rekaan. Daftar hitam akan bertambah secara transparan saat ada laporan riil yang diajukan oleh masyarakat."}
                 </p>
               </div>
             )}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import CyberRadarAnimation from "@/components/CyberRadarAnimation";
 import HackerAvatar from "@/components/HackerAvatar";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   MessageSquare,
   ShieldCheck,
@@ -27,6 +28,7 @@ interface ScenarioSummary {
 }
 
 export default function SandboxTab() {
+  const lang = useLanguage();
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
   const [activeScenarioID, setActiveScenarioID] = useState<string | null>(null);
   const [activeScenario, setActiveScenario] = useState<any>(null);
@@ -179,7 +181,7 @@ export default function SandboxTab() {
 
           <div className="w-full text-center">
             <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight inline-block whitespace-nowrap animate-text-shimmer">
-              Kenali Modus Social Engineering
+              {lang === "en" ? "Recognize Social Engineering Scams" : "Kenali Modus Social Engineering"}
             </h2>
           </div>
         </section>
@@ -205,7 +207,7 @@ export default function SandboxTab() {
 
               <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
                 <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
-                  Mulai Simulasi
+                  {lang === "en" ? "Start Simulation" : "Mulai Simulasi"}
                 </span>
               </div>
             </div>
@@ -337,7 +339,7 @@ export default function SandboxTab() {
               {!isCompleted && currentStep && currentStep.choices && currentStep.choices.length > 0 ? (
                 <div className="space-y-2.5">
                   <p className="text-xs font-medium text-slate-400">
-                    Pilih respon Anda:
+                    {lang === "en" ? "Choose your response:" : "Pilih respon Anda:"}
                   </p>
                   <div className="grid gap-2">
                     {currentStep.choices.map((c: any) => (
@@ -349,7 +351,7 @@ export default function SandboxTab() {
                       >
                         <span className="leading-relaxed pr-3">{c.text}</span>
                         <span className="text-[11px] font-semibold text-blue-400 shrink-0 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
-                          Pilih →
+                          {lang === "en" ? "Select →" : "Pilih →"}
                         </span>
                       </button>
                     ))}
@@ -357,13 +359,15 @@ export default function SandboxTab() {
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-300">Skenario Latihan Telah Selesai.</span>
+                  <span className="text-xs font-semibold text-slate-300">
+                    {lang === "en" ? "Simulation Scenario Completed." : "Skenario Latihan Telah Selesai."}
+                  </span>
                   <button
                     onClick={() => startScenario(activeScenarioID)}
                     className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40 cursor-pointer"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
-                    <span>Ulangi Latihan</span>
+                    <span>{lang === "en" ? "Restart Simulation" : "Ulangi Latihan"}</span>
                   </button>
                 </div>
               )}
@@ -375,7 +379,7 @@ export default function SandboxTab() {
             {/* Immunity Score Card */}
             <div className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl">
               <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-                Imunitas Kognitif Digital
+                {lang === "en" ? "Digital Cognitive Immunity" : "Imunitas Kognitif Digital"}
               </span>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-4xl font-black text-white">{currentScore}</span>
@@ -394,8 +398,9 @@ export default function SandboxTab() {
                 />
               </div>
               <p className="mt-3 text-xs text-slate-400 leading-relaxed">
-                Skor meningkat ketika Anda menuntut verifikasi resmi, dan anjlok drastis jika Anda
-                terbujuk menyetor uang, mengklik tautan tidak resmi, atau menyerahkan kode OTP.
+                {lang === "en"
+                  ? "Score increases when demanding official verification, and drops drastically if persuaded to deposit money, click unauthorized links, or share OTPs."
+                  : "Skor meningkat ketika Anda menuntut verifikasi resmi, dan anjlok drastis jika Anda terbujuk menyetor uang, mengklik tautan tidak resmi, atau menyerahkan kode OTP."}
               </p>
             </div>
 
@@ -404,14 +409,18 @@ export default function SandboxTab() {
               <div className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-3.5 animate-in fade-in duration-300">
                 <div className="flex items-center gap-2 text-blue-400">
                   <Trophy className="h-5 w-5" />
-                  <h4 className="text-sm font-bold uppercase tracking-wider font-mono">Evaluasi Akhir</h4>
+                  <h4 className="text-sm font-bold uppercase tracking-wider font-mono">
+                    {lang === "en" ? "Final Evaluation" : "Evaluasi Akhir"}
+                  </h4>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
                   <span className="text-xs sm:text-sm font-bold text-white">{finalResult.verdict}</span>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Pelajaran Penting:</span>
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
+                    {lang === "en" ? "Key Takeaways:" : "Pelajaran Penting:"}
+                  </span>
                   <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1.5 leading-relaxed">
                     {finalResult.lessons &&
                       finalResult.lessons.map((ls: string, lidx: number) => (

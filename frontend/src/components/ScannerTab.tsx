@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   Search,
   AlertTriangle,
@@ -274,6 +275,7 @@ function RiskGaugeDial({ score }: { score: number }) {
 
 export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   const router = useRouter();
+  const lang = useLanguage();
   const [scanType, setScanType] = useState<ScanCategory>("text");
 
   // Form states
@@ -460,12 +462,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   };
 
   const TABS = [
-    { id: "text", label: "Pesan Chat", icon: MessageSquare },
-    { id: "url", label: "Tautan Web", icon: Globe },
-    { id: "phone", label: "No. Telepon", icon: Phone },
-    { id: "bank", label: "Rekening Bank", icon: CreditCard },
-    { id: "email", label: "Alamat Email", icon: Mail },
-    { id: "file", label: "Berkas / APK / Foto", icon: FileCode },
+    { id: "text", label: lang === "en" ? "Chat Messages" : "Pesan Chat", icon: MessageSquare },
+    { id: "url", label: lang === "en" ? "Web Links" : "Tautan Web", icon: Globe },
+    { id: "phone", label: lang === "en" ? "Phone Numbers" : "No. Telepon", icon: Phone },
+    { id: "bank", label: lang === "en" ? "Bank Accounts" : "Rekening Bank", icon: CreditCard },
+    { id: "email", label: lang === "en" ? "Email Addresses" : "Alamat Email", icon: Mail },
+    { id: "file", label: lang === "en" ? "Files / APK / Photos" : "Berkas / APK / Foto", icon: FileCode },
   ];
 
   return (
@@ -473,10 +475,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {/* Intro Header Section */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-2 shadow-xl">
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Investigasi Ancaman Digital
+          {lang === "en" ? "Digital Threat Investigation" : "Investigasi Ancaman Digital"}
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-3xl">
-          Cek riwayat aduan publik dan keaslian data sebelum Anda mentransfer uang, mengklik tautan, atau merespons pihak yang mencurigakan.
+          {lang === "en"
+            ? "Verify public complaint histories and data authenticity before transferring funds, clicking links, or responding to suspicious entities."
+            : "Cek riwayat aduan publik dan keaslian data sebelum Anda mentransfer uang, mengklik tautan, atau merespons pihak yang mencurigakan."}
         </p>
       </section>
 
@@ -524,7 +528,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 rows={3}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Tempel atau ketik teks pesan WhatsApp, SMS, atau Telegram di sini untuk dibedah modusnya..."
+                placeholder={lang === "en" ? "Paste or type WhatsApp, SMS, or Telegram messages here to analyze threats..." : "Tempel atau ketik teks pesan WhatsApp, SMS, atau Telegram di sini untuk dibedah modusnya..."}
                 className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none resize-none font-sans"
               />
             </div>
@@ -540,7 +544,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 type="text"
                 value={inputURL}
                 onChange={(e) => setInputURL(e.target.value)}
-                placeholder="domain-atau-link-mencurigakan.com/login..."
+                placeholder={lang === "en" ? "suspicious-domain.com/login or shortlink..." : "domain-atau-link-mencurigakan.com/login..."}
                 className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
             </div>
@@ -577,7 +581,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       type="text"
                       value={countryFilterQuery}
                       onChange={(e) => setCountryFilterQuery(e.target.value)}
-                      placeholder="Cari negara atau kode..."
+                      placeholder={lang === "en" ? "Search country or dial code..." : "Cari negara atau kode..."}
                       className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       autoFocus
                     />
@@ -638,7 +642,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       type="text"
                       value={bankFilterQuery}
                       onChange={(e) => setBankFilterQuery(e.target.value)}
-                      placeholder="Cari bank atau e-wallet..."
+                      placeholder={lang === "en" ? "Search bank or e-wallet..." : "Cari bank atau e-wallet..."}
                       className="w-full rounded-lg border border-white/10 bg-[#060a14] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       autoFocus
                     />
@@ -674,7 +678,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 type="email"
                 value={inputEmail}
                 onChange={(e) => setInputEmail(e.target.value)}
-                placeholder="nama-pengirim@domain.com..."
+                placeholder={lang === "en" ? "sender-name@domain.com..." : "nama-pengirim@domain.com..."}
                 className="w-full px-3.5 py-3 text-sm text-white bg-transparent placeholder-slate-500 focus:outline-none font-mono"
               />
             </div>
@@ -687,15 +691,19 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   <Upload className="h-5 w-5 text-blue-400 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-white truncate">
-                      {selectedFile ? selectedFile.name : "Unggah bukti transfer, poster loker/undian, atau berkas APK"}
+                      {selectedFile
+                        ? selectedFile.name
+                        : (lang === "en" ? "Upload transfer receipt, job flyer, or APK file" : "Unggah bukti transfer, poster loker/undian, atau berkas APK")}
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Mendukung JPG, PNG, WEBP, PDF, APK (Maksimal 5 MB)"}
+                      {selectedFile
+                        ? `${(selectedFile.size / 1024).toFixed(1)} KB`
+                        : (lang === "en" ? "Supports JPG, PNG, WEBP, PDF, APK (Max 5 MB)" : "Mendukung JPG, PNG, WEBP, PDF, APK (Maksimal 5 MB)")}
                     </p>
                   </div>
                 </div>
                 <label className="cursor-pointer rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shrink-0 shadow-sm shadow-blue-600/30">
-                  <span>{selectedFile ? "Ganti" : "Pilih File"}</span>
+                  <span>{selectedFile ? (lang === "en" ? "Change" : "Ganti") : (lang === "en" ? "Choose File" : "Pilih File")}</span>
                   <input
                     type="file"
                     onChange={handleFileUpload}
@@ -740,18 +748,18 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <Search className="h-4 w-4" />
             <span>
               {loading
-                ? "Sedang Menyelidiki..."
+                ? (lang === "en" ? "Investigating..." : "Sedang Menyelidiki...")
                 : scanType === "text"
-                ? "Periksa Pesan"
+                ? (lang === "en" ? "Inspect Message" : "Periksa Pesan")
                 : scanType === "url"
-                ? "Periksa Tautan"
+                ? (lang === "en" ? "Inspect Link" : "Periksa Tautan")
                 : scanType === "phone"
-                ? "Periksa Nomor"
+                ? (lang === "en" ? "Inspect Number" : "Periksa Nomor")
                 : scanType === "bank"
-                ? "Periksa Rekening"
+                ? (lang === "en" ? "Inspect Account" : "Periksa Rekening")
                 : scanType === "email"
-                ? "Periksa Email"
-                : "Periksa Berkas"}
+                ? (lang === "en" ? "Inspect Email" : "Periksa Email")
+                : (lang === "en" ? "Inspect File" : "Periksa Berkas")}
             </span>
           </button>
         </div>
@@ -815,7 +823,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           <div className="py-2 flex flex-col items-center justify-center text-center select-none">
             <RiskGaugeDial score={result.risk_score} />
             <div className="mt-2 text-xs font-mono font-bold tracking-widest text-slate-300 uppercase">
-              INDEKS SCORE <span className="text-base font-sans font-black ml-1.5" style={{ color: getRiskTierColor(result.risk_score) }}>{result.risk_score}%</span>
+              {lang === "en" ? "RISK INDEX SCORE" : "INDEKS SCORE"} <span className="text-base font-sans font-black ml-1.5" style={{ color: getRiskTierColor(result.risk_score) }}>{result.risk_score}%</span>
             </div>
           </div>
 
@@ -824,7 +832,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
               <div className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Eye className="h-4 w-4" />
-                <span>Analisis AI Vision ({result.ai_vision_result.content_type})</span>
+                <span>{lang === "en" ? "AI Vision Analysis" : "Analisis AI Vision"} ({result.ai_vision_result.content_type})</span>
               </div>
               <p className="text-slate-300 leading-relaxed">{result.ai_vision_result.explanation}</p>
               {result.ai_vision_result.extracted_text_summary && (
@@ -837,7 +845,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
             <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
               <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
-                Hasil Pemeriksaan
+                {lang === "en" ? "Inspection Results" : "Hasil Pemeriksaan"}
               </div>
               <div className="space-y-3.5 pt-0.5">
                 {result.sources.filter((s: any) => s.status === "queried").map((source: any) => {
@@ -925,7 +933,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 }}
                 className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"
               >
-                <span>Buat Laporan Aduan</span>
+                <span>{lang === "en" ? "File Official Report" : "Buat Laporan Aduan"}</span>
               </button>
             </div>
           )}
