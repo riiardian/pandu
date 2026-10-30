@@ -54,6 +54,50 @@ const SCENARIO_TRANSLATIONS: Record<string, { title: string; description: string
   },
 };
 
+function formatSenderRole(rawRole: string, lang: "id" | "en"): string {
+  if (!rawRole) return lang === "en" ? "Unknown Entity" : "Entitas Tak Dikenal";
+
+  // Check if role contains a phone number inside parentheses e.g. (+62 821-4402-1922)
+  const phoneMatch = rawRole.match(/\(?\+?62\s*([\d\s-]+)\)?/);
+  if (phoneMatch) {
+    const rawDigits = "0" + phoneMatch[1].replace(/[\s-]/g, "");
+    // Dynamically mask digits (preserve 08, mask 2, keep 2, mask 2, keep 1, mask 2, keep 1)
+    let masked = "";
+    for (let i = 0; i < rawDigits.length; i++) {
+      if (i < 2) {
+        masked += rawDigits[i]; // '08'
+      } else if (i === 2 || i === 3) {
+        masked += "x";
+      } else if (i === 4 || i === 5) {
+        masked += rawDigits[i];
+      } else if (i === 6 || i === 7) {
+        masked += "x";
+      } else if (i === 8) {
+        masked += rawDigits[i];
+      } else if (i === rawDigits.length - 1) {
+        masked += rawDigits[i]; // last digit
+      } else {
+        masked += "x";
+      }
+    }
+
+    // Extract label part before parentheses
+    let label = rawRole.replace(/\s*\(.*?\)/, "").trim();
+    if (lang === "en") {
+      label = label
+        .replace(/Nomor Tak Dikenal/gi, "Unknown Number")
+        .replace(/Nomor Asing/gi, "Foreign Number")
+        .replace(/Kontak Baru/gi, "New Contact")
+        .replace(/Akun Bisnis Tiruan/gi, "Spoofed Business Account")
+        .replace(/Panggilan Call Center/gi, "Call Center Voice");
+    }
+    // Return without parentheses
+    return `${label} ${masked}`;
+  }
+
+  return rawRole;
+}
+
 export default function SandboxTab() {
   const lang = useLanguage();
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
@@ -254,21 +298,25 @@ export default function SandboxTab() {
               <div className="flex items-center gap-3 min-w-0">
                 <HackerAvatar className="h-10 w-10 shrink-0" />
                 <div className="min-w-0">
-                  <h4 className="text-sm font-bold text-white leading-tight">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">
                     {currentStep?.sender_name || currentStep?.SenderName || (lang === "en" && activeScenarioID && SCENARIO_TRANSLATIONS[activeScenarioID]?.title) || activeScenario?.title}
                   </h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {currentStep?.sender_role || currentStep?.SenderRole || (lang === "en" ? "Foreign Entity" : "Entitas Asing")} · <span className="text-emerald-400 font-semibold">Online</span>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                    {formatSenderRole(currentStep?.sender_role || currentStep?.SenderRole || "", lang)}
                   </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Online</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Minimal Clean Exit Button */}
+              {/* Minimal Clean Exit Button (Borderless, Zero-Background) */}
               <button
                 onClick={() => setActiveScenarioID(null)}
                 aria-label="Tutup simulasi"
                 title="Tutup simulasi"
-                className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                className="flex h-8 w-8 items-center justify-center text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-none shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
