@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import CyberRadarAnimation from "@/components/CyberRadarAnimation";
+import HackerAvatar from "@/components/HackerAvatar";
 import {
   MessageSquare,
   ShieldCheck,
@@ -10,7 +11,6 @@ import {
   Send,
   FileBox,
   Link2,
-  Sparkles,
   Trophy,
   ArrowRight,
   UserCheck,
@@ -213,35 +213,36 @@ export default function SandboxTab() {
       ) : (
         /* Active Simulation Sandbox (Refined Obsidian Dark Theme) */
         <div className="grid gap-6 lg:grid-cols-3 text-left">
+          {/* Top Bar Navigation & Active Scenario Breadcrumb */}
+          <div className="lg:col-span-3 flex items-center justify-between gap-3">
+            <button
+              onClick={() => setActiveScenarioID(null)}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121316] px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:border-blue-500/40 hover:bg-[#18191f] hover:text-white transition-all cursor-pointer shadow-md shrink-0"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-blue-400" />
+              <span>Ganti Modus</span>
+            </button>
+            <div className="text-xs text-right truncate">
+              <span className="text-slate-400 hidden sm:inline">Latihan: </span>
+              <span className="font-bold text-slate-200 truncate">{activeScenario?.title}</span>
+            </div>
+          </div>
+
           {/* Left Column: Chat Container Mockup */}
           <div className="lg:col-span-2 flex flex-col rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md shadow-2xl overflow-hidden min-h-[580px]">
             {/* Chat App Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-[#0f1014] px-4 sm:px-5 py-3.5">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-slate-800 overflow-hidden border border-white/10">
-                  <img
-                    src={currentStep?.SenderAvatar || "https://api.dicebear.com/7.x/personas/svg?seed=Bot"}
-                    alt="avatar"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div>
+              <div className="flex items-center gap-3 min-w-0">
+                <HackerAvatar className="h-10 w-10 shrink-0" />
+                <div className="min-w-0">
                   <h4 className="text-sm font-bold text-white leading-tight">
-                    {currentStep?.SenderName || activeScenario.title}
+                    {currentStep?.sender_name || currentStep?.SenderName || activeScenario?.title}
                   </h4>
-                  <p className="text-[11px] text-slate-400">
-                    {currentStep?.SenderRole || "Kontak Asing"} · <span className="text-emerald-400 font-semibold">Online</span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {currentStep?.sender_role || currentStep?.SenderRole || "Entitas Asing"} · <span className="text-emerald-400 font-semibold">Online</span>
                   </p>
                 </div>
               </div>
-
-              <button
-                onClick={() => setActiveScenarioID(null)}
-                className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span>Pilih Modus Lain</span>
-              </button>
             </div>
 
             {/* Chat Body Messages */}
@@ -251,13 +252,6 @@ export default function SandboxTab() {
                   key={idx}
                   className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
                 >
-                  {/* Tactic Banner for Scammer Message */}
-                  {msg.sender === "bot" && msg.tactic && msg.tactic !== "Selesai" && (
-                    <div className="mb-1 rounded-md bg-rose-500/10 border border-rose-500/25 px-2.5 py-0.5 text-[10px] font-mono font-bold text-rose-300">
-                      Taktik: {msg.tactic}
-                    </div>
-                  )}
-
                   <div
                     className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
                       msg.sender === "user"
@@ -269,21 +263,25 @@ export default function SandboxTab() {
 
                     {/* Dangerous Attachment Rendering */}
                     {msg.attachment && (
-                      <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0d0e12] p-3">
+                      <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
                         {msg.attachment.type === "FILE_APK" && (
-                          <div className="flex items-center gap-2.5 text-rose-400">
-                            <FileBox className="h-6 w-6 text-rose-400 shrink-0" />
+                          <div className="flex items-center gap-3 text-rose-400">
+                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                              <FileBox className="h-5 w-5 text-rose-400" />
+                            </div>
                             <div className="min-w-0">
                               <p className="font-bold text-xs truncate text-white">{msg.attachment.data}</p>
-                              <span className="text-[10px] text-rose-400 font-semibold uppercase">
-                                Berkas Aplikasi Android (.APK)
+                              <span className="text-[10px] text-rose-400 font-mono font-semibold uppercase tracking-wider block mt-0.5">
+                                Berkas Android .APK (Potensi Sniffer)
                               </span>
                             </div>
                           </div>
                         )}
                         {msg.attachment.type === "LINK" && (
-                          <div className="flex items-center gap-2 text-blue-400">
-                            <Link2 className="h-5 w-5 text-blue-400 shrink-0" />
+                          <div className="flex items-center gap-2.5 text-blue-400">
+                            <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
+                              <Link2 className="h-4 w-4 text-blue-400" />
+                            </div>
                             <span className="text-xs font-mono truncate text-blue-300">{msg.attachment.data}</span>
                           </div>
                         )}
@@ -302,25 +300,36 @@ export default function SandboxTab() {
             {/* Tactical Feedback Bar */}
             {turnFeedback && (
               <div
-                className={`border-t p-3.5 text-xs flex items-start gap-2.5 ${
+                className={`border-t p-4 text-xs flex items-start gap-3 ${
                   turnFeedback.rating === "SAFE"
-                    ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"
+                    ? "bg-emerald-950/25 border-emerald-500/30 text-emerald-300"
                     : turnFeedback.rating === "RISKY"
-                    ? "bg-amber-500/10 border-amber-500/25 text-amber-300"
-                    : "bg-rose-500/10 border-rose-500/25 text-rose-300"
+                    ? "bg-amber-950/25 border-amber-500/30 text-amber-300"
+                    : "bg-rose-950/25 border-rose-500/30 text-rose-300"
                 }`}
               >
                 {turnFeedback.rating === "SAFE" ? (
-                  <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
                 )}
-                <div>
-                  <span className="font-bold uppercase tracking-wider block">
-                    {turnFeedback.rating === "SAFE" ? "Keputusan Aman" : "Keputusan Berisiko"} (Skor: {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : turnFeedback.scoreDelta})
-                  </span>
-                  <p className="mt-0.5 leading-relaxed">{turnFeedback.feedback}</p>
-                  <p className="text-[10px] opacity-75 mt-0.5 italic">Catatan: {turnFeedback.psychology}</p>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold uppercase tracking-wider font-mono">
+                      {turnFeedback.rating === "SAFE" ? "Keputusan Aman" : "Keputusan Berisiko"}
+                    </span>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                        turnFeedback.scoreDelta > 0
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "bg-rose-500/20 text-rose-300"
+                      }`}
+                    >
+                      {turnFeedback.scoreDelta > 0 ? `+${turnFeedback.scoreDelta}` : turnFeedback.scoreDelta}
+                    </span>
+                  </div>
+                  <p className="leading-relaxed text-slate-200">{turnFeedback.feedback}</p>
+                  <p className="text-[11px] opacity-80 italic">Catatan: {turnFeedback.psychology}</p>
                 </div>
               </div>
             )}
@@ -329,21 +338,28 @@ export default function SandboxTab() {
             <div className="border-t border-white/10 bg-[#0f1014] p-4">
               {!isCompleted && currentStep && currentStep.choices && currentStep.choices.length > 0 ? (
                 <div className="space-y-2.5">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+                  <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
                     Pilih Tindakan atau Jawaban Anda:
                   </p>
                   <div className="grid gap-2">
-                    {currentStep.choices.map((c: any) => (
-                      <button
-                        key={c.id}
-                        disabled={loading}
-                        onClick={() => handleMakeChoice(c)}
-                        className="flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 text-left text-xs sm:text-sm font-semibold text-white hover:border-blue-500/50 hover:bg-[#1a1c23] transition-all disabled:opacity-50 cursor-pointer"
-                      >
-                        <span className="pr-3 leading-relaxed">{c.text}</span>
-                        <Send className="h-4 w-4 text-blue-400 shrink-0" />
-                      </button>
-                    ))}
+                    {currentStep.choices.map((c: any, cIdx: number) => {
+                      const letter = String.fromCharCode(65 + cIdx); // A, B, C
+                      return (
+                        <button
+                          key={c.id}
+                          disabled={loading}
+                          onClick={() => handleMakeChoice(c)}
+                          className="group flex items-start gap-3 rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-white hover:border-blue-500/50 hover:bg-[#1a1d24] transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 font-mono text-[11px] font-bold text-slate-400 group-hover:border-blue-500/50 group-hover:bg-blue-600 group-hover:text-white transition-colors mt-0.5">
+                            {letter}
+                          </span>
+                          <span className="flex-1 leading-relaxed text-slate-200 group-hover:text-white">
+                            {c.text}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               ) : (
@@ -351,7 +367,7 @@ export default function SandboxTab() {
                   <span className="text-xs font-semibold text-slate-300">Skenario Latihan Telah Selesai.</span>
                   <button
                     onClick={() => startScenario(activeScenarioID)}
-                    className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40 cursor-pointer"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     <span>Ulangi Latihan</span>
