@@ -63,17 +63,17 @@ export default function LiveTerminalFeed() {
       </div>
 
       {/* Terminal Output Body - Real terminal syntax, no badges, non-scrollable */}
-      <div className="h-[200px] sm:h-[225px] p-3 sm:p-3.5 space-y-1 overflow-hidden text-[10px] sm:text-[11px] leading-relaxed">
+      <div className="terminal-body h-[200px] sm:h-[225px] p-3 sm:p-3.5 space-y-1 overflow-hidden text-[11px] sm:text-xs leading-relaxed">
         {visibleLines.map((item, idx) => (
           <div key={item.id} className="flex items-baseline gap-2 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
             <span className={`${item.color} font-bold select-none shrink-0`}>
               {item.pfx}
             </span>
-            <span className={`truncate ${idx === visibleLines.length - 1 ? "text-white font-medium" : "text-slate-300"}`}>
+            <span className={`terminal-log-text truncate ${idx === visibleLines.length - 1 ? "active-line text-white font-semibold" : "text-slate-200"}`}>
               {item.text}
             </span>
             {idx === visibleLines.length - 1 && (
-              <span className="inline-block w-1.5 h-3 bg-white animate-pulse shrink-0 ml-0.5" />
+              <span className="terminal-cursor inline-block w-1.5 h-3.5 bg-white animate-pulse shrink-0 ml-0.5" />
             )}
           </div>
         ))}

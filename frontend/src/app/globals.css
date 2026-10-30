@@ -356,6 +356,41 @@ html.light section > div[style*="rotateX"] {
 html.light .terminal-feed-card {
   border-color: #cbd5e1 !important;
   box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.08) !important;
+  background-color: #06070a !important;
+}
+
+/* Ensure Terminal Code Body ALWAYS Has High-Contrast Bright Text in Light Mode */
+html.light .terminal-feed-card .terminal-body {
+  background-color: #06070a !important;
+}
+
+html.light .terminal-feed-card .terminal-body .terminal-log-text {
+  color: #e2e8f0 !important;
+}
+
+html.light .terminal-feed-card .terminal-body .terminal-log-text.active-line {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+html.light .terminal-feed-card .terminal-body .text-emerald-400 {
+  color: #34d399 !important;
+}
+
+html.light .terminal-feed-card .terminal-body .text-blue-400 {
+  color: #60a5fa !important;
+}
+
+html.light .terminal-feed-card .terminal-body .text-amber-400 {
+  color: #fbbf24 !important;
+}
+
+html.light .terminal-feed-card .terminal-body .text-rose-400 {
+  color: #fb7185 !important;
+}
+
+html.light .terminal-feed-card .terminal-body .terminal-cursor {
+  background-color: #ffffff !important;
 }
 
 /* Dial Gauge Styles in Dark & Light Modes */
