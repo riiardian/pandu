@@ -182,10 +182,10 @@ export default function Header() {
             href="/"
             className="flex items-center gap-[2px] text-left focus:outline-none min-w-0 group"
           >
-            <div className="flex shrink-0 items-center justify-center text-white group-hover:text-blue-400 transition-colors">
+            <div className="flex shrink-0 items-center justify-center text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               <PanduLogo className="h-[18px] sm:h-[20px] w-auto" />
             </div>
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-white block leading-tight group-hover:text-blue-400 transition-colors">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white block leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               ANDU
             </span>
           </Link>
@@ -196,32 +196,32 @@ export default function Header() {
             <button
               onClick={toggleLanguage}
               aria-label="Ubah Bahasa / Switch Language"
-              className="flex items-center gap-1 h-9 px-1 text-xs font-mono font-bold text-white hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
+              className="flex items-center gap-1 h-9 px-1 text-xs font-mono font-bold text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
               title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
             >
-              <Globe className="h-4 w-4 text-white hover:text-blue-400 transition-colors" />
+              <Globe className="h-4 w-4 shrink-0" />
               <span>{lang === "id" ? "EN" : "ID"}</span>
             </button>
 
-            {/* Light / Dark Theme Switcher (Pure White Icon, No Background) */}
+            {/* Light / Dark Theme Switcher */}
             <button
               onClick={toggleTheme}
               aria-label="Ubah Tema / Toggle Theme"
-              className="flex h-9 w-9 items-center justify-center text-white hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
+              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
               title={theme === "dark" ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
             >
               {theme === "dark" ? (
                 <Sun className="h-4.5 w-4.5 text-white" />
               ) : (
-                <Moon className="h-4.5 w-4.5 text-white" />
+                <Moon className="h-4.5 w-4.5" />
               )}
             </button>
 
-            {/* Minimalist Hamburger Menu Button (No Background) */}
+            {/* Minimalist Hamburger Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle Navigation Menu"
-              className="flex h-9 w-9 items-center justify-center text-white hover:text-blue-400 focus:outline-none transition-colors cursor-pointer select-none"
+              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors cursor-pointer select-none"
             >
               {isOpen ? (
                 <svg
@@ -266,16 +266,16 @@ export default function Header() {
           />
 
           {/* Minimalist Drawer Panel */}
-          <div className="relative ml-auto flex h-full w-[78vw] max-w-[290px] flex-col bg-[#101114] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 text-slate-200 select-none">
+          <div className="relative ml-auto flex h-full w-[78vw] max-w-[290px] flex-col bg-[#101114] border-l border-white/10 shadow-2xl z-50 animate-in slide-in-from-right duration-200 select-none">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5">
-              <span className="font-bold text-sm text-white tracking-wide">
+              <span className="font-bold text-sm text-slate-900 dark:text-white tracking-wide">
                 {lang === "en" ? "Navigation Menu" : "Menu Navigasi"}
               </span>
               <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Tutup Menu"
-                className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
               >
                 <svg
                   className="h-4 w-4"
@@ -303,13 +303,13 @@ export default function Header() {
                     onClick={(e) => handleNavClick(e, item.href)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                       item.active
-                        ? "bg-white/10 text-white font-medium"
-                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                        ? "bg-blue-600/10 text-blue-600 dark:bg-white/10 dark:text-white font-semibold"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5"
                     }`}
                   >
                     <IconComponent
                       className={`h-4 w-4 shrink-0 ${
-                        item.active ? "text-blue-400" : "text-slate-400"
+                        item.active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
                       }`}
                     />
                     <span>{item.label}</span>

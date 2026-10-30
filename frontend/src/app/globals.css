@@ -419,36 +419,39 @@ html.light .animate-aurora-counter {
   opacity: 0.16 !important;
 }
 
-/* FINAL CASCADE PRIORITY: ALL Solid Colored Action Buttons & Pills MUST HAVE PURE WHITE TEXT */
+/* FINAL CASCADE PRIORITY: ALL Solid Colored Action Buttons & Active Pills MUST HAVE PURE WHITE TEXT */
 html.light .bg-blue-600,
 html.light .bg-blue-500,
 html.light .bg-rose-600,
 html.light .bg-emerald-600,
-html.light [class*="bg-blue-600"],
-html.light [class*="bg-blue-500"],
-html.light [class*="bg-rose-600"],
-html.light [class*="bg-emerald-600"],
 html.light span.bg-blue-600,
 html.light button.bg-blue-600,
 html.light a.bg-blue-600,
-html.light .bg-blue-600 *,
-html.light .bg-blue-500 *,
-html.light .bg-rose-600 *,
-html.light .bg-emerald-600 * {
+html.light button.bg-blue-600 *,
+html.light a.bg-blue-600 *,
+html.light span.bg-blue-600 *,
+html.light .bg-blue-600 > *,
+html.light .bg-blue-500 > *,
+html.light .bg-rose-600 > *,
+html.light .bg-emerald-600 > * {
   color: #ffffff !important;
 }
 
-/* Ensure stroke-based Lucide icons inside solid buttons retain transparent fill */
-html.light .bg-blue-600 svg,
-html.light .bg-blue-500 svg,
-html.light .bg-rose-600 svg,
-html.light .bg-emerald-600 svg,
-html.light [class*="bg-blue-600"] svg,
-html.light [class*="bg-blue-500"] svg,
-html.light .bg-blue-600 svg *,
-html.light .bg-blue-500 svg *,
-html.light .bg-rose-600 svg *,
-html.light .bg-emerald-600 svg * {
+/* Ensure stroke-based Lucide icons inside solid buttons retain transparent fill and pure white stroke */
+html.light button.bg-blue-600 svg,
+html.light a.bg-blue-600 svg,
+html.light span.bg-blue-600 svg,
+html.light .bg-blue-600 > svg,
+html.light .bg-blue-500 > svg,
+html.light .bg-rose-600 > svg,
+html.light .bg-emerald-600 > svg,
+html.light button.bg-blue-600 svg *,
+html.light a.bg-blue-600 svg *,
+html.light span.bg-blue-600 svg *,
+html.light .bg-blue-600 > svg *,
+html.light .bg-blue-500 > svg *,
+html.light .bg-rose-600 > svg *,
+html.light .bg-emerald-600 > svg * {
   fill: none !important;
   stroke: #ffffff !important;
 }
