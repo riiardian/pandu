@@ -190,22 +190,11 @@ export default function SandboxTab() {
           {scenarios.map((sc) => (
             <div
               key={sc.id}
-              className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/40 hover:bg-[#16181d] transition-all"
+              onClick={() => startScenario(sc.id)}
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/50 hover:bg-[#16181d] transition-all cursor-pointer text-left"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-                  <span className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-slate-300">
-                    {sc.platform}
-                  </span>
-                  <span>
-                    Tingkat:{" "}
-                    <span className="font-bold text-slate-200">
-                      {sc.difficulty}
-                    </span>
-                  </span>
-                </div>
-
-                <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+              <div className="space-y-2">
+                <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
                   {sc.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
@@ -213,14 +202,10 @@ export default function SandboxTab() {
                 </p>
               </div>
 
-              <div className="pt-5 mt-4">
-                <button
-                  onClick={() => startScenario(sc.id)}
-                  disabled={loading}
-                  className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"
-                >
-                  <span>Mulai Simulasi</span>
-                </button>
+              <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
+                <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                  Mulai Simulasi
+                </span>
               </div>
             </div>
           ))}
