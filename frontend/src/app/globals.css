@@ -130,27 +130,29 @@ html, body {
 /* Elegant Text Shimmer Gleam (Single Steady Pass, 100% Constant & Slow) */
 @keyframes text-shimmer {
   0% {
-    background-position: 100% 0;
+    background-position: 200% 0;
   }
   100% {
-    background-position: -100% 0;
+    background-position: -200% 0;
   }
 }
 
 .animate-text-shimmer {
-  background: linear-gradient(
+  background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.65) 0%,
-    rgba(255, 255, 255, 0.65) 35%,
+    rgba(255, 255, 255, 0.65) 25%,
+    #ffffff 45%,
     #ffffff 50%,
-    rgba(255, 255, 255, 0.65) 65%,
+    #ffffff 55%,
+    rgba(255, 255, 255, 0.65) 75%,
     rgba(255, 255, 255, 0.65) 100%
   );
   background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
   animation: text-shimmer 6s linear infinite;
 }
 
@@ -270,12 +272,12 @@ html.light button.bg-\[\#060a14\]:hover {
 }
 
 /* Light Theme Headings & Text Hierarchy */
-html.light h1,
-html.light h2,
-html.light h3,
-html.light h4,
-html.light h5,
-html.light h6 {
+html.light h1:not(.animate-text-shimmer),
+html.light h2:not(.animate-text-shimmer),
+html.light h3:not(.animate-text-shimmer),
+html.light h4:not(.animate-text-shimmer),
+html.light h5:not(.animate-text-shimmer),
+html.light h6:not(.animate-text-shimmer) {
   color: #0f172a !important;
 }
 
@@ -368,16 +370,17 @@ html.light .bg-\[\#0c0d12\]\/70 {
   border-color: #e2e8f0 !important;
 }
 
-/* Light Theme Shimmer Text (Vivid Cyber Gleam - Visible Luminous Pass) */
-html.light .animate-text-shimmer {
-  background: linear-gradient(
+/* Light Theme Shimmer Text (Vivid Blue Cyber Wave across Dark Slate Text) */
+html.light .animate-text-shimmer,
+html.light h2.animate-text-shimmer {
+  background-image: linear-gradient(
     90deg,
     #0f172a 0%,
-    #0f172a 25%,
-    #0284c7 40%,
+    #0f172a 20%,
+    #2563eb 40%,
     #38bdf8 50%,
-    #0284c7 60%,
-    #0f172a 75%,
+    #2563eb 60%,
+    #0f172a 80%,
     #0f172a 100%
   ) !important;
   background-size: 200% auto !important;
@@ -385,16 +388,19 @@ html.light .animate-text-shimmer {
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: text-shimmer 6s linear infinite !important;
+  animation: text-shimmer 6s linear infinite;
 }
 
-html.dark .animate-text-shimmer {
-  background: linear-gradient(
+html.dark .animate-text-shimmer,
+html.dark h2.animate-text-shimmer {
+  background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.65) 0%,
-    rgba(255, 255, 255, 0.65) 35%,
+    rgba(255, 255, 255, 0.65) 25%,
+    #ffffff 45%,
     #ffffff 50%,
-    rgba(255, 255, 255, 0.65) 65%,
+    #ffffff 55%,
+    rgba(255, 255, 255, 0.65) 75%,
     rgba(255, 255, 255, 0.65) 100%
   ) !important;
   background-size: 200% auto !important;
@@ -402,7 +408,7 @@ html.dark .animate-text-shimmer {
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: text-shimmer 6s linear infinite !important;
+  animation: text-shimmer 6s linear infinite;
 }
 
 /* Aurora Backdrop Softening in Light Mode */
