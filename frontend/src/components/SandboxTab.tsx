@@ -188,7 +188,7 @@ export default function SandboxTab() {
               </p>
             </div>
 
-            <CyberRadarAnimation className="w-32 h-32 sm:w-40 sm:h-40 shrink-0" />
+            <CyberRadarAnimation className="w-52 h-32 sm:w-64 sm:h-40 shrink-0" />
           </div>
         </section>
       )}

@@ -9,7 +9,7 @@ interface CyberRadarAnimationProps {
 }
 
 export default function CyberRadarAnimation({
-  className = "w-36 h-36 sm:w-44 sm:h-44",
+  className = "w-52 h-32 sm:w-64 sm:h-40",
 }: CyberRadarAnimationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -32,7 +32,7 @@ export default function CyberRadarAnimation({
   return (
     <div
       ref={containerRef}
-      className={`flex items-center justify-center shrink-0 ${className}`}
+      className={`flex items-center justify-center shrink-0 overflow-hidden ${className}`}
       aria-hidden="true"
     />
   );
