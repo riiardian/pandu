@@ -236,7 +236,7 @@ export default function SandboxTab() {
                 </div>
 
                 <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-                  <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                  <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold !text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
                     {lang === "en" ? "Start Simulation" : "Mulai Simulasi"}
                   </span>
                 </div>
@@ -295,29 +295,29 @@ export default function SandboxTab() {
                       <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
                         {msg.attachment.type === "FILE_APK" && (
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 font-mono text-xs font-bold shrink-0">
+                            <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400 font-mono text-xs font-bold shrink-0">
                               APK
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-xs truncate text-white">
+                              <p className="font-bold text-xs truncate text-slate-900 dark:text-white">
                                 {msg.attachment.data.split(" ")[0]}
                               </p>
-                              <span className="text-[11px] text-slate-400 block mt-0.5">
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                                 4.8 MB · Berkas Aplikasi
                               </span>
                             </div>
                           </div>
                         )}
                         {msg.attachment.type === "LINK" && (
-                          <div className="flex items-center gap-2.5 text-blue-400">
+                          <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
                             <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
-                              <Link2 className="h-4 w-4 text-blue-400" />
+                              <Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <span className="text-xs font-mono truncate text-blue-300 underline">{msg.attachment.data}</span>
+                            <span className="text-xs font-mono truncate text-blue-600 dark:text-blue-300 underline">{msg.attachment.data}</span>
                           </div>
                         )}
                         {msg.attachment.type === "IMAGE" && (
-                          <div className="text-xs text-slate-400 italic">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 italic">
                             [Lampiran Gambar: {msg.attachment.data}]
                           </div>
                         )}
@@ -413,7 +413,7 @@ export default function SandboxTab() {
                 {lang === "en" ? "Digital Cognitive Immunity" : "Imunitas Kognitif Digital"}
               </span>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-4xl font-black text-white">{currentScore}</span>
+                <span className="text-4xl font-black text-slate-900 dark:text-white">{currentScore}</span>
                 <span className="text-sm font-semibold text-slate-500">/ 100</span>
               </div>
               <div className="mt-3.5 w-full rounded-full bg-white/10 h-2 overflow-hidden">
@@ -445,7 +445,7 @@ export default function SandboxTab() {
                   </h4>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
-                  <span className="text-xs sm:text-sm font-bold text-white">{finalResult.verdict}</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{finalResult.verdict}</span>
                 </div>
 
                 <div className="space-y-2">

@@ -235,11 +235,11 @@ function RiskGaugeDial({ score }: { score: number }) {
       {/* Speedtest Style Radial Gauge */}
       <div className="relative w-[270px] sm:w-[290px] h-[195px] sm:h-[205px]">
         <svg viewBox="0 0 300 220" className="w-full h-full overflow-visible">
-          {/* Inactive Background Ribbon: Solid Clean Pure White (No blur / No glassmorphism) */}
+          {/* Inactive Background Ribbon */}
           <path
             d="M 73.40 199.28 A 100 100 0 1 1 226.60 199.28"
             fill="none"
-            stroke="#ffffff"
+            className="gauge-track"
             strokeWidth="12"
             strokeLinecap="butt"
           />
@@ -248,7 +248,7 @@ function RiskGaugeDial({ score }: { score: number }) {
           <path
             d="M 68.03 203.78 A 107 107 0 1 1 231.97 203.78"
             fill="none"
-            stroke="rgba(255, 255, 255, 0.25)"
+            className="gauge-guide"
             strokeWidth="1.0"
           />
 
@@ -272,7 +272,7 @@ function RiskGaugeDial({ score }: { score: number }) {
               y1={t.y1}
               x2={t.x2}
               y2={t.y2}
-              stroke={t.isMajor ? "#ffffff" : "#64748b"}
+              className={t.isMajor ? "gauge-major-tick" : "gauge-minor-tick"}
               strokeWidth={t.isMajor ? 1.8 : 1.0}
               strokeLinecap="butt"
             />
@@ -295,17 +295,17 @@ function RiskGaugeDial({ score }: { score: number }) {
             </text>
           ))}
 
-          {/* SPEEDTEST RECTANGULAR BAR NEEDLE IN SOLID WHITE (Lengthened to 61px, zero collision with numbers) */}
+          {/* SPEEDTEST RECTANGULAR BAR NEEDLE (Dynamic in Dark & Light Modes) */}
           <g
             transform={`rotate(${needleAngle} 150 135)`}
             style={{ transition: "transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)" }}
           >
-            {/* Rectangular Solid White Bar (Length 61px, ample clearance before numbers at r=78) */}
-            <rect x="146.75" y="74" width="6.5" height="61" rx="1.5" fill="#ffffff" />
+            {/* Rectangular Solid Bar (Length 61px, ample clearance before numbers at r=78) */}
+            <rect x="146.75" y="74" width="6.5" height="61" rx="1.5" className="gauge-needle" />
           </g>
 
-          {/* CLEAN, SIMPLE, SOLID FLAT BLACK CENTER HUB */}
-          <circle cx="150" cy="135" r="12" fill="#000000" stroke="#334155" strokeWidth="1.5" />
+          {/* Center Hub */}
+          <circle cx="150" cy="135" r="12" className="gauge-hub" strokeWidth="1.5" />
         </svg>
       </div>
     </div>

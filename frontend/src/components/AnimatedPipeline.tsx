@@ -89,7 +89,7 @@ export default function AnimatedPipeline() {
   return (
     <div className="relative space-y-4 sm:space-y-5 text-left my-4 select-none">
       {/* Sleek 1px Vertical Cable Conduit (Centered with 32px circular badges at left:15.5px) */}
-      <div className="absolute left-[15.5px] sm:left-[17.5px] top-6 bottom-6 w-[1px] bg-slate-800 overflow-hidden pointer-events-none">
+      <div className="absolute left-[15.5px] sm:left-[17.5px] top-6 bottom-6 w-[1px] bg-slate-800 pipeline-conduit overflow-hidden pointer-events-none">
         {/* Subtle traveling spark down the cable */}
         <div
           className={`absolute left-0 w-full h-20 bg-gradient-to-b from-transparent via-cyan-400 to-transparent transition-all ${

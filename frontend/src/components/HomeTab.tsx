@@ -57,7 +57,7 @@ function TypewriterAcronymHeadline() {
       {/* 2. Active Typewriter: Sits on the exact same grid footprint without pushing content down */}
       <span className="text-white col-start-1 row-start-1">
         {text}
-        <span className="inline-block w-[3px] h-[0.85em] bg-white ml-1 align-baseline animate-pulse" />
+        <span className="inline-block w-[3px] h-[0.85em] bg-current ml-1 align-baseline animate-pulse" />
       </span>
     </span>
   );
