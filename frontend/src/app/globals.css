@@ -154,5 +154,100 @@ html, body {
   animation: text-shimmer 6s linear infinite;
 }
 
+/* ======================================================== */
+/* High-Fidelity Light Theme (Crisp, Modern & Accessible)   */
+/* ======================================================== */
+html.light,
+html.light body {
+  background-color: #f6f8fc !important;
+  color: #0f172a !important;
+}
 
+html.light .bg-black {
+  background-color: #f6f8fc !important;
+}
 
+html.light header {
+  background-color: rgba(246, 248, 252, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Light Theme Card Containers */
+html.light .bg-\[\#121316\]\/90,
+html.light .bg-\[\#121316\],
+html.light .bg-\[\#101114\],
+html.light .bg-\[\#15171d\],
+html.light .bg-\[\#16181d\],
+html.light .bg-\[\#0f1014\] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+}
+
+html.light .bg-\[\#090a0d\],
+html.light .bg-\[\#0c0d11\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Light Theme Text Hierarchy */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-200 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-300 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/5 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-white\/5,
+html.light .bg-white\/10 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Light Theme Shimmer Text (Dark Gradient for High Contrast) */
+html.light .animate-text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.75) 0%,
+    rgba(15, 23, 42, 0.75) 35%,
+    #2563eb 50%,
+    rgba(15, 23, 42, 0.75) 65%,
+    rgba(15, 23, 42, 0.75) 100%
+  ) !important;
+  background-size: 200% auto !important;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Aurora Backdrop Softening in Light Mode */
+html.light .pointer-events-none.fixed.inset-0.overflow-hidden.z-0.bg-black {
+  background-color: #f6f8fc !important;
+}
+
+html.light .animate-aurora-sweep,
+html.light .animate-aurora-counter {
+  opacity: 0.18 !important;
+}

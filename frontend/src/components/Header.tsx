@@ -12,6 +12,9 @@ import {
   Workflow,
   Fingerprint,
   HelpCircle,
+  Globe,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 // Silky-smooth slow animated scroll for quick navigation jumps
@@ -47,7 +50,61 @@ function smoothScrollToY(targetY: number, duration: number = 1100) {
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [lang, setLang] = useState<"id" | "en">("id");
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const pathname = usePathname();
+
+  // Initialize theme and language from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedTheme = localStorage.getItem("pandu_theme") as "dark" | "light" | null;
+      if (savedTheme === "light") {
+        setTheme("light");
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      } else {
+        setTheme("dark");
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      }
+
+      const savedLang = localStorage.getItem("pandu_lang") as "id" | "en" | null;
+      if (savedLang === "en") {
+        setLang("en");
+        document.documentElement.lang = "en";
+      } else {
+        setLang("id");
+        document.documentElement.lang = "id";
+      }
+    } catch (e) {
+      // LocalStorage access fallback
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    try {
+      localStorage.setItem("pandu_theme", nextTheme);
+      if (nextTheme === "light") {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      }
+    } catch (e) {}
+  };
+
+  const toggleLanguage = () => {
+    const nextLang = lang === "id" ? "en" : "id";
+    setLang(nextLang);
+    try {
+      localStorage.setItem("pandu_lang", nextLang);
+      document.documentElement.lang = nextLang;
+      window.dispatchEvent(new CustomEvent("pandu_lang_change", { detail: { lang: nextLang } }));
+    } catch (e) {}
+  };
 
   // Close menu automatically on route change
   useEffect(() => {
@@ -75,13 +132,13 @@ export default function Header() {
     pathname.startsWith("/laporan");
 
   const NAV_ITEMS = [
-    { href: "/", label: "Beranda", icon: Home, active: isHome },
-    { href: "/xray", label: "Investigasi Ancaman", icon: Search, active: isXray },
-    { href: "/simulasi", label: "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
-    { href: "/aksi", label: "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
-    { href: "/#alur-kerja", label: "Alur Kerja Sistem", icon: Workflow, active: false },
-    { href: "/#manipulasi-digital", label: "Bentuk Manipulasi Digital", icon: Fingerprint, active: false },
-    { href: "/#faq", label: "Pertanyaan Umum (FAQ)", icon: HelpCircle, active: false },
+    { href: "/", label: lang === "en" ? "Home" : "Beranda", icon: Home, active: isHome },
+    { href: "/xray", label: lang === "en" ? "Threat Investigation" : "Investigasi Ancaman", icon: Search, active: isXray },
+    { href: "/simulasi", label: lang === "en" ? "Scam Simulation" : "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
+    { href: "/aksi", label: lang === "en" ? "Report Center & Blacklist" : "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
+    { href: "/#alur-kerja", label: lang === "en" ? "System Workflow" : "Alur Kerja Sistem", icon: Workflow, active: false },
+    { href: "/#manipulasi-digital", label: lang === "en" ? "Digital Manipulation" : "Bentuk Manipulasi Digital", icon: Fingerprint, active: false },
+    { href: "/#faq", label: lang === "en" ? "Frequently Asked Questions (FAQ)" : "Pertanyaan Umum (FAQ)", icon: HelpCircle, active: false },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -133,41 +190,69 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Minimalist Hamburger Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle Navigation Menu"
-            className="flex h-9 w-9 items-center justify-center text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-90"
-          >
-            {isOpen ? (
-              <svg
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3.5" y1="7" x2="20.5" y2="7" />
-                <line x1="3.5" y1="12" x2="16.5" y2="12" />
-                <line x1="3.5" y1="17" x2="20.5" y2="17" />
-              </svg>
-            )}
-          </button>
+          {/* Header Controls (Language, Theme, Menu) */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Switcher */}
+            <button
+              onClick={toggleLanguage}
+              aria-label="Ubah Bahasa / Switch Language"
+              className="flex items-center gap-1 h-8 px-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-mono font-bold text-slate-200 hover:text-white transition-all active:scale-95 cursor-pointer select-none"
+              title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
+            >
+              <Globe className="h-3.5 w-3.5 text-blue-400" />
+              <span>{lang === "id" ? "EN" : "ID"}</span>
+            </button>
+
+            {/* Light / Dark Theme Switcher */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Ubah Tema / Toggle Theme"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-amber-400 transition-all active:scale-95 cursor-pointer"
+              title={theme === "dark" ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 text-amber-400" />
+              ) : (
+                <Moon className="h-4 w-4 text-blue-400" />
+              )}
+            </button>
+
+            {/* Minimalist Hamburger Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle Navigation Menu"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-blue-400 focus:outline-none transition-all active:scale-95 cursor-pointer"
+            >
+              {isOpen ? (
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              ) : (
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="3.5" y1="7" x2="20.5" y2="7" />
+                  <line x1="3.5" y1="12" x2="16.5" y2="12" />
+                  <line x1="3.5" y1="17" x2="20.5" y2="17" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -185,7 +270,7 @@ export default function Header() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5">
               <span className="font-bold text-sm text-white tracking-wide">
-                Menu
+                {lang === "en" ? "Navigation Menu" : "Menu Navigasi"}
               </span>
               <button
                 onClick={() => setIsOpen(false)}
