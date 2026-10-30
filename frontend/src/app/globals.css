@@ -283,9 +283,9 @@ html.light h6:not(.animate-text-shimmer) {
   color: #0f172a !important;
 }
 
-html.light p.text-white:not(.bg-blue-600 *),
-html.light span.text-white:not(.bg-blue-600 *):not(.bg-blue-600):not([class*="bg-blue-"]),
-html.light div.text-white:not(.bg-blue-600 *):not([class*="bg-blue-"]) {
+html.light p.text-white:not(.bg-blue-600 *):not(.terminal-feed-card *),
+html.light span.text-white:not(.bg-blue-600 *):not(.bg-blue-600):not([class*="bg-blue-"]):not(.terminal-feed-card *),
+html.light div.text-white:not(.bg-blue-600 *):not([class*="bg-blue-"]):not(.terminal-feed-card *) {
   color: #0f172a !important;
 }
 
@@ -345,7 +345,8 @@ html.light .bg-white\/10 {
   border-color: #cbd5e1 !important;
 }
 
-/* Live Terminal Card Container in Light Mode */
+/* Live Terminal Card Container in Light & Dark Modes */
+section > div[style*="rotateX"],
 html.light section > div[style*="rotateX"] {
   background-color: transparent !important;
   border: none !important;
@@ -353,10 +354,27 @@ html.light section > div[style*="rotateX"] {
   padding: 0 !important;
 }
 
+.terminal-feed-card {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
 html.light .terminal-feed-card {
   border-color: #cbd5e1 !important;
   box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.08) !important;
   background-color: #06070a !important;
+}
+
+/* Authentic Terminal Titlebar: Stays Consistently Dark & Flat (No White Flash or Shadow Popping on Theme Switch) */
+.terminal-feed-card .terminal-titlebar,
+html.light .terminal-feed-card .terminal-titlebar {
+  background-color: #0d0f15 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.terminal-feed-card .terminal-titlebar .titlebar-text,
+html.light .terminal-feed-card .terminal-titlebar .titlebar-text {
+  color: #94a3b8 !important;
 }
 
 /* Ensure Terminal Code Body ALWAYS Has High-Contrast Bright Text in Light Mode */
@@ -368,6 +386,7 @@ html.light .terminal-feed-card .terminal-body .terminal-log-text {
   color: #e2e8f0 !important;
 }
 
+.terminal-feed-card .terminal-body .terminal-log-text.active-line,
 html.light .terminal-feed-card .terminal-body .terminal-log-text.active-line {
   color: #ffffff !important;
   font-weight: 600 !important;

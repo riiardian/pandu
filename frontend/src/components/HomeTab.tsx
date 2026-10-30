@@ -143,7 +143,7 @@ export default function HomeTab() {
       {/* 2. OSINT Live Forensic Preview Card (Tilted 3D Isometric Perspective) */}
       <section className="relative pt-2 pb-6" style={{ perspective: "1000px" }}>
         <div
-          className="rounded-2xl transition-all duration-300 hover:rotate-0"
+          className="rounded-2xl transition-transform duration-300 ease-out hover:rotate-0"
           style={{
             transform: "rotateX(8deg) rotateY(-12deg) rotateZ(1.5deg)",
             transformOrigin: "center left",

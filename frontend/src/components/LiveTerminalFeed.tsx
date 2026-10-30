@@ -48,7 +48,7 @@ export default function LiveTerminalFeed() {
   return (
     <div className="terminal-feed-card w-full rounded-2xl border border-white/10 bg-[#06070a] shadow-2xl overflow-hidden font-mono text-left select-none pointer-events-none touch-none">
       {/* Authentic Minimalist Terminal Titlebar */}
-      <div className="flex items-center justify-between border-b border-white/10 bg-[#0d0f15] px-3.5 py-2">
+      <div className="terminal-titlebar flex items-center justify-between border-b border-white/10 bg-[#0d0f15] px-3.5 py-2">
         <div className="flex items-center gap-2">
           {/* Subtle Window Dots */}
           <div className="flex items-center gap-1.5">
@@ -56,20 +56,20 @@ export default function LiveTerminalFeed() {
             <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
           </div>
-          <span className="text-[11px] text-slate-400 ml-1.5 font-mono">
+          <span className="titlebar-text text-[11px] text-slate-400 ml-1.5 font-mono">
             pandu@scanner: ~/forensics
           </span>
         </div>
       </div>
 
       {/* Terminal Output Body - Real terminal syntax, no badges, non-scrollable */}
-      <div className="terminal-body h-[200px] sm:h-[225px] p-3 sm:p-3.5 space-y-1 overflow-hidden text-[11px] sm:text-xs leading-relaxed">
+      <div className="terminal-body p-3.5 space-y-1.5 overflow-hidden text-[11px] sm:text-xs leading-relaxed">
         {visibleLines.map((item, idx) => (
           <div key={item.id} className="flex items-baseline gap-2 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
             <span className={`${item.color} font-bold select-none shrink-0`}>
               {item.pfx}
             </span>
-            <span className={`terminal-log-text truncate ${idx === visibleLines.length - 1 ? "active-line text-white font-semibold" : "text-slate-200"}`}>
+            <span className={`terminal-log-text truncate ${idx === visibleLines.length - 1 ? "active-line font-semibold" : "text-slate-200"}`}>
               {item.text}
             </span>
             {idx === visibleLines.length - 1 && (
