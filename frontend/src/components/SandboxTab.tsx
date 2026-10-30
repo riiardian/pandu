@@ -171,13 +171,13 @@ export default function SandboxTab() {
 
   return (
     <div className="space-y-6">
-      {/* Intro Hero Section (Clean, Modern Plus Jakarta Sans, 1-Line on Desktop) */}
+      {/* Intro Hero Section (Clean, Space Grotesk, 1-Line Everywhere) */}
       {!activeScenarioID && (
         <section className="pt-2 pb-2">
           <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 sm:gap-8">
             <div className="text-left w-full sm:w-auto">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight text-white leading-snug sm:whitespace-nowrap">
-                Kenali Modus Social Engineering Sebelum Menjadi Sasaran
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white leading-snug whitespace-nowrap">
+                Kenali Modus Social Engineering
               </h2>
             </div>
 
