@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CyberRadarAnimation from "@/components/CyberRadarAnimation";
 import HackerAvatar from "@/components/HackerAvatar";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -81,16 +81,27 @@ export default function SandboxTab() {
   const [activeScenarioID, setActiveScenarioID] = useState<string | null>(null);
   const [activeScenario, setActiveScenario] = useState<any>(null);
   const [currentStepID, setCurrentStepID] = useState<string>("step_1");
-  const [chatHistory, setChatHistory] = useState<Array<{ sender: "bot" | "user"; text: string; attachment?: any; tactic?: string }>>([]);
+  const [chatHistory, setChatHistory] = useState<
+    Array<{ sender: "bot" | "user" | "system"; text: string; attachment?: any; tactic?: string; rating?: string }>
+  >([]);
   const [currentScore, setCurrentScore] = useState<number>(0);
-  const [turnFeedback, setTurnFeedback] = useState<any>(null);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [finalResult, setFinalResult] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchScenarios();
   }, []);
+
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTo({
+        top: chatScrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [chatHistory]);
 
   const fetchScenarios = async () => {
     try {
@@ -117,7 +128,6 @@ export default function SandboxTab() {
         setCurrentScore(0); // Score starts from 0 across 4 steps
         setIsCompleted(false);
         setFinalResult(null);
-        setTurnFeedback(null);
 
         // Seed initial message
         const initialStep = sc.steps[sc.initial_step];
@@ -142,14 +152,15 @@ export default function SandboxTab() {
 
   const handleMakeChoice = async (choice: any) => {
     setLoading(true);
-    setTurnFeedback(null);
 
-    // 1. Add user reply to chat
-    const updatedHistory = [
-      ...chatHistory,
-      { sender: "user" as const, text: choice.text },
-    ];
-    setChatHistory(updatedHistory);
+    const userMsg = { sender: "user" as const, text: choice.text };
+    const systemFeedbackMsg = {
+      sender: "system" as const,
+      text: choice.feedback,
+      rating: choice.safety_rating,
+    };
+
+    setChatHistory((prev) => [...prev, userMsg]);
 
     try {
       const res = await fetch("/api/v1/sandbox/respond", {
@@ -170,12 +181,6 @@ export default function SandboxTab() {
 
       const turnData = json.data;
       setCurrentScore(turnData.new_total_score);
-      setTurnFeedback({
-        rating: choice.safety_rating,
-        feedback: choice.feedback,
-        psychology: choice.psychology_note,
-        scoreDelta: choice.score_delta,
-      });
 
       if (turnData.is_completed) {
         setIsCompleted(true);
@@ -186,20 +191,23 @@ export default function SandboxTab() {
         });
 
         if (turnData.next_step) {
-          setChatHistory([
-            ...updatedHistory,
+          setChatHistory((prev) => [
+            ...prev,
+            systemFeedbackMsg,
             {
               sender: "bot",
               text: turnData.next_step.message,
               tactic: turnData.next_step.deception_tactic,
             },
           ]);
+        } else {
+          setChatHistory((prev) => [...prev, systemFeedbackMsg]);
         }
       } else if (turnData.next_step) {
         setCurrentStepID(turnData.next_step.step_id);
-        // Scammer replies
-        setChatHistory([
-          ...updatedHistory,
+        setChatHistory((prev) => [
+          ...prev,
+          systemFeedbackMsg,
           {
             sender: "bot",
             text: turnData.next_step.message,
@@ -300,93 +308,84 @@ export default function SandboxTab() {
             </div>
 
             {/* Chat Body Messages */}
-            <div className="flex-1 space-y-4 p-4 sm:p-5 overflow-y-auto max-h-[440px] bg-[#090a0d]">
+            <div
+              ref={chatScrollRef}
+              className="flex-1 space-y-4 p-4 sm:p-5 overflow-y-auto max-h-[440px] bg-[#090a0d]"
+            >
               {chatHistory.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
-                      msg.sender === "user"
-                        ? "bg-blue-600 text-white rounded-tr-none shadow-md shadow-blue-600/20"
-                        : "bg-[#15171d] text-slate-100 rounded-tl-none border border-white/10"
-                    }`}
-                  >
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
-
-                    {/* Dangerous Attachment Rendering (Authentic, No Spoilers) */}
-                    {msg.attachment && (
-                      <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
-                        {msg.attachment.type === "FILE_APK" && (
-                          <div className="flex items-center gap-3">
-                            <span className="font-mono text-xs font-black text-rose-500 dark:text-rose-400 tracking-wider shrink-0 select-none">
-                              APK
-                            </span>
-                            <div className="min-w-0">
-                              <p className="font-bold text-xs truncate text-slate-900 dark:text-white">
-                                {msg.attachment.data.split(" ")[0]}
-                              </p>
-                              <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                                4.8 MB · {lang === "en" ? "Application Package" : "Berkas Aplikasi"}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                        {msg.attachment.type === "LINK" && (
-                          <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
-                            <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
-                              <Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <span className="text-xs font-mono truncate text-blue-600 dark:text-blue-300 underline">{msg.attachment.data}</span>
-                          </div>
-                        )}
-                        {msg.attachment.type === "IMAGE" && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 italic">
-                            [{lang === "en" ? "Image Attachment: " : "Lampiran Gambar: "}{msg.attachment.data}]
-                          </div>
-                        )}
-                      </div>
-                    )}
+                msg.sender === "system" ? (
+                  <div key={idx} className="my-2 mx-auto w-full max-w-md rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 p-3 text-left">
+                    <span
+                      className={`text-xs font-semibold block ${
+                        msg.rating === "SAFE"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : msg.rating === "RISKY"
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      {msg.rating === "SAFE"
+                        ? (lang === "en" ? "Correct Decision" : "Keputusan Tepat")
+                        : msg.rating === "RISKY"
+                        ? (lang === "en" ? "Suboptimal" : "Kurang Tepat")
+                        : (lang === "en" ? "Incorrect Decision" : "Keputusan Keliru")}
+                    </span>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                      {msg.text}
+                    </p>
                   </div>
-                </div>
+                ) : (
+                  <div
+                    key={idx}
+                    className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
+                        msg.sender === "user"
+                          ? "bg-blue-600 text-white rounded-tr-none shadow-md shadow-blue-600/20"
+                          : "bg-[#15171d] text-slate-100 rounded-tl-none border border-white/10"
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                      {/* Dangerous Attachment Rendering (Authentic, No Spoilers) */}
+                      {msg.attachment && (
+                        <div className="mt-2.5 rounded-xl border border-white/10 bg-[#0c0d11] p-3">
+                          {msg.attachment.type === "FILE_APK" && (
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono text-xs font-black text-rose-500 dark:text-rose-400 tracking-wider shrink-0 select-none">
+                                APK
+                              </span>
+                              <div className="min-w-0">
+                                <p className="font-bold text-xs truncate text-slate-900 dark:text-white">
+                                  {msg.attachment.data.split(" ")[0]}
+                                </p>
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
+                                  4.8 MB · {lang === "en" ? "Application Package" : "Berkas Aplikasi"}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                          {msg.attachment.type === "LINK" && (
+                            <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
+                              <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
+                                <Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <span className="text-xs font-mono truncate text-blue-600 dark:text-blue-300 underline">{msg.attachment.data}</span>
+                            </div>
+                          )}
+                          {msg.attachment.type === "IMAGE" && (
+                            <div className="text-xs text-slate-500 dark:text-slate-400 italic">
+                              [{lang === "en" ? "Image Attachment: " : "Lampiran Gambar: "}{msg.attachment.data}]
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
               ))}
             </div>
-
-            {/* Natural & Clean Feedback Note */}
-            {turnFeedback && (
-              <div className="border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0c0d12] px-4 py-3 text-xs flex items-start gap-2.5">
-                <span
-                  className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
-                    turnFeedback.rating === "SAFE"
-                      ? "bg-emerald-500"
-                      : turnFeedback.rating === "RISKY"
-                      ? "bg-amber-500"
-                      : "bg-rose-500"
-                  }`}
-                />
-                <div className="space-y-0.5 min-w-0">
-                  <span
-                    className={`font-semibold block ${
-                      turnFeedback.rating === "SAFE"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : turnFeedback.rating === "RISKY"
-                        ? "text-amber-600 dark:text-amber-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    }`}
-                  >
-                    {turnFeedback.rating === "SAFE"
-                      ? (lang === "en" ? "Correct Decision (+25)" : "Keputusan Tepat (+25)")
-                      : turnFeedback.rating === "RISKY"
-                      ? (lang === "en" ? "Suboptimal (+15)" : "Kurang Tepat (+15)")
-                      : (lang === "en" ? "Incorrect (+0)" : "Keputusan Keliru (+0)")}
-                  </span>
-                  <p className="leading-relaxed text-slate-600 dark:text-slate-300 text-xs">
-                    {turnFeedback.feedback}
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* Input Action Panel (Conversational Quick Replies) */}
             <div className="border-t border-white/10 bg-[#0f1014] p-4">
