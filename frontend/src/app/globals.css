@@ -347,9 +347,15 @@ html.light .bg-white\/10 {
 
 /* Live Terminal Card Container in Light Mode */
 html.light section > div[style*="rotateX"] {
-  background-color: #0f172a !important;
-  border-color: rgba(15, 23, 42, 0.25) !important;
-  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.20), 0 10px 20px -10px rgba(15, 23, 42, 0.12) !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+html.light .terminal-feed-card {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* Dial Gauge Styles in Dark & Light Modes */

@@ -46,7 +46,7 @@ export default function LiveTerminalFeed() {
   }
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-[#06070a] shadow-2xl overflow-hidden font-mono text-left select-none pointer-events-none touch-none">
+    <div className="terminal-feed-card w-full rounded-2xl border border-white/10 bg-[#06070a] shadow-2xl overflow-hidden font-mono text-left select-none pointer-events-none touch-none">
       {/* Authentic Minimalist Terminal Titlebar */}
       <div className="flex items-center justify-between border-b border-white/10 bg-[#0d0f15] px-3.5 py-2">
         <div className="flex items-center gap-2">
