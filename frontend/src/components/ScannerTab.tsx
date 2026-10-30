@@ -916,6 +916,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
                         if (e.label === "Kategori") return `${lang === "en" ? "Category" : "Kategori"}: ${e.value}`;
                         if (e.label === "Laporan terverifikasi") return `${lang === "en" ? "Verified reports" : "Laporan terverifikasi"}: ${e.value}`;
+                        if (e.label === "MX aktif") return `${lang === "en" ? "Active MX" : "MX aktif"}: ${e.value}`;
+                        if (e.label === "Status registrasi") return `${lang === "en" ? "Registration status" : "Status registrasi"}: ${e.value}`;
+                        if (e.label === "Frekuensi laporan") return `${lang === "en" ? "Report frequency" : "Frekuensi laporan"}: ${e.value}`;
+                        if (e.label === "Confidence sumber") return `${lang === "en" ? "Source confidence" : "Confidence sumber"}: ${e.value}`;
+                        if (e.label?.startsWith("Temuan Modus")) return `${lang === "en" ? e.label.replace("Temuan Modus", "Detected Modus") : e.label}: ${e.value}`;
+                        if (e.label?.includes("Analisis Intelijen")) return `${lang === "en" ? "AI Intelligence Analysis" : e.label}: ${e.value}`;
                         return `${e.label}: ${e.value}`;
                       });
                     evidenceText = cleanItems.join(" • ");
@@ -927,12 +933,22 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                       : (lang === "en" ? "No crime history or public complaints found." : "Tidak ditemukan riwayat kejahatan / aduan.");
                   } else if (lang === "en") {
                     evidenceText = evidenceText
+                      // URL scanner findings & status
+                      .replace(/Terindikasi situs perjudian \/ taruhan online ilegal:\s*/gi, "Indicated as illegal online gambling / betting site: ")
+                      .replace(/Tidak ditemukan riwayat kejahatan, feed phishing, atau aduan publik\.?/gi, "No criminal records, phishing feeds, or public complaints found.")
+                      .replace(/Tidak ditemukan indikasi manipulasi formulir, umpan jebakan, atau konten ilegal\.?/gi, "No form manipulation, phishing traps, or illegal content detected.")
+                      .replace(/Halaman web tidak memuat konten mencurigakan atau tidak dapat diakses publik\.?/gi, "Web page contains no suspicious content or is publicly inaccessible.")
+                      .replace(/Domain tercatat pada feed ancaman phishing OpenPhish \(via urlscan\.io\)/gi, "Domain listed in OpenPhish phishing threat feed (via urlscan.io)")
+                      .replace(/Ditemukan catatan aduan penipuan \/ laporan korban di internet/gi, "Public fraud complaints or victim reports found on the internet")
+                      .replace(/Alamat IP langsung tidak diproses pada feed nama domain publik\.?/gi, "Direct IP addresses are not processed in public domain name feeds.")
+                      // Registry & general threat intel
                       .replace(/Tidak ditemukan riwayat kejahatan \/ aduan\.?/gi, "No crime history or public complaints found.")
                       .replace(/Tidak ditemukan catatan kecurigaan\.?/gi, "No suspicious records found.")
                       .replace(/Ditemukan catatan kecurigaan\.?/gi, "Suspicious records or threat indicators detected.")
                       .replace(/Tidak ada rekaman insiden atau aduan penipuan\.?/gi, "No incident records or scam complaints found.")
                       .replace(/Tidak ada riwayat aduan publik\.?/gi, "No public complaint records found.")
                       .replace(/Tidak ada cuplikan halaman publik yang ditemukan pada indeks mesin pencari\.?/gi, "No public complaint records found in search index.")
+                      .replace(/Tidak ditemukan catatan hash berbahaya pada database CIRCL\.?/gi, "No malicious hash records found in CIRCL database.")
                       .replace(/Terdaftar dalam aduan publik/gi, "Listed in public complaint records")
                       .replace(/Terindikasi penipuan/gi, "Indicated as fraudulent")
                       .replace(/Entitas berisiko tinggi/gi, "High-risk entity")
@@ -946,13 +962,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   }
 
                   const displayName = lang === "en"
-                    ? (source.name === "Registri Ancaman & Rekam Laporan"
+                    ? (source.name === "Pemeriksaan Konten & Alur Situs" || source.name.includes("Konten & Alur")
+                        ? "Page Content & Site Flow Inspection"
+                        : source.name === "Intelijen Ancaman & Rekam Jejak Siber" || source.name.includes("Intelijen Ancaman")
+                        ? "Threat Intelligence & Cyber Footprint"
+                        : source.name === "Registri Ancaman & Rekam Laporan" || source.name.includes("Registri Ancaman")
                         ? "Threat Registry & Report Records"
-                        : source.name === "Intelijen Jejak & Riwayat Siber"
-                        ? "Footprint Intelligence & Cyber History"
-                        : source.name.includes("Registri Ancaman")
-                        ? "Threat Registry & Report Records"
-                        : source.name.includes("Intelijen Jejak")
+                        : source.name === "Intelijen Jejak & Riwayat Siber" || source.name.includes("Intelijen Jejak")
                         ? "Footprint Intelligence & Cyber History"
                         : source.name)
                     : source.name;
