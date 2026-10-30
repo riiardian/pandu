@@ -443,7 +443,7 @@ export default function SandboxTab() {
             {/* Immunity Score Card */}
             <div className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl">
               <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-                {lang === "en" ? "Digital Cognitive Immunity" : "Imunitas Kognitif Digital"}
+                {lang === "en" ? "Self-Protection Index" : "Indeks Proteksi Diri"}
               </span>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-4xl font-black text-slate-900 dark:text-white">{currentScore}</span>
