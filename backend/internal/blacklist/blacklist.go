@@ -65,6 +65,33 @@ type ReportRequest struct {
 	AmountLost       int64          `json:"amount_lost"`
 	EvidenceSHA256   string         `json:"evidence_sha256"`
 	EvidenceFileName string         `json:"evidence_file_name"`
+	EvidenceFilePath string         `json:"evidence_file_path"`
+}
+
+type ThreatReport struct {
+	ID               string         `json:"id"`
+	Type             ThreatType     `json:"type"`
+	Identifier       string         `json:"identifier"`
+	CleanKey         string         `json:"clean_key"`
+	Category         ThreatCategory `json:"category"`
+	ReportedBank     string         `json:"reported_bank,omitempty"`
+	AccountHolder    string         `json:"account_holder,omitempty"`
+	Chronology       string         `json:"chronology"`
+	EvidenceFileName string         `json:"evidence_file_name,omitempty"`
+	EvidenceFilePath string         `json:"evidence_file_path,omitempty"`
+	EvidenceSHA256   string         `json:"evidence_sha256,omitempty"`
+	Status           string         `json:"status"` // "pending", "verified", "rejected"
+	ClientIP         string         `json:"client_ip,omitempty"`
+	CreatedAt        string         `json:"created_at"`
+	ReviewedAt       *string        `json:"reviewed_at,omitempty"`
+	ReviewNotes      string         `json:"review_notes,omitempty"`
+}
+
+type AdminReportStats struct {
+	TotalReports    int `json:"total_reports"`
+	PendingReports  int `json:"pending_reports"`
+	VerifiedReports int `json:"verified_reports"`
+	RejectedReports int `json:"rejected_reports"`
 }
 
 // BlacklistStats gives summary statistics
@@ -404,4 +431,262 @@ func (r *PostgresRegistry) GetStats() BlacklistStats {
 	}
 
 	return stats
+}
+
+// CreateReport records an incoming user fraud report with authentic evidence file metadata.
+func (r *PostgresRegistry) CreateReport(req ReportRequest, clientIP string) (*ThreatReport, error) {
+	clean := normalizeKey(req.Identifier)
+	if clean == "" {
+		return nil, fmt.Errorf("Identitas target tidak valid")
+	}
+
+	id := fmt.Sprintf("REP-%s-%04d", time.Now().Format("20060102"), time.Now().UnixNano()%10000)
+
+	query := `
+		INSERT INTO threat_reports (
+			id, type, identifier, clean_key, category, reported_bank, account_holder,
+			chronology, evidence_file_name, evidence_file_path, evidence_sha256,
+			status, client_ip
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending', $12)
+		RETURNING id, type, identifier, clean_key, category,
+		          COALESCE(reported_bank, ''), COALESCE(account_holder, ''),
+		          COALESCE(chronology, ''), COALESCE(evidence_file_name, ''),
+		          COALESCE(evidence_file_path, ''), COALESCE(evidence_sha256, ''),
+		          status, COALESCE(client_ip, ''),
+		          to_char(created_at, 'YYYY-MM-DD HH24:MI:SS')
+	`
+
+	var rep ThreatReport
+	err := r.db.QueryRow(
+		query,
+		id, req.Type, req.Identifier, clean, req.Category,
+		req.ReportedBank, req.AccountHolder, req.Chronology,
+		req.EvidenceFileName, req.EvidenceFilePath, req.EvidenceSHA256,
+		clientIP,
+	).Scan(
+		&rep.ID, &rep.Type, &rep.Identifier, &rep.CleanKey, &rep.Category,
+		&rep.ReportedBank, &rep.AccountHolder, &rep.Chronology,
+		&rep.EvidenceFileName, &rep.EvidenceFilePath, &rep.EvidenceSHA256,
+		&rep.Status, &rep.ClientIP, &rep.CreatedAt,
+	)
+
+	if err != nil {
+		log.Printf("Error inserting into threat_reports: %v", err)
+		return nil, err
+	}
+
+	// Also increment community report counter in threat_blacklist
+	r.ReportThreat(req)
+
+	return &rep, nil
+}
+
+// GetReports retrieves reports filtered by status with pagination.
+func (r *PostgresRegistry) GetReports(status string, limit int, offset int) ([]ThreatReport, int, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	var countQuery string
+	var listQuery string
+	var countArgs []interface{}
+	var listArgs []interface{}
+
+	if status != "" && status != "all" {
+		countQuery = `SELECT COUNT(*) FROM threat_reports WHERE status = $1`
+		countArgs = append(countArgs, status)
+
+		listQuery = `
+			SELECT id, type, identifier, clean_key, category,
+			       COALESCE(reported_bank, ''), COALESCE(account_holder, ''),
+			       COALESCE(chronology, ''), COALESCE(evidence_file_name, ''),
+			       COALESCE(evidence_file_path, ''), COALESCE(evidence_sha256, ''),
+			       status, COALESCE(client_ip, ''),
+			       to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'),
+			       to_char(reviewed_at, 'YYYY-MM-DD HH24:MI:SS'),
+			       COALESCE(review_notes, '')
+			FROM threat_reports
+			WHERE status = $1
+			ORDER BY created_at DESC
+			LIMIT $2 OFFSET $3
+		`
+		listArgs = append(listArgs, status, limit, offset)
+	} else {
+		countQuery = `SELECT COUNT(*) FROM threat_reports`
+
+		listQuery = `
+			SELECT id, type, identifier, clean_key, category,
+			       COALESCE(reported_bank, ''), COALESCE(account_holder, ''),
+			       COALESCE(chronology, ''), COALESCE(evidence_file_name, ''),
+			       COALESCE(evidence_file_path, ''), COALESCE(evidence_sha256, ''),
+			       status, COALESCE(client_ip, ''),
+			       to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'),
+			       to_char(reviewed_at, 'YYYY-MM-DD HH24:MI:SS'),
+			       COALESCE(review_notes, '')
+			FROM threat_reports
+			ORDER BY created_at DESC
+			LIMIT $1 OFFSET $2
+		`
+		listArgs = append(listArgs, limit, offset)
+	}
+
+	var total int
+	if err := r.db.QueryRow(countQuery, countArgs...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	rows, err := r.db.Query(listQuery, listArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var reports []ThreatReport
+	for rows.Next() {
+		var rep ThreatReport
+		var revAt sql.NullString
+		err := rows.Scan(
+			&rep.ID, &rep.Type, &rep.Identifier, &rep.CleanKey, &rep.Category,
+			&rep.ReportedBank, &rep.AccountHolder, &rep.Chronology,
+			&rep.EvidenceFileName, &rep.EvidenceFilePath, &rep.EvidenceSHA256,
+			&rep.Status, &rep.ClientIP, &rep.CreatedAt,
+			&revAt, &rep.ReviewNotes,
+		)
+		if err == nil {
+			if revAt.Valid {
+				v := revAt.String
+				rep.ReviewedAt = &v
+			}
+			reports = append(reports, rep)
+		}
+	}
+
+	return reports, total, nil
+}
+
+// GetReportByID returns a single report by ID.
+func (r *PostgresRegistry) GetReportByID(id string) (*ThreatReport, error) {
+	query := `
+		SELECT id, type, identifier, clean_key, category,
+		       COALESCE(reported_bank, ''), COALESCE(account_holder, ''),
+		       COALESCE(chronology, ''), COALESCE(evidence_file_name, ''),
+		       COALESCE(evidence_file_path, ''), COALESCE(evidence_sha256, ''),
+		       status, COALESCE(client_ip, ''),
+		       to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'),
+		       to_char(reviewed_at, 'YYYY-MM-DD HH24:MI:SS'),
+		       COALESCE(review_notes, '')
+		FROM threat_reports
+		WHERE id = $1
+		LIMIT 1
+	`
+
+	var rep ThreatReport
+	var revAt sql.NullString
+	err := r.db.QueryRow(query, id).Scan(
+		&rep.ID, &rep.Type, &rep.Identifier, &rep.CleanKey, &rep.Category,
+		&rep.ReportedBank, &rep.AccountHolder, &rep.Chronology,
+		&rep.EvidenceFileName, &rep.EvidenceFilePath, &rep.EvidenceSHA256,
+		&rep.Status, &rep.ClientIP, &rep.CreatedAt,
+		&revAt, &rep.ReviewNotes,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if revAt.Valid {
+		v := revAt.String
+		rep.ReviewedAt = &v
+	}
+
+	return &rep, nil
+}
+
+// VerifyReport marks a report as verified and synchronizes it into the official blacklist registry.
+func (r *PostgresRegistry) VerifyReport(id string, notes string) (*ThreatReport, error) {
+	rep, err := r.GetReportByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("Laporan tidak ditemukan: %w", err)
+	}
+
+	query := `
+		UPDATE threat_reports
+		SET status = 'verified',
+		    reviewed_at = CURRENT_TIMESTAMP,
+		    review_notes = $2
+		WHERE id = $1
+		RETURNING to_char(reviewed_at, 'YYYY-MM-DD HH24:MI:SS')
+	`
+
+	var revAt string
+	if err := r.db.QueryRow(query, id, notes).Scan(&revAt); err != nil {
+		return nil, err
+	}
+
+	rep.Status = "verified"
+	rep.ReviewedAt = &revAt
+	rep.ReviewNotes = notes
+
+	// Elevate verification in threat_blacklist
+	updateBlacklistSQL := `
+		UPDATE threat_blacklist
+		SET verified = TRUE,
+		    risk_level = 'CRITICAL',
+		    last_reported = CURRENT_TIMESTAMP,
+		    chronology_tags = array_append(chronology_tags, 'terverifikasi_admin')
+		WHERE clean_key = $1
+	`
+	_, _ = r.db.Exec(updateBlacklistSQL, rep.CleanKey)
+
+	return rep, nil
+}
+
+// RejectReport marks a report as rejected with optional notes.
+func (r *PostgresRegistry) RejectReport(id string, notes string) (*ThreatReport, error) {
+	rep, err := r.GetReportByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("Laporan tidak ditemukan: %w", err)
+	}
+
+	query := `
+		UPDATE threat_reports
+		SET status = 'rejected',
+		    reviewed_at = CURRENT_TIMESTAMP,
+		    review_notes = $2
+		WHERE id = $1
+		RETURNING to_char(reviewed_at, 'YYYY-MM-DD HH24:MI:SS')
+	`
+
+	var revAt string
+	if err := r.db.QueryRow(query, id, notes).Scan(&revAt); err != nil {
+		return nil, err
+	}
+
+	rep.Status = "rejected"
+	rep.ReviewedAt = &revAt
+	rep.ReviewNotes = notes
+
+	return rep, nil
+}
+
+// GetAdminReportStats returns aggregated report count by status.
+func (r *PostgresRegistry) GetAdminReportStats() (*AdminReportStats, error) {
+	query := `
+		SELECT
+			COUNT(*),
+			COUNT(*) FILTER (WHERE status = 'pending'),
+			COUNT(*) FILTER (WHERE status = 'verified'),
+			COUNT(*) FILTER (WHERE status = 'rejected')
+		FROM threat_reports
+	`
+
+	var s AdminReportStats
+	err := r.db.QueryRow(query).Scan(&s.TotalReports, &s.PendingReports, &s.VerifiedReports, &s.RejectedReports)
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, nil
 }

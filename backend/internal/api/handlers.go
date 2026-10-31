@@ -6,9 +6,13 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
+	"pandu/backend/internal/admin"
 	"pandu/backend/internal/blacklist"
 	"pandu/backend/internal/dossier"
 	"pandu/backend/internal/sandbox"
@@ -113,6 +117,18 @@ func RegisterRoutes(app *fiber.App) {
 
 	// General Stats
 	v1.Get("/stats", handleGetStats)
+
+	// Pillar 4: Admin Oversight & Report Verification
+	adminGroup := v1.Group("/admin")
+	adminGroup.Post("/auth/login", handleAdminLogin)
+	adminGroup.Post("/auth/logout", handleAdminLogout)
+	adminGroup.Get("/auth/me", admin.AuthMiddleware(), handleAdminMe)
+	adminGroup.Get("/stats", admin.AuthMiddleware(), handleAdminStats)
+	adminGroup.Get("/reports", admin.AuthMiddleware(), handleAdminGetReports)
+	adminGroup.Get("/reports/:id", admin.AuthMiddleware(), handleAdminGetReportDetail)
+	adminGroup.Post("/reports/:id/verify", admin.AuthMiddleware(), handleAdminVerifyReport)
+	adminGroup.Post("/reports/:id/reject", admin.AuthMiddleware(), handleAdminRejectReport)
+	adminGroup.Get("/evidence/:id", admin.AuthMiddleware(), handleAdminGetEvidence)
 }
 
 func handleScanText(c *fiber.Ctx) error {
@@ -454,8 +470,19 @@ func handleReportBlacklist(c *fiber.Ctx) error {
 				data, err := io.ReadAll(f)
 				if err == nil && len(data) > 0 {
 					hash := sha256.Sum256(data)
-					req.EvidenceSHA256 = hex.EncodeToString(hash[:])
+					hashStr := hex.EncodeToString(hash[:])
+					req.EvidenceSHA256 = hashStr
 					req.EvidenceFileName = fileHeader.Filename
+
+					// Save file securely to uploads/evidence/
+					ext := filepath.Ext(fileHeader.Filename)
+					safeName := fmt.Sprintf("%s_%d%s", hashStr[:16], time.Now().Unix(), ext)
+					uploadDir := "/www/wwwroot/pandu/backend/uploads/evidence"
+					_ = os.MkdirAll(uploadDir, 0755)
+					destPath := filepath.Join(uploadDir, safeName)
+					if err := os.WriteFile(destPath, data, 0644); err == nil {
+						req.EvidenceFilePath = destPath
+					}
 				}
 			}
 		}
@@ -475,17 +502,18 @@ func handleReportBlacklist(c *fiber.Ctx) error {
 		})
 	}
 
-	entry, isNew := blacklist.GetRegistry().ReportThreat(req)
-	msg := "Laporan penipuan berhasil dicatat dalam basis data PANDU"
-	if !isNew {
-		msg = "Laporan berhasil dicatat. Frekuensi laporan untuk entitas ini telah ditingkatkan."
+	rep, err := blacklist.GetRegistry().CreateReport(req, c.IP())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menyimpan laporan",
+		})
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"message": msg,
-		"is_new":  isNew,
-		"data":    entry,
+		"message": "Laporan penipuan berhasil dicatat dan masuk antrean verifikasi forensik PANDU",
+		"data":    rep,
 	})
 }
 
@@ -604,4 +632,175 @@ func handleGetStats(c *fiber.Ctx) error {
 			"mission":               "Empowering Today's Generation Toward a Safer Cyber Ecosystem",
 		},
 	})
+}
+
+// ---------------- Admin Handlers ----------------
+
+type AdminLoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type AdminReviewRequest struct {
+	Notes string `json:"notes"`
+}
+
+func handleAdminLogin(c *fiber.Ctx) error {
+	var req AdminLoginRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Format kredensial tidak valid",
+		})
+	}
+
+	token, err := admin.Authenticate(req.Username, req.Password, c.IP())
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error(),
+		})
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "pandu_admin_session",
+		Value:    token,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HTTPOnly: true,
+		Secure:   false,
+		SameSite: "Lax",
+	})
+
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"token":    token,
+		"username": req.Username,
+	})
+}
+
+func handleAdminLogout(c *fiber.Ctx) error {
+	c.ClearCookie("pandu_admin_session")
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Logout berhasil",
+	})
+}
+
+func handleAdminMe(c *fiber.Ctx) error {
+	user := c.Locals("admin_user")
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"username": user,
+	})
+}
+
+func handleAdminStats(c *fiber.Ctx) error {
+	stats, err := blacklist.GetRegistry().GetAdminReportStats()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil statistik laporan",
+		})
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    stats,
+	})
+}
+
+func handleAdminGetReports(c *fiber.Ctx) error {
+	status := c.Query("status", "all")
+	limit, _ := strconv.Atoi(c.Query("limit", "50"))
+	offset, _ := strconv.Atoi(c.Query("offset", "0"))
+
+	reports, total, err := blacklist.GetRegistry().GetReports(status, limit, offset)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil daftar laporan",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    reports,
+		"total":   total,
+		"limit":   limit,
+		"offset":  offset,
+	})
+}
+
+func handleAdminGetReportDetail(c *fiber.Ctx) error {
+	id := c.Params("id")
+	rep, err := blacklist.GetRegistry().GetReportByID(id)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Laporan tidak ditemukan",
+		})
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    rep,
+	})
+}
+
+func handleAdminVerifyReport(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var req AdminReviewRequest
+	_ = c.BodyParser(&req)
+
+	rep, err := blacklist.GetRegistry().VerifyReport(id, req.Notes)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Laporan berhasil diverifikasi dan disinkronkan ke daftar hitam PANDU",
+		"data":    rep,
+	})
+}
+
+func handleAdminRejectReport(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var req AdminReviewRequest
+	_ = c.BodyParser(&req)
+
+	rep, err := blacklist.GetRegistry().RejectReport(id, req.Notes)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Laporan berhasil ditolak",
+		"data":    rep,
+	})
+}
+
+func handleAdminGetEvidence(c *fiber.Ctx) error {
+	id := c.Params("id")
+	rep, err := blacklist.GetRegistry().GetReportByID(id)
+	if err != nil || rep.EvidenceFilePath == "" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Berkas bukti tidak ditemukan",
+		})
+	}
+
+	if _, err := os.Stat(rep.EvidenceFilePath); os.IsNotExist(err) {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Berkas bukti fisik tidak ditemukan pada server",
+		})
+	}
+
+	return c.SendFile(rep.EvidenceFilePath)
 }
