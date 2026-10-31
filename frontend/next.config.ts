@@ -12,6 +12,25 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/xray",
+        destination: "/investigasi",
+        permanent: true,
+      },
+      {
+        source: "/aksi",
+        destination: "/lapor",
+        permanent: true,
+      },
+      {
+        source: "/laporan",
+        destination: "/lapor",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

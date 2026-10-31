@@ -1015,7 +1015,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   if (onForwardToDossier) {
                     onForwardToDossier(payload);
                   } else {
-                    router.push("/aksi");
+                    router.push("/lapor");
                   }
                 }}
                 className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"

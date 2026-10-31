@@ -1,1 +1,5 @@
-export { default, metadata } from "../aksi/page";
+import { redirect } from "next/navigation";
+
+export default function LaporanRedirect() {
+  redirect("/lapor");
+}

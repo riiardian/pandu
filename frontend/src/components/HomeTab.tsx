@@ -131,7 +131,7 @@ export default function HomeTab() {
 
         <div className="pt-1 flex items-center">
           <Link
-            href="/xray"
+            href="/investigasi"
             className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
           >
             <Search className="h-4 w-4" />
@@ -165,7 +165,7 @@ export default function HomeTab() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
           {/* Module 1: X-Ray */}
           <Link
-            href="/xray"
+            href="/investigasi"
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
@@ -219,7 +219,7 @@ export default function HomeTab() {
 
           {/* Module 3: Dossier / Blacklist */}
           <Link
-            href="/aksi"
+            href="/lapor"
             className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">

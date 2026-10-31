@@ -4,7 +4,7 @@ import GeminiBackground from "@/components/GeminiBackground";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "The Deception Arena — PANDU",
+  title: "Social Engineering Simulation",
   description: "Simulator percakapan interaktif penguji ketahanan kognitif dan pengambilan keputusan siber.",
 };
 
