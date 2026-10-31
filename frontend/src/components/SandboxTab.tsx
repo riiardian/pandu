@@ -434,10 +434,10 @@ export default function SandboxTab() {
                         key={c.id}
                         disabled={loading}
                         onClick={() => handleMakeChoice(c)}
-                        className="group flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-medium text-slate-200 hover:border-blue-500/60 hover:bg-[#1a1d25] hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-[#15171d] p-3 sm:p-3.5 text-left text-xs sm:text-sm font-medium text-slate-200 disabled:opacity-50 cursor-pointer"
                       >
                         <span className="leading-relaxed pr-3">{c.text}</span>
-                        <span className="shrink-0 rounded-full bg-blue-600 px-3.5 py-1 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors select-none shadow-sm">
+                        <span className="shrink-0 rounded-full bg-blue-600 px-3.5 py-1 text-xs font-semibold text-white select-none shadow-sm">
                           {lang === "en" ? "Select" : "Pilih"}
                         </span>
                       </button>

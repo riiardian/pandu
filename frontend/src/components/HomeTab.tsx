@@ -331,12 +331,12 @@ export default function HomeTab() {
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="flex w-full items-center justify-between text-left gap-3 focus:outline-none group cursor-pointer"
+                  className="flex w-full items-center justify-between text-left gap-3 focus:outline-none cursor-pointer"
                 >
                   <span className="text-sm sm:text-base font-semibold text-white leading-snug">
                     {item.q}
                   </span>
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5">
                     <ChevronDown
                       className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${
                         isOpen ? "rotate-180 text-blue-400" : ""
