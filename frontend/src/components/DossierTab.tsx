@@ -9,16 +9,14 @@ import {
   CheckCircle2,
   Copy,
   Check,
-  ExternalLink,
   ShieldAlert,
-  Send,
-  Clock,
-  User,
-  CreditCard,
   Phone,
+  CreditCard,
   Globe,
   FileCode,
   Flame,
+  ArrowRight,
+  PhoneCall,
 } from "lucide-react";
 
 interface DossierTabProps {
@@ -28,6 +26,16 @@ interface DossierTabProps {
     chronology: string;
   } | null;
 }
+
+const BANK_HOTLINES = [
+  { name: "BCA", number: "1500888" },
+  { name: "Mandiri", number: "14000" },
+  { name: "BRI", number: "1500017" },
+  { name: "BNI", number: "1500046" },
+  { name: "DANA", number: "1500445" },
+  { name: "GoPay", number: "1500304" },
+  { name: "OVO", number: "1500696" },
+];
 
 export default function DossierTab({ initialData }: DossierTabProps) {
   const lang = useLanguage();
@@ -134,9 +142,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
       const json = await res.json();
       if (json.success) {
         setReportSuccess(json.message || "Laporan berhasil dicatat dalam Daftar Hitam PANDU.");
-        // Refresh recent threats
         fetchRecentThreats();
-        // Reset form
         setReportTarget("");
         setReportBank("");
         setReportAccountHolder("");
@@ -155,200 +161,219 @@ export default function DossierTab({ initialData }: DossierTabProps) {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  const getDynamicTargetLabel = () => {
+    switch (reportType) {
+      case "phone":
+        return lang === "en" ? "Target Phone Number / WhatsApp:" : "Nomor Telepon / WhatsApp Target:";
+      case "bank_account":
+        return lang === "en" ? "Target Bank Account / E-Wallet Number:" : "Nomor Rekening / Akun E-Wallet Target:";
+      case "url":
+        return lang === "en" ? "Target Website Link / URL:" : "Tautan / URL Website Target:";
+      case "apk_hash":
+        return lang === "en" ? "Target APK File Name or Hash:" : "Nama Berkas atau Hash APK Target:";
+      default:
+        return lang === "en" ? "Target Identifier:" : "Identitas Target:";
+    }
+  };
+
+  const getDynamicTargetPlaceholder = () => {
+    switch (reportType) {
+      case "phone":
+        return lang === "en" ? "Example: 085812345678" : "Contoh: 085812345678";
+      case "bank_account":
+        return lang === "en" ? "Example: 8271039481 or 0858... (DANA)" : "Contoh: 8271039481 atau 0858... (DANA)";
+      case "url":
+        return lang === "en" ? "Example: https://shopee-vip-toko.site" : "Contoh: https://shopee-vip-toko.site";
+      case "apk_hash":
+        return lang === "en" ? "Example: Lihat_Foto_Paket.apk or sha256..." : "Contoh: Lihat_Foto_Paket.apk atau sha256...";
+      default:
+        return "";
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto text-left">
-      {/* Intro Header */}
-      <div className="rounded-2xl border border-white/10 bg-[#0d0f15]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl space-y-2">
-        <div className="flex items-center gap-2 text-blue-400 font-mono text-xs uppercase tracking-wider">
-          <ShieldAlert className="h-4 w-4" />
-          <span>{lang === "en" ? "Cyber Threat Intelligence Database" : "Basis Data Intelijen Siber"}</span>
-        </div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          {lang === "en" ? "Report Center & Blacklist Registry" : "Pusat Laporan & Daftar Hitam (Threat Registry)"}
+    <div className="space-y-5 max-w-3xl mx-auto text-left">
+      {/* 1. Header: Clean & Natural without bulky box */}
+      <div className="space-y-1.5 pt-2 pb-1">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          {lang === "en" ? "Threat Registry & Report Center" : "Pusat Laporan & Daftar Hitam"}
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+        <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
           {lang === "en"
-            ? "Verify suspicious WhatsApp numbers, bank accounts, or links against PANDU's cybercrime threat registry. You can also report new fraudulent entities to protect the public in real time."
-            : "Verifikasi keabsahan nomor WhatsApp, rekening bank, atau link mencurigakan terhadap basis data kejahatan siber PANDU. Anda juga dapat melaporkan entitas penipuan baru untuk melindungi masyarakat secara real-time."}
+            ? "Verify suspicious phone numbers, bank accounts, or links against community records, or file a new scam report."
+            : "Periksa rekam jejak nomor kontak, rekening bank, atau tautan mencurigakan, atau laporkan temuan penipuan baru."}
         </p>
       </div>
 
-      {/* Sub-Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+      {/* 2. Segmented Navigation Control */}
+      <div className="grid grid-cols-3 p-1 rounded-xl bg-slate-200/60 dark:bg-white/5 border border-slate-300/70 dark:border-white/10 gap-1 text-xs select-none">
         <button
+          type="button"
           onClick={() => setActiveTab("search")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all cursor-pointer ${
             activeTab === "search"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "bg-white dark:bg-[#1a1c23] text-slate-900 dark:text-white shadow-sm font-bold"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
           }`}
         >
-          <Search className="h-4 w-4" />
-          <span>{lang === "en" ? "Check Blacklist" : "Periksa Daftar Hitam"}</span>
+          <Search className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{lang === "en" ? "Check Registry" : "Cek Daftar Hitam"}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => setActiveTab("report")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all cursor-pointer ${
             activeTab === "report"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "bg-white dark:bg-[#1a1c23] text-slate-900 dark:text-white shadow-sm font-bold"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
           }`}
         >
-          <AlertTriangle className="h-4 w-4" />
-          <span>{lang === "en" ? "Report New Scam" : "Lapor Penipuan Baru"}</span>
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{lang === "en" ? "File Report" : "Lapor Penipuan"}</span>
         </button>
 
         <button
+          type="button"
           onClick={() => setActiveTab("firstaid")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all cursor-pointer ${
             activeTab === "firstaid"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "bg-white dark:bg-[#1a1c23] text-slate-900 dark:text-white shadow-sm font-bold"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
           }`}
         >
-          <ShieldCheck className="h-4 w-4" />
-          <span>{lang === "en" ? "Emergency First-Aid" : "Pertolongan Pertama"}</span>
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{lang === "en" ? "First Aid" : "Langkah Darurat"}</span>
         </button>
       </div>
 
       {/* TAB 1: PERIKSA DAFTAR HITAM */}
       {activeTab === "search" && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          {/* Search Box */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-white">
-              {lang === "en" ? "Check Status of Phone Number, Bank Account, or Link" : "Cek Status Nomor Telepon, Rekening, atau Tautan"}
-            </h3>
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Integrated Search Box */}
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-[#121316]/90 p-4 sm:p-5 shadow-sm space-y-2.5">
+            <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200">
+              {lang === "en" ? "Search phone number, bank account, or URL:" : "Cari nomor telepon, rekening bank, atau tautan:"}
+            </label>
 
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder={lang === "en" ? "Enter phone number (08...), bank account (BCA/BRI...), or web URL..." : "Masukkan no WA (08...), no rekening (BCA/BRI...), atau URL web..."}
+                  placeholder={lang === "en" ? "Example: 0858..., BCA 827..., or URL..." : "Contoh: 0858..., BCA 827..., atau URL..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="w-full rounded-xl border border-white/10 bg-[#090a0d] pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] pl-10 pr-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
                 />
               </div>
 
               <button
+                type="button"
                 onClick={() => handleSearch()}
                 disabled={searchLoading}
-                className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40 disabled:opacity-50 shrink-0"
+                className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm disabled:opacity-50 shrink-0 cursor-pointer"
               >
-                {searchLoading ? (lang === "en" ? "Checking..." : "Memeriksa...") : (lang === "en" ? "Check Now" : "Periksa Sekarang")}
+                {searchLoading ? (lang === "en" ? "Checking..." : "Memeriksa...") : (lang === "en" ? "Check" : "Periksa")}
               </button>
             </div>
-
-            {/* Quick Helper Note */}
-            <p className="text-[11px] text-slate-500 pt-1">
-              {lang === "en" ? "Input suspicious phone numbers, bank accounts, or web links to verify if they have been reported by the public." : "Masukkan nomor kontak, rekening bank, atau tautan yang mencurigakan untuk memeriksa apakah sudah pernah dilaporkan masyarakat."}
-            </p>
           </div>
 
           {/* Search Result Display */}
           {hasSearched && searchResult && (
-            <div className="animate-in fade-in duration-300">
+            <div className="animate-in fade-in duration-200">
               {searchResult.found ? (
-                /* RED DANGER ALERT: MATCHED IN BLACKLIST */
-                <div className="rounded-2xl border border-rose-500/40 bg-rose-950/20 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-rose-500/20 pb-3">
-                    <div className="flex items-center gap-2.5 text-rose-400 font-bold text-sm sm:text-base">
-                      <Flame className="h-5 w-5 animate-pulse" />
-                      <span>{lang === "en" ? "WARNING: REGISTERED IN PANDU THREAT BLACKLIST" : "PERINGATAN: TERDAFTAR DALAM DAFTAR HITAM PANDU"}</span>
+                /* Found in Blacklist Alert Card */
+                <div className="rounded-2xl border border-rose-500/30 bg-rose-50/60 dark:bg-rose-950/20 p-4 sm:p-5 space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-rose-500/20 pb-2.5">
+                    <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm">
+                      <Flame className="h-4 w-4 shrink-0" />
+                      <span>{lang === "en" ? "Registered in Threat Blacklist" : "Terdaftar dalam Daftar Hitam"}</span>
                     </div>
-                    <span className="rounded bg-rose-600/30 border border-rose-500/50 px-2 py-0.5 text-[10px] font-mono font-bold text-rose-200">
-                      {lang === "en" ? "RISK" : "RISIKO"} {searchResult.data?.risk_level || "CRITICAL"}
+                    <span className="rounded-full bg-rose-600/15 border border-rose-500/30 px-2.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-300">
+                      {searchResult.data?.risk_level || "CRITICAL"}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Target Identity" : "Identitas Target"}</span>
-                      <p className="text-sm font-bold text-white font-mono break-all">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    <div className="rounded-xl border border-rose-500/15 bg-white/60 dark:bg-black/30 p-3 space-y-0.5">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-rose-300/80 block">
+                        {lang === "en" ? "Target Identifier" : "Identitas Target"}
+                      </span>
+                      <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-mono break-all">
                         {searchResult.data?.identifier}
                       </p>
                       {searchResult.data?.account_holder && (
-                        <p className="text-[11px] text-rose-200">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300">
                           {lang === "en" ? "o/b" : "a.n"} {searchResult.data?.account_holder} ({searchResult.data?.reported_bank})
                         </p>
                       )}
                     </div>
 
-                    <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Report Count" : "Jumlah Laporan Korban"}</span>
-                      <p className="text-xl font-black text-rose-400 font-mono">
+                    <div className="rounded-xl border border-rose-500/15 bg-white/60 dark:bg-black/30 p-3 space-y-0.5">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-rose-300/80 block">
+                        {lang === "en" ? "Total Complaints" : "Jumlah Laporan"}
+                      </span>
+                      <p className="text-lg font-bold text-rose-600 dark:text-rose-400">
                         {searchResult.data?.report_count} {lang === "en" ? "Reports" : "Laporan"}
                       </p>
-                      <p className="text-[10px] text-rose-200">
-                        {lang === "en" ? "First:" : "Pertama:"} {searchResult.data?.first_reported?.split(" ")[0]}
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-rose-500/20 bg-rose-950/40 p-3 space-y-1">
-                      <span className="text-[10px] font-mono text-rose-300 uppercase">{lang === "en" ? "Modus Category" : "Kategori Modus"}</span>
-                      <p className="text-sm font-bold text-white capitalize">
-                        {searchResult.data?.category?.replace("_", " ")}
-                      </p>
-                      <p className="text-[10px] text-rose-200">
-                        {lang === "en" ? "Status: Verified Dangerous" : "Status: Terverifikasi Berbahaya"}
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                        {lang === "en" ? "First reported:" : "Pertama dilaporkan:"} {searchResult.data?.first_reported?.split(" ")[0]}
                       </p>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 space-y-1">
-                    <span className="text-[10px] font-mono text-slate-400 uppercase">{lang === "en" ? "Notes / Chronology:" : "Keterangan / Kronologi Kejadian:"}</span>
-                    <p className="text-xs text-slate-200 leading-relaxed">
-                      {searchResult.data?.description}
-                    </p>
-                  </div>
+                  {searchResult.data?.chronology && (
+                    <div className="rounded-xl border border-rose-500/15 bg-white/60 dark:bg-black/30 p-3 space-y-1 text-xs">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-rose-300/80 block">
+                        {lang === "en" ? "Modus & Chronology Note:" : "Catatan Modus & Kronologi:"}
+                      </span>
+                      <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed">
+                        {searchResult.data?.chronology}
+                      </p>
+                    </div>
+                  )}
 
-                  <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p className="text-[11px] text-rose-300">
-                      {lang === "en"
-                        ? "Do not transfer money or download any files from this number/link."
-                        : "Jangan lakukan transfer uang atau unduh file apa pun dari nomor/link ini."}
-                    </p>
+                  <div className="pt-1 flex justify-end">
                     <button
+                      type="button"
                       onClick={() => {
                         setReportTarget(searchResult.data?.identifier || "");
                         setActiveTab("report");
                       }}
-                      className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 transition-colors shrink-0"
+                      className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                     >
-                      {lang === "en" ? "+ Add New Report" : "+ Tambahkan Laporan Baru"}
+                      <span>{lang === "en" ? "Add complaint report on this target" : "Tambah laporan aduan pada target ini"}</span>
+                      <ArrowRight className="h-3 w-3" />
                     </button>
                   </div>
                 </div>
               ) : (
-                /* GREEN / SAFE ALERT: NOT IN BLACKLIST */
-                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-md p-5 sm:p-6 space-y-3 shadow-xl">
-                  <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-sm sm:text-base">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span>{lang === "en" ? "Not Listed in PANDU Threat Blacklist" : "Belum Terdaftar dalam Basis Data Daftar Hitam PANDU"}</span>
+                /* Not Found Clean Card */
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#121316] p-5 text-center space-y-2">
+                  <div className="mx-auto h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <CheckCircle2 className="h-4 w-4" />
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    {lang === "en" ? "Not Found in Blacklist" : "Belum Terdaftar dalam Daftar Hitam"}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                     {lang === "en"
-                      ? <>Target <span className="font-mono text-white font-bold">"{searchResult.query}"</span> has not been reported by the PANDU community yet.</>
-                      : <>Target <span className="font-mono text-white font-bold">"{searchResult.query}"</span> saat ini belum pernah dilaporkan oleh komunitas PANDU.</>}
-                  </p>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    {lang === "en"
-                      ? "Security Note: Not being listed does not guarantee 100% safety. Scammers frequently switch phone numbers or spin up new domains every few days. Always remain vigilant against requests for wire transfers or APK app installations."
-                      : "Catatan Keamanan: Belum terdaftar bukan jaminan 100% aman. Penipu kerap berganti nomor baru atau menggunakan domain baru setiap beberapa hari. Tetap waspadai permintaan transfer uang atau penginstalan file format .APK."}
+                      ? "This entity has no prior fraud reports recorded in PANDU's database. Stay vigilant and verify through official channels before sending funds or data."
+                      : "Entitas ini belum memiliki catatan aduan di basis data PANDU. Tetap waspada dan utamakan verifikasi kanal resmi sebelum mentransfer dana atau data."}
                   </p>
                   <div className="pt-2">
                     <button
+                      type="button"
                       onClick={() => {
-                        setReportTarget(searchResult.query);
+                        setReportTarget(searchQuery);
                         setActiveTab("report");
                       }}
-                      className="rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                     >
-                      {lang === "en" ? "Found Suspicious Activity? Report This Target" : "Apakah Anda Menemukan Indikasi Mencurigakan? Laporkan Target Ini"}
+                      <span>{lang === "en" ? "Report this entity if you suspect fraud" : "Laporkan entitas ini jika mencurigakan"}</span>
+                      <ArrowRight className="h-3 w-3" />
                     </button>
                   </div>
                 </div>
@@ -356,19 +381,19 @@ export default function DossierTab({ initialData }: DossierTabProps) {
             </div>
           )}
 
-          {/* Recent Threats Live Feed */}
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-                {lang === "en" ? "LATEST THREAT REPORTS IN PANDU DATABASE" : "Laporan Ancaman Terkini di Basis Data PANDU"}
+          {/* Recent Threats Feed */}
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2">
+              <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                {lang === "en" ? "Recent Threat Reports" : "Laporan Ancaman Terkini"}
               </h4>
-              <span className="text-[11px] font-mono text-blue-400">
-                {recentThreats.length} {lang === "en" ? "Entities Registered" : "Entitas Terdaftar"}
+              <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                {recentThreats.length} {lang === "en" ? "Registered" : "Terdaftar"}
               </span>
             </div>
 
             {recentThreats.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {recentThreats.slice(0, 6).map((threat) => (
                   <div
                     key={threat.id}
@@ -376,37 +401,37 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                       setSearchQuery(threat.identifier);
                       handleSearch(threat.identifier);
                     }}
-                    className="cursor-pointer rounded-xl border border-white/10 bg-[#121316]/80 p-3.5 space-y-2 hover:border-blue-500/40 hover:bg-[#18191f] transition-all text-left"
+                    className="cursor-pointer rounded-xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121316]/80 p-3 space-y-1.5 hover:border-blue-500/50 hover:shadow-sm transition-all text-left"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white font-mono truncate">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white font-mono truncate">
                         {threat.identifier}
                       </span>
-                      <span className="rounded bg-rose-950/60 border border-rose-800/40 px-2 py-0.2 text-[9px] font-mono font-bold text-rose-300 shrink-0">
+                      <span className="rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400 shrink-0">
                         {threat.report_count} {lang === "en" ? "Reports" : "Laporan"}
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                       {threat.description}
                     </p>
 
-                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-white/5">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-500 pt-1 border-t border-slate-100 dark:border-white/5">
                       <span className="capitalize">{threat.category?.replace("_", " ")}</span>
-                      <span>{lang === "en" ? "Active:" : "Aktif:"} {threat.last_reported?.split(" ")[0]}</span>
+                      <span>{threat.last_reported?.split(" ")[0]}</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6 text-center space-y-1.5">
-                <p className="text-xs text-slate-300 font-medium">
-                  {lang === "en" ? "No complaint report records in the database yet." : "Belum ada catatan laporan aduan pada basis data."}
+              <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] p-6 text-center space-y-1">
+                <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                  {lang === "en" ? "No complaint records in the database yet." : "Belum ada catatan laporan aduan pada basis data."}
                 </p>
-                <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                   {lang === "en"
-                    ? "PANDU does not load artificial mock data. Blacklist entries expand transparently upon genuine community reports."
-                    : "PANDU tidak memuat data rekaan. Daftar hitam akan bertambah secara transparan saat ada laporan riil yang diajukan oleh masyarakat."}
+                    ? "PANDU does not load mock entries. Blacklist records expand transparently based on verified public reports."
+                    : "PANDU tidak memuat data rekaan. Daftar hitam akan bertambah secara transparan saat ada laporan riil yang diajukan masyarakat."}
                 </p>
               </div>
             )}
@@ -416,46 +441,47 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
       {/* TAB 2: LAPOR PENIPUAN BARU */}
       {activeTab === "report" && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-5 shadow-xl">
+        <div className="space-y-5 animate-in fade-in duration-200">
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-[#121316]/90 p-4 sm:p-6 space-y-4 shadow-sm">
             <div>
-              <h3 className="text-base font-bold text-white">
-                {lang === "en" ? "Malicious Entity Reporting Form" : "Formulir Pelaporan Entitas Berbahaya"}
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                {lang === "en" ? "File Threat Report" : "Formulir Laporan Penipuan"}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed mt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-0.5">
                 {lang === "en"
-                  ? "Your report will be immediately recorded into PANDU's blacklist registry to warn other users investigating this target."
-                  : "Laporan Anda akan langsung dicatat ke basis data daftar hitam PANDU dan memperingatkan pengguna lain yang melakukan pencarian terhadap nomor, rekening, atau tautan ini."}
+                  ? "Your submission will be immediately recorded into PANDU's blacklist registry to warn other users."
+                  : "Laporan Anda langsung dicatat ke basis data daftar hitam PANDU untuk memperingatkan pengguna lain."}
               </p>
             </div>
 
             {reportSuccess && (
-              <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 flex items-center justify-between text-xs text-emerald-200">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/30 p-3.5 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-200">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>{reportSuccess}</span>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setActiveTab("search")}
-                  className="rounded bg-emerald-600 px-3 py-1 font-semibold text-white hover:bg-emerald-500 text-[11px] shrink-0"
+                  className="rounded-lg bg-emerald-600 px-3 py-1 font-semibold text-white hover:bg-emerald-500 text-[11px] shrink-0 cursor-pointer"
                 >
-                  {lang === "en" ? "View in Blacklist" : "Lihat di Daftar Hitam"}
+                  {lang === "en" ? "View Blacklist" : "Cek di Daftar"}
                 </button>
               </div>
             )}
 
-            <form onSubmit={handleReportSubmit} className="space-y-4 text-xs">
-              {/* Type Selector */}
+            <form onSubmit={handleReportSubmit} className="space-y-3.5 text-xs">
+              {/* Type Selector Pills */}
               <div>
-                <label className="block font-semibold text-slate-300 mb-1.5">
-                  {lang === "en" ? "Reported Entity Type:" : "Tipe Entitas yang Dilaporkan:"}
+                <label className="block font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+                  {lang === "en" ? "Entity Type:" : "Tipe Entitas:"}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
                     { id: "phone", label: lang === "en" ? "Phone / WA" : "No. Telepon / WA", icon: Phone },
                     { id: "bank_account", label: lang === "en" ? "Bank / E-Wallet" : "Rekening / E-Wallet", icon: CreditCard },
-                    { id: "url", label: lang === "en" ? "Link / Website" : "Tautan / Website", icon: Globe },
-                    { id: "apk_hash", label: lang === "en" ? "Malicious APK" : "File APK Jahat", icon: FileCode },
+                    { id: "url", label: lang === "en" ? "Website Link" : "Tautan / Website", icon: Globe },
+                    { id: "apk_hash", label: lang === "en" ? "Malicious APK" : "Aplikasi (.APK)", icon: FileCode },
                   ].map((t) => {
                     const IconComp = t.icon;
                     return (
@@ -463,109 +489,103 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                         type="button"
                         key={t.id}
                         onClick={() => setReportType(t.id as any)}
-                        className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 transition-all ${
+                        className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 transition-all cursor-pointer ${
                           reportType === t.id
-                            ? "border-blue-500 bg-blue-600/20 text-white font-bold"
-                            : "border-white/10 bg-[#090a0d] text-slate-400 hover:text-white"
+                            ? "border-blue-600 bg-blue-600 text-white font-semibold shadow-sm"
+                            : "border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <IconComp className="h-3.5 w-3.5" />
-                        <span>{t.label}</span>
+                        <span className="truncate">{t.label}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Identifier Target */}
+              {/* Dynamic Target Input */}
               <div>
-                <label className="block font-semibold text-slate-300 mb-1.5">
-                  {lang === "en" ? "Target Number / Account / Link:" : "Nomor / Akun / Tautan Target:"}
+                <label className="block font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+                  {getDynamicTargetLabel()}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder={
-                    reportType === "phone"
-                      ? (lang === "en" ? "Example: 085812345678" : "Contoh: 085812345678")
-                      : reportType === "bank_account"
-                      ? (lang === "en" ? "Example: 8271039481 or 0858xxxx (DANA)" : "Contoh: 8271039481 atau 0858xxxx (DANA)")
-                      : (lang === "en" ? "Example: https://shopee-vip-toko.site" : "Contoh: https://shopee-vip-toko.site")
-                  }
+                  placeholder={getDynamicTargetPlaceholder()}
                   value={reportTarget}
                   onChange={(e) => setReportTarget(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none font-mono"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-2.5 sm:p-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none font-mono transition-colors"
                 />
               </div>
 
-              {/* Modality Category */}
+              {/* Category & Bank details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1.5">
-                    {lang === "en" ? "Scam Modus Category:" : "Modus Penipuan:"}
+                  <label className="block font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+                    {lang === "en" ? "Scam Modus Category:" : "Kategori Modus:"}
                   </label>
                   <select
                     value={reportCategory}
                     onChange={(e) => setReportCategory(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-2.5 sm:p-3 text-xs sm:text-sm text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition-colors"
                   >
-                    <option value="loker_freelance">{lang === "en" ? "Freelance Task Scam (Video Likes / Deposit)" : "Loker Freelance (Misi Like Video / Deposit)"}</option>
-                    <option value="kurir_apk">{lang === "en" ? "Malicious APK (Courier / Traffic Fine ETLE)" : "Penyebaran APK Kurir / Surat Tilang ETLE"}</option>
-                    <option value="phishing_bank">{lang === "en" ? "Bank Phishing (OTP & Balance Theft)" : "Phishing Bank (Pencurian OTP & Saldo)"}</option>
-                    <option value="impersonasi">{lang === "en" ? "Relative Impersonation / WhatsApp Hijack" : "Impersonasi Kerabat / WhatsApp Hijacking"}</option>
+                    <option value="loker_freelance">{lang === "en" ? "Freelance Task Scam (Video Likes / Deposit)" : "Loker Freelance (Misi Like / Deposit)"}</option>
+                    <option value="kurir_apk">{lang === "en" ? "Malicious APK (Fake Courier / ETLE Ticket)" : "Penyebaran File APK (Kurir / Surat Tilang)"}</option>
+                    <option value="phishing_bank">{lang === "en" ? "Bank Phishing (OTP & Balance Theft)" : "Phishing Bank (Pencurian OTP & Kredensial)"}</option>
+                    <option value="impersonasi">{lang === "en" ? "Relative Impersonation / WhatsApp Hijack" : "Impersonasi Teman / WhatsApp Hijacking"}</option>
                     <option value="pinjol_ilegal">{lang === "en" ? "Illegal Loan / Contact Extortion" : "Pinjol Ilegal & Pemerasan Kontak"}</option>
-                    <option value="investasi_bodong">{lang === "en" ? "Fake Investment / Fraudulent Trading" : "Investasi Bodong / Trading Palsu"}</option>
+                    <option value="investasi_bodong">{lang === "en" ? "Fake Investment / Trading Scam" : "Investasi Bodong / Trading Palsu"}</option>
                   </select>
                 </div>
 
                 {reportType === "bank_account" && (
                   <div>
-                    <label className="block font-semibold text-slate-300 mb-1.5">
-                      {lang === "en" ? "Bank Name & Account Holder:" : "Nama Bank / E-Wallet & Atas Nama:"}
+                    <label className="block font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+                      {lang === "en" ? "Bank & Account Holder Name:" : "Nama Bank & Atas Nama:"}
                     </label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        placeholder={lang === "en" ? "Bank (BCA/BRI/DANA)" : "Bank (BCA/BRI/DANA)"}
+                        placeholder="Bank (BCA/BRI/DANA)"
                         value={reportBank}
                         onChange={(e) => setReportBank(e.target.value)}
-                        className="w-1/2 rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        className="w-1/2 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-2.5 sm:p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       />
                       <input
                         type="text"
-                        placeholder={lang === "en" ? "Account Holder Name" : "Atas Nama Pemilik"}
+                        placeholder={lang === "en" ? "Holder Name" : "Atas Nama"}
                         value={reportAccountHolder}
                         onChange={(e) => setReportAccountHolder(e.target.value)}
-                        className="w-1/2 rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                        className="w-1/2 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-2.5 sm:p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Chronology / Story */}
+              {/* Chronology / Summary */}
               <div>
-                <label className="block font-semibold text-slate-300 mb-1.5">
+                <label className="block font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                   {lang === "en" ? "Incident Chronology / Summary:" : "Kronologi Singkat / Catatan Modus:"}
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder={lang === "en" ? "Briefly explain how the scammer contacted you and what was requested..." : "Ceritakan singkat bagaimana pelaku menghubungi Anda dan apa yang mereka minta..."}
+                  placeholder={lang === "en" ? "Explain briefly how you were contacted and what the perpetrator demanded..." : "Ceritakan singkat bagaimana pelaku menghubungi Anda dan apa yang mereka minta..."}
                   value={reportChronology}
                   onChange={(e) => setReportChronology(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#090a0d] p-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-2.5 sm:p-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none leading-relaxed transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={reportSubmitting}
-                className="w-full rounded-xl bg-blue-600 py-3 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40 disabled:opacity-50"
+                className="w-full rounded-xl bg-blue-600 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
               >
                 {reportSubmitting
-                  ? (lang === "en" ? "Saving to Database..." : "Mencatat ke Basis Data...")
-                  : (lang === "en" ? "Save to PANDU Threat Blacklist" : "Simpan ke Basis Data Daftar Hitam PANDU")}
+                  ? (lang === "en" ? "Saving..." : "Menyimpan...")
+                  : (lang === "en" ? "Save to Threat Blacklist" : "Simpan ke Basis Data")}
               </button>
             </form>
           </div>
@@ -574,17 +594,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
       {/* TAB 3: PERTOLONGAN PERTAMA */}
       {activeTab === "firstaid" && (
-        <div className="space-y-6 animate-in fade-in duration-200">
+        <div className="space-y-5 animate-in fade-in duration-200">
           {/* Emergency 5-Minute Checklist */}
-          <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 backdrop-blur-md p-5 sm:p-6 space-y-4 shadow-xl">
-            <div className="flex items-center gap-2 text-rose-400 font-bold text-sm sm:text-base">
-              <ShieldAlert className="h-5 w-5" />
-              <span>{lang === "en" ? "First 5-Minute Emergency Account Isolation Protocol" : "Prosedur Isolasi Darurat 5 Menit Pertama"}</span>
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-[#121316]/90 p-4 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm sm:text-base">
+              <ShieldAlert className="h-5 w-5 shrink-0" />
+              <span>{lang === "en" ? "First 5-Minute Emergency Protocol" : "Prosedur Darurat 5 Menit Pertama"}</span>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               {lang === "en"
                 ? "If you have accidentally installed a malicious .APK file or transferred funds to a fraudster, execute these 4 isolation steps immediately in sequence:"
-                : "Jika Anda terlanjur menginstal file .APK kurir atau mentransfer uang kepada penipu, lakukan 4 langkah isolasi darurat ini secara berurutan sekarang juga:"}
+                : "Jika Anda terlanjur menginstal file .APK mencurigakan atau mentransfer dana kepada pelaku, lakukan 4 langkah isolasi darurat ini secara berurutan:"}
             </p>
 
             <div className="space-y-2.5">
@@ -593,17 +613,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     {
                       step: "01",
                       title: "Sever Internet Connection (Enable Airplane Mode)",
-                      desc: "Turn off WiFi and Cellular Data immediately. SMS-stealing trojans require an active internet connection to forward your banking OTP codes to attacker servers.",
+                      desc: "Turn off WiFi and Mobile Data immediately. SMS-stealing trojans require active internet to forward your banking OTP codes to attacker servers.",
                     },
                     {
                       step: "02",
                       title: "Contact Your Official Bank / E-Wallet Call Center",
-                      desc: "Request an emergency account freeze or m-banking lock to prevent scammers from executing fund draining transactions.",
+                      desc: "Request an immediate emergency account freeze or m-banking block to prevent unauthorized balance draining.",
                     },
                     {
                       step: "03",
                       title: "Identify & Uninstall Suspicious Applications",
-                      desc: "Open Phone Settings > Apps. Search for iconless apps or unfamiliar names (e.g. 'Package Receipt', 'ETLE Confirmation') and uninstall them immediately.",
+                      desc: "Open Phone Settings > Apps. Search for iconless apps or unfamiliar names (e.g. 'Package Receipt', 'ETLE Confirmation') and uninstall immediately.",
                     },
                     {
                       step: "04",
@@ -615,17 +635,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     {
                       step: "01",
                       title: "Putus Koneksi Internet (Aktifkan Mode Pesawat)",
-                      desc: "Matikan WiFi dan Data Seluler segera. Trojan penyadap SMS memerlukan koneksi internet untuk mengirimkan kode OTP m-banking Anda ke server penipu.",
+                      desc: "Matikan WiFi dan Data Seluler segera. Trojan penyadap SMS memerlukan koneksi internet untuk mengirimkan kode OTP m-banking ke server penipu.",
                     },
                     {
                       step: "02",
                       title: "Hubungi Call Center Resmi Bank / E-Wallet Anda",
-                      desc: "Minta pemblokiran rekening darurat atau pembekuan akses m-banking Anda agar penipu tidak dapat melakukan transaksi pengurasan saldo.",
+                      desc: "Minta pemblokiran rekening darurat atau pembekuan akses m-banking agar penipu tidak dapat melakukan transaksi pengurasan saldo.",
                     },
                     {
                       step: "03",
                       title: "Cek & Uninstall Aplikasi Mencurigakan",
-                      desc: "Buka Pengaturan HP > Aplikasi. Cari aplikasi tanpa ikon atau bernama aneh (misal: 'Surat Paket', 'Konfirmasi ETLE') lalu copot pemasangannya.",
+                      desc: "Buka Pengaturan HP > Aplikasi. Cari aplikasi tanpa ikon atau bernama mencurigakan (misal: 'Surat Paket', 'Konfirmasi ETLE') lalu copot pemasangannya.",
                     },
                     {
                       step: "04",
@@ -634,11 +654,36 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     },
                   ]
               ).map((item) => (
-                <div key={item.step} className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 flex gap-3 text-xs">
-                  <span className="font-mono font-bold text-rose-400 text-sm shrink-0">{item.step}</span>
-                  <div className="space-y-0.5">
-                    <h5 className="font-bold text-white">{item.title}</h5>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">{item.desc}</p>
+                <div
+                  key={item.step}
+                  className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#090a0d] p-3 sm:p-3.5 flex gap-3 text-xs"
+                >
+                  <span className="font-mono font-bold text-rose-600 dark:text-rose-400 text-xs sm:text-sm shrink-0 h-6 w-6 rounded bg-rose-500/10 flex items-center justify-center">
+                    {item.step}
+                  </span>
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <h5 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{item.title}</h5>
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-[11px] sm:text-xs">{item.desc}</p>
+                    {item.step === "02" && (
+                      <div className="pt-2 space-y-1.5">
+                        <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 block">
+                          {lang === "en" ? "Tap to Call Official Hotline:" : "Ketuk untuk Hubungi Hotline Resmi:"}
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {BANK_HOTLINES.map((b) => (
+                            <a
+                              key={b.name}
+                              href={`tel:${b.number}`}
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-2 py-0.5 text-[11px] text-slate-800 dark:text-slate-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <PhoneCall className="h-2.5 w-2.5 text-slate-400" />
+                              <span className="font-semibold">{b.name}</span>
+                              <span className="text-slate-500 font-mono text-[10px]">{b.number}</span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -646,12 +691,13 @@ export default function DossierTab({ initialData }: DossierTabProps) {
           </div>
 
           {/* Family Alert WhatsApp Card */}
-          <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3 shadow-xl">
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-[#121316]/90 p-4 sm:p-5 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-white">
-                {lang === "en" ? "Family WhatsApp Security Warning Draft" : "Draf Peringatan untuk Grup WhatsApp Keluarga"}
+              <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                {lang === "en" ? "Family WhatsApp Security Warning Draft" : "Draf Peringatan WhatsApp Keluarga"}
               </h4>
               <button
+                type="button"
                 onClick={() =>
                   copyToClipboard(
                     lang === "en"
@@ -660,23 +706,23 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     "family"
                   )
                 }
-                className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-2.5 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
               >
                 {copiedKey === "family" ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">{lang === "en" ? "Copied" : "Tersalin"}</span>
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-emerald-600 dark:text-emerald-400">{lang === "en" ? "Copied" : "Tersalin"}</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3.5 w-3.5 text-slate-300" />
-                    <span>{lang === "en" ? "Copy Message" : "Salin Pesan WA"}</span>
+                    <Copy className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                    <span>{lang === "en" ? "Copy Draft" : "Salin Draf"}</span>
                   </>
                 )}
               </button>
             </div>
 
-            <pre className="rounded-xl border border-white/10 bg-[#090a0d] p-3.5 font-sans text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+            <pre className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#090a0d] p-3 font-sans text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
               {lang === "en"
                 ? `Security alert for family: Please stay vigilant if you receive messages from unknown numbers sending .APK files (disguised as package receipts / traffic tickets) or claiming to be relatives in emergency distress. Never click or install them as they intercept mobile banking SMS OTPs. Always verify directly with the person. Stay safe!`
                 : `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`}
