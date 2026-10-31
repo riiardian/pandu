@@ -241,3 +241,8 @@
 - Keamanan Unggah Berkas: Validasi ekstensi ketat (.png, .jpg, .jpeg, .webp, .pdf), inspeksi header magic bytes asli (mencegah masquerading file), isolasi direktori bukti izin 0700 & berkas 0600, serta penangkal path traversal.
 - Validasi Input & Anti-DoS: Pembatasan panjang parameter input teks (maks 10.000 karakter), URL (maks 2.048 karakter), nomor telepon (maks 64 karakter), rekening (maks 64 karakter), dan pencegahan ReDoS.
 - Hardening Nginx: Pemblokiran file tersembunyi (.env, .git, .admin_secret), pemblokiran probe otomatis (wp-admin), dan penerapan penuh security headers (HSTS preload, nosniff, DENY frame-ancestors, Permissions-Policy).
+
+### 2026-10-31: Transformasi Panel Admin ke Tema Terang (Light Mode)
+- Mengubah tema panel admin verifikasi laporan () menjadi tema terang (Light Mode) modern, bersih, dan profesional.
+- Layar Login: Kartu putih solid mengambang dengan border halus, tipografi slate gelap kontras tinggi, dan tombol aksi biru.
+- Dasbor Verifikasi: Latar belakang canvas off-white (#f8fafc), header putih bersih dengan navigasi minimalis, 4 kartu ringkasan metrik bernomor tebal dengan indikator titik semantik (amber, emerald, rose), tab filter bergaris bawah, kartu antrean laporan putih dengan batas pemisah rapi, modal peninjauan catatan, dan penampil bukti lampiran transparan.
