@@ -654,7 +654,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
             <div className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
               {OFFICIAL_CHANNELS.map((ch) => (
-                <div key={ch.name} className="py-3 first:pt-0 last:pb-0 space-y-1">
+                <div key={ch.name} className="py-2.5 first:pt-0 last:pb-0 space-y-0.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{ch.name}</span>
                     <a
@@ -668,7 +668,6 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                     </a>
                   </div>
                   <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{ch.desc}</p>
-                  <span className="text-[11px] font-mono text-slate-500 block pt-0.5">{ch.contact}</span>
                 </div>
               ))}
             </div>
