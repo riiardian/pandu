@@ -1,5 +1,6 @@
 # Binaries
 backend/pandu-api
+backend/pandu-backend
 *.exe
 *.exe~
 *.dll
@@ -31,6 +32,10 @@ yarn-error.log*
 backend/.admin_secret
 backend/uploads/
 uploads/
+
+# Internal Agent & Progress Docs
+AGENTS.md
+PROJECT_PROGRESS.md
 
 # OS
 .DS_Store

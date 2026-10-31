@@ -11,7 +11,7 @@
 **Tema Besar:** *“Guardians of the Digital Space – Empowering Today’s Generation Toward a Safer Cyber Ecosystem”*  
 **Studi Kasus:** The Trust Trap: Navigating Digital Deception  
 **Tim Peserta:** 404Forbidden (Kode Tim: `MIT-002`)  
-**Ketua Tim:** Rio Ardian Pratama | Informatika, Telkom University  
+**Ketua Tim:** Rio Ardian Pratama | Telkom University  
 
 ---
 
@@ -166,7 +166,7 @@ Sesuai dengan Petunjuk Teknis dan Ketentuan Studi Kasus MIT-WEEK 2026:
 
 ## 6. Tim Pengembang (404Forbidden)
 
-- **Ketua Tim & Lead Developer**: Rio Ardian Pratama (`@riiardian`) | S1 Informatika, Telkom University
+- **Ketua Tim & Lead Developer**: Rio Ardian Pratama (`@riiardian`) | Telkom University
 - **Kode Peserta**: `MIT-002`
 - **Tautan Live Deployment**: [https://pandu.web.id](https://pandu.web.id)
 - **Repositori Resmi**: [https://github.com/riiardian/pandu](https://github.com/riiardian/pandu)

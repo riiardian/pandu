@@ -33,12 +33,12 @@ type ScanURLRequest struct {
 	FollowRedirects bool   `json:"follow_redirects"`
 }
 
-// ScanPhoneRequest payload (legacy handler kept for compatibility tests; route is intentionally not exposed)
+// ScanPhoneRequest payload
 type ScanPhoneRequest struct {
 	Phone string `json:"phone"`
 }
 
-// ScanBankRequest payload (legacy handler kept for compatibility tests; route is intentionally not exposed)
+// ScanBankRequest payload
 type ScanBankRequest struct {
 	BankName      string `json:"bank_name"`
 	AccountNumber string `json:"account_number"`
