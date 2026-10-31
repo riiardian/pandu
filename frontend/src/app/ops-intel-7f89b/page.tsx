@@ -502,16 +502,13 @@ export default function AdminVerificationPage() {
                       </button>
                     </div>
 
-                    <div className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5">
+                    <div className="text-xs text-slate-500 flex flex-wrap items-center gap-2">
                       <span>{report.category}</span>
                       {report.reported_bank && (
-                        <>
-                          <span>•</span>
-                          <span className="text-slate-700">
-                            {report.reported_bank}
-                            {report.account_holder ? ` (${report.account_holder})` : ""}
-                          </span>
-                        </>
+                        <span className="text-slate-700">
+                          {report.reported_bank}
+                          {report.account_holder ? ` (${report.account_holder})` : ""}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -630,7 +627,7 @@ export default function AdminVerificationPage() {
                 {reviewAction === "verify" ? "Konfirmasi Verifikasi Laporan" : "Tolak Laporan"}
               </h3>
               <p className="text-xs text-slate-500 font-mono">
-                {selectedReport.id} • {selectedReport.identifier}
+                {selectedReport.id} <span className="text-slate-300">/</span> {selectedReport.identifier}
               </p>
             </div>
 

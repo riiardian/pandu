@@ -267,3 +267,8 @@
 - Menghapus bulatan/titik pemisah di samping teks status verifikasi.
 - Memindahkan waktu laporan ('Hari ini, 14:05') tepat ke pojok kanan atas kartu.
 - Memindahkan nomor/ID laporan ('REP-...') ke pojok bawah kiri kartu, berdampingan dengan tombol aksi di pojok kanan bawah.
+
+### 2026-10-31: Penghapusan Titik Tengah (Bullet Dots) & Pembersihan Dialog Aksi
+- Menghapus seluruh simbol titik tengah ( / ) pada baris kategori modus dan informasi perbankan kartu laporan.
+- Menghapus simbol bulatan pemisah pada modal dialog konfirmasi verifikasi dan penolakan laporan ( tanpa titik tengah).
+- Memastikan tampilan kartu dan popup konfirmasi 100% bersih, datar, dan bebas dari titik/bulatan pemisah visual yang tidak perlu.
