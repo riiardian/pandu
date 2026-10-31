@@ -141,10 +141,10 @@ export default function HomeTab() {
           </div>
         </div>
 
-        {/* 2. OSINT Live Forensic Preview Card (3D Isometric Perspective, Stay Still) */}
+        {/* 2. OSINT Live Forensic Preview Card (3D Isometric Perspective, Stay Still, Zero White Border) */}
         <div className="lg:col-span-5 w-full" style={{ perspective: "1000px" }}>
           <div
-            className="rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            className="rounded-2xl overflow-hidden shadow-2xl border-0"
             style={{
               transform: "rotateX(8deg) rotateY(-12deg) rotateZ(1.5deg)",
               transformOrigin: "center left",

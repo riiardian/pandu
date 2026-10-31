@@ -337,31 +337,26 @@ html.light .bg-white\/10 {
 }
 
 /* Live Terminal Card Container in Light & Dark Modes */
-section > div[style*="rotateX"],
-html.light section > div[style*="rotateX"] {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.terminal-feed-card {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  transition: none !important;
-}
-
+div[style*="rotateX"],
+html.light div[style*="rotateX"],
+.terminal-feed-card,
 html.light .terminal-feed-card {
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.08) !important;
   background-color: #06070a !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5) !important;
   transition: none !important;
 }
 
-/* Authentic Terminal Titlebar: Stays Consistently Dark & Flat (No White Flash or Shadow Popping on Theme Switch) */
+/* Authentic Terminal Titlebar: Stays Consistently Dark & Flat (No White Border or Flash) */
 .terminal-feed-card .terminal-titlebar,
 html.light .terminal-feed-card .terminal-titlebar {
   background-color: #0d0f15 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
   box-shadow: none !important;
   transition: none !important;
 }
