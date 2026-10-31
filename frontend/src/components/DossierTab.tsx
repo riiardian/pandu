@@ -680,13 +680,13 @@ export default function DossierTab({ initialData }: DossierTabProps) {
             <div className="space-y-1">
               <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                 {lang === "en"
-                  ? "Protect Your Loved Ones from Digital Manipulation"
-                  : "Bentengi Keluarga dari Jeratan Rekayasa Sosial"}
+                  ? "Protect Your Family from Digital Deception"
+                  : "Lindungi Keluarga dari Tipu Daya Digital"}
               </h4>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 {lang === "en"
-                  ? "Modern cyber scams exploit panic and human trust rather than technical flaws. Strengthen your family's digital resilience early through PANDU's interactive social engineering simulations."
-                  : "Modus penipuan modern tidak meretas sistem, melainkan memanfaatkan kepanikan dan kepolosan manusia. Latih ketahanan digital keluarga Anda sejak dini mengenali jebakan siber lewat simulasi interaktif PANDU."}
+                  ? "Don't let your parents or relatives become the next victim. Share awareness and test their responses against scam tactics through PANDU's interactive practice."
+                  : "Jangan biarkan orang tua atau kerabat Anda menjadi korban berikutnya. Bagikan pemahaman dan uji respon mereka menghadapi taktik penipu lewat latihan interaktif PANDU."}
               </p>
             </div>
 
@@ -695,7 +695,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 href="/simulasi"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm"
               >
-                <span>{lang === "en" ? "Explore Interactive Simulation" : "Mulai Latihan Simulasi"}</span>
+                <span>{lang === "en" ? "Open Educational Practice" : "Buka Latihan Edukasi"}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
