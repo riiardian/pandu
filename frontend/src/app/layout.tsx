@@ -15,8 +15,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "PANDU — Navigating Digital Deception | MIT-WEEK 2026",
-  description: "Aplikasi Web Pemecah Jebakan Tipuan Digital, Simulator Keputusan Siber & Generator Laporan Forensik Resmi untuk Generasi Muda Indonesia.",
+  title: "Protective Analysis & Navigation for Digital Users — PANDU",
+  description: "Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi.",
 };
 
 export default function RootLayout({

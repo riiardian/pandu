@@ -7,6 +7,5 @@
       <circle cx="256" cy="256" r="36" fill="white" />
     </mask>
   </defs>
-  <rect width="512" height="512" rx="128" fill="#000000" />
-  <path d="M 64 256 C 128 150, 384 150, 448 256 C 384 362, 128 362, 64 256 Z" fill="#ffffff" mask="url(#panduEyeMask)" />
+  <path d="M 64 256 C 128 150, 384 150, 448 256 C 384 362, 128 362, 64 256 Z" fill="currentColor" mask="url(#panduEyeMask)" />
 </svg>
