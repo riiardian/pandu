@@ -252,3 +252,11 @@
 - Menggabungkan statistik laporan langsung ke dalam filter pills yang ringkas dan hemat ruang: Semua (5), Menunggu (4), Terverifikasi (1), Ditolak (0).
 - Merapikan kartu laporan dengan hierarki manusiawi: format nomor telepon yang nyaman dibaca (0812-9999-0000), tag status natural tanpa bulatan dot, waktu relatif (Hari ini, 14:05), kotak lampiran bukti dengan thumbnail gambar dan tombol 'Periksa Bukti'.
 - Tombol aksi ergonomis untuk mobile: tombol 'Tolak' dan 'Verifikasi' dengan touch target penuh yang nyaman dijangkau jempol satu tangan.
+
+### 2026-10-31: Eliminasi Total Elemen Badge & Penyelarasan Palet Monokrom Alami
+- Menghapus seluruh pill badge, chip kontainer, dan tombol badge di panel admin ().
+- Status laporan ('Menunggu Verifikasi', 'Terverifikasi', 'Ditolak') diubah murni menjadi teks tipografi alami tanpa kapsul pill atau border background.
+- Kategori modus ('Penipuan Umum') diubah murni menjadi teks sekunder polos tanpa chip abu-abu.
+- Aksi periksa bukti fisik diubah menjadi tautan teks biru bersih 'Lihat Gambar' tanpa bingkai tombol badge.
+- Tab navigasi diubah menjadi tab teks bergaris bawah datar (underline tabs) tanpa kapsul pill bersarang.
+- Penyelarasan palet warna: palet warna-warni permen (candy colors) dihilangkan total, digantikan oleh palet monokromatik tenang (slate/off-white) dengan aksen biru fungsional tunggal.
