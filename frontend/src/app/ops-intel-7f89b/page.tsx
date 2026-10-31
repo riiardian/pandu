@@ -370,17 +370,6 @@ export default function AdminVerificationPage() {
 
             <button
               type="button"
-              onClick={() => loadDashboardData()}
-              disabled={loading}
-              className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
-              title="Segarkan data"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
-              <span className="hidden sm:inline">Segarkan</span>
-            </button>
-
-            <button
-              type="button"
               onClick={handleLogout}
               className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-rose-600 transition-colors cursor-pointer ml-1"
             >
@@ -441,22 +430,22 @@ export default function AdminVerificationPage() {
           </div>
 
           {/* Clean Search Input */}
-          <div className="relative w-full sm:w-60 shrink-0">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+          <div className="relative w-full sm:w-72 shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari target, nomor, ID..."
-              className="w-full rounded-lg border border-slate-300 bg-white pl-8 pr-7 py-1 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 bg-white pl-9.5 pr-8 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -483,33 +472,14 @@ export default function AdminVerificationPage() {
                   key={report.id}
                   className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 space-y-3 shadow-xs"
                 >
-                  {/* Row 1: Status (Plain Text, NO BADGE), Time, ID */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className={isPending ? "text-amber-700 font-semibold" : isVerified ? "text-emerald-700 font-semibold" : "text-slate-500 font-medium"}>
-                        {isPending ? "Menunggu Verifikasi" : isVerified ? "Terverifikasi" : "Ditolak"}
-                      </span>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-slate-400">
-                        {formatDisplayDate(report.created_at)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-slate-400 font-mono text-[11px]">
-                      <span>{report.id}</span>
-                      <button
-                        type="button"
-                        onClick={() => copyText(report.id, `id-${report.id}`)}
-                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
-                        title="Salin ID"
-                      >
-                        {copiedId === `id-${report.id}` ? (
-                          <Check className="h-3 w-3 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                      </button>
-                    </div>
+                  {/* Row 1: Status di kiri, Waktu di kanan atas (tanpa bulet) */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 text-xs">
+                    <span className={isPending ? "text-amber-700 font-semibold" : isVerified ? "text-emerald-700 font-semibold" : "text-slate-500 font-medium"}>
+                      {isPending ? "Menunggu Verifikasi" : isVerified ? "Terverifikasi" : "Ditolak"}
+                    </span>
+                    <span className="text-slate-400">
+                      {formatDisplayDate(report.created_at)}
+                    </span>
                   </div>
 
                   {/* Row 2: Target & Modus Category (Plain text, NO BADGE) */}
@@ -593,42 +563,57 @@ export default function AdminVerificationPage() {
                     </div>
                   )}
 
-                  {/* Row 5: Audit Review Notes (if already verified or rejected) */}
-                  {report.reviewed_at && (
-                    <div className="text-[11px] text-slate-400 pt-1 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                      <span>Direview: {formatDisplayDate(report.reviewed_at)}</span>
-                      {report.review_notes && <span>Catatan: {report.review_notes}</span>}
-                    </div>
-                  )}
-
-                  {/* Row 6: Action Buttons (Only for Pending, Clean & Simple) */}
-                  {isPending && (
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                  {/* Row 5: Footer - Nomor Laporan di Bawah Kiri, Tombol Aksi di Kanan */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                    <div className="flex items-center gap-1 text-slate-400 font-mono text-[11px]">
+                      <span>{report.id}</span>
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelectedReport(report);
-                          setReviewAction("reject");
-                          setReviewNotes("");
-                        }}
-                        className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-600 hover:text-rose-600 hover:border-rose-300 transition-colors cursor-pointer"
+                        onClick={() => copyText(report.id, `id-${report.id}`)}
+                        className="text-slate-400 hover:text-slate-700 cursor-pointer p-0.5"
+                        title="Salin ID"
                       >
-                        Tolak
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedReport(report);
-                          setReviewAction("verify");
-                          setReviewNotes("Bukti otentik valid.");
-                        }}
-                        className="px-3.5 py-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors cursor-pointer"
-                      >
-                        Verifikasi
+                        {copiedId === `id-${report.id}` ? (
+                          <Check className="h-3 w-3 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
                       </button>
                     </div>
-                  )}
+
+                    {isPending ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedReport(report);
+                            setReviewAction("reject");
+                            setReviewNotes("");
+                          }}
+                          className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-600 hover:text-rose-600 hover:border-rose-300 transition-colors cursor-pointer"
+                        >
+                          Tolak
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedReport(report);
+                            setReviewAction("verify");
+                            setReviewNotes("Bukti otentik valid.");
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors cursor-pointer"
+                        >
+                          Verifikasi
+                        </button>
+                      </div>
+                    ) : report.reviewed_at ? (
+                      <div className="text-[11px] text-slate-400">
+                        <span>Direview: {formatDisplayDate(report.reviewed_at)}</span>
+                        {report.review_notes && <span className="ml-1 text-slate-500">({report.review_notes})</span>}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               );
             })

@@ -260,3 +260,10 @@
 - Aksi periksa bukti fisik diubah menjadi tautan teks biru bersih 'Lihat Gambar' tanpa bingkai tombol badge.
 - Tab navigasi diubah menjadi tab teks bergaris bawah datar (underline tabs) tanpa kapsul pill bersarang.
 - Penyelarasan palet warna: palet warna-warni permen (candy colors) dihilangkan total, digantikan oleh palet monokromatik tenang (slate/off-white) dengan aksen biru fungsional tunggal.
+
+### 2026-10-31: Penyesuaian Tata Letak Kartu Laporan & Header Panel Admin
+- Menghapus tombol icon refresh/segarkan pada header atas (menyisakan tombol Keluar).
+- Memperbesar ukuran dan padding kolom input pencarian target ('Cari target, nomor, ID...') agar lebih lega dan nyaman diketik.
+- Menghapus bulatan/titik pemisah di samping teks status verifikasi.
+- Memindahkan waktu laporan ('Hari ini, 14:05') tepat ke pojok kanan atas kartu.
+- Memindahkan nomor/ID laporan ('REP-...') ke pojok bawah kiri kartu, berdampingan dengan tombol aksi di pojok kanan bawah.
