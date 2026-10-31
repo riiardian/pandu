@@ -3,6 +3,7 @@ package admin
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -164,20 +165,26 @@ func ValidateSessionToken(token string) (string, error) {
 	return username, nil
 }
 
-// Authenticate verifies username and password with bcrypt and rate limiting
+// Authenticate verifies username and password with bcrypt, constant-time checks, and rate limiting
 func Authenticate(username, password, ip string) (string, error) {
 	if err := loginLimiter.Check(ip); err != nil {
 		return "", err
 	}
 
 	expectedUser := GetAdminUsername()
-	if username != expectedUser {
-		loginLimiter.RecordFail(ip)
-		return "", fmt.Errorf("Kredensial admin tidak valid")
+	hash := GetAdminPasswordHash()
+
+	// Constant-time comparison for username
+	userMatch := subtle.ConstantTimeCompare([]byte(username), []byte(expectedUser)) == 1
+
+	// Dummy hash comparison to ensure constant execution time even if username is invalid
+	targetHash := hash
+	if !userMatch {
+		targetHash = "$2b$12$e80yq9j5X42K97n/2g9yquZqjN1V5n2g7K97n/2g9yquZqjN1V5n2"
 	}
 
-	hash := GetAdminPasswordHash()
-	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
+	err := bcrypt.CompareHashAndPassword([]byte(targetHash), []byte(password))
+	if !userMatch || err != nil {
 		loginLimiter.RecordFail(ip)
 		return "", fmt.Errorf("Kredensial admin tidak valid")
 	}

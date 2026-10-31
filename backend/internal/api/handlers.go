@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -140,6 +141,13 @@ func handleScanText(c *fiber.Ctx) error {
 		})
 	}
 
+	if len(req.Text) > 10000 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang teks pesan melebihi batas maksimal 10.000 karakter",
+		})
+	}
+
 	result := scanner.AnalyzeText(req.Text)
 
 	// Cross-check text against Blacklist Registry
@@ -172,6 +180,13 @@ func handleScanURL(c *fiber.Ctx) error {
 		})
 	}
 
+	if len(req.URL) > 2048 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang tautan melebihi batas maksimal 2048 karakter",
+		})
+	}
+
 	result := scanner.AnalyzeURL(req.URL, req.FollowRedirects)
 
 	// Cross-check URL against Blacklist Registry
@@ -201,6 +216,13 @@ func handleScanPhone(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	if len(req.Phone) > 64 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang nomor telepon melebihi batas maksimal",
 		})
 	}
 
@@ -258,6 +280,13 @@ func handleScanBank(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	if len(req.AccountNumber) > 64 || len(req.BankName) > 64 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang nomor rekening atau nama bank melebihi batas maksimal",
 		})
 	}
 
@@ -321,6 +350,13 @@ func handleScanEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Format body JSON tidak valid",
+		})
+	}
+
+	if len(req.Email) > 256 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang alamat email melebihi batas maksimal 256 karakter",
 		})
 	}
 
@@ -417,12 +453,37 @@ func handleScanFile(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"success": true, "data": result})
 }
 
+func isValidFileHeader(data []byte, ext string) bool {
+	if len(data) < 4 {
+		return false
+	}
+	switch ext {
+	case ".png":
+		return len(data) >= 8 && bytes.Equal(data[:8], []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A})
+	case ".jpg", ".jpeg":
+		return len(data) >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF
+	case ".webp":
+		return len(data) >= 12 && string(data[:4]) == "RIFF" && string(data[8:12]) == "WEBP"
+	case ".pdf":
+		return len(data) >= 4 && string(data[:4]) == "%PDF"
+	default:
+		return false
+	}
+}
+
 func handleCheckBlacklist(c *fiber.Ctx) error {
 	q := strings.TrimSpace(c.Query("q"))
 	if q == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Parameter pencarian 'q' wajib diisi",
+		})
+	}
+
+	if len(q) > 256 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang parameter pencarian melebihi batas maksimal (256 karakter)",
 		})
 	}
 
@@ -464,23 +525,47 @@ func handleReportBlacklist(c *fiber.Ctx) error {
 					"message": "Ukuran berkas bukti maksimal 10 MB",
 				})
 			}
+
+			// Validate file extension strictly (Allow only safe media types)
+			ext := strings.ToLower(filepath.Ext(fileHeader.Filename))
+			allowedExts := map[string]bool{
+				".png":  true,
+				".jpg":  true,
+				".jpeg": true,
+				".webp": true,
+				".pdf":  true,
+			}
+			if !allowedExts[ext] {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"success": false,
+					"message": "Tipe berkas tidak diizinkan. Hanya menerima lampiran PNG, JPG, WEBP, atau PDF.",
+				})
+			}
+
 			f, err := fileHeader.Open()
 			if err == nil {
 				defer f.Close()
 				data, err := io.ReadAll(f)
 				if err == nil && len(data) > 0 {
+					// Validate magic bytes to prevent masquerading files
+					if !isValidFileHeader(data, ext) {
+						return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+							"success": false,
+							"message": "Format byte berkas tidak sesuai dengan tipe ekstensi yang diklaim.",
+						})
+					}
+
 					hash := sha256.Sum256(data)
 					hashStr := hex.EncodeToString(hash[:])
 					req.EvidenceSHA256 = hashStr
-					req.EvidenceFileName = fileHeader.Filename
+					req.EvidenceFileName = filepath.Base(fileHeader.Filename)
 
 					// Save file securely to uploads/evidence/
-					ext := filepath.Ext(fileHeader.Filename)
 					safeName := fmt.Sprintf("%s_%d%s", hashStr[:16], time.Now().Unix(), ext)
 					uploadDir := "/www/wwwroot/pandu/backend/uploads/evidence"
-					_ = os.MkdirAll(uploadDir, 0755)
+					_ = os.MkdirAll(uploadDir, 0700)
 					destPath := filepath.Join(uploadDir, safeName)
-					if err := os.WriteFile(destPath, data, 0644); err == nil {
+					if err := os.WriteFile(destPath, data, 0600); err == nil {
 						req.EvidenceFilePath = destPath
 					}
 				}
@@ -495,10 +580,19 @@ func handleReportBlacklist(c *fiber.Ctx) error {
 		}
 	}
 
-	if strings.TrimSpace(req.Identifier) == "" {
+	req.Identifier = strings.TrimSpace(req.Identifier)
+	if req.Identifier == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Nomor telepon, rekening, tautan, atau email target wajib diisi",
+		})
+	}
+
+	// Validate input lengths to prevent database flooding
+	if len(req.Identifier) > 256 || len(req.Chronology) > 10000 || len(req.ReportedBank) > 64 || len(req.AccountHolder) > 128 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Panjang data laporan melampaui batas yang diizinkan",
 		})
 	}
 
@@ -667,7 +761,7 @@ func handleAdminLogin(c *fiber.Ctx) error {
 		Value:    token,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HTTPOnly: true,
-		Secure:   false,
+		Secure:   true,
 		SameSite: "Lax",
 	})
 
@@ -795,12 +889,25 @@ func handleAdminGetEvidence(c *fiber.Ctx) error {
 		})
 	}
 
-	if _, err := os.Stat(rep.EvidenceFilePath); os.IsNotExist(err) {
+	cleanPath := filepath.Clean(rep.EvidenceFilePath)
+	const allowedEvidenceBase = "/www/wwwroot/pandu/backend/uploads/evidence"
+	if !strings.HasPrefix(cleanPath, filepath.Clean(allowedEvidenceBase)) {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"success": false,
+			"message": "Akses path berkas tidak diizinkan",
+		})
+	}
+
+	if _, err := os.Stat(cleanPath); os.IsNotExist(err) {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"success": false,
 			"message": "Berkas bukti fisik tidak ditemukan pada server",
 		})
 	}
 
-	return c.SendFile(rep.EvidenceFilePath)
+	// Security headers to prevent XSS / content sniffing
+	c.Set("Content-Security-Policy", "default-src 'none'")
+	c.Set("X-Content-Type-Options", "nosniff")
+	c.Set("X-Frame-Options", "DENY")
+	return c.SendFile(cleanPath)
 }

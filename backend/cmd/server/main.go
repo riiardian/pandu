@@ -22,12 +22,15 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		AppName:               "PANDU — Digital Deception Defense API v1.0",
-		ReadTimeout:           15 * time.Second,
-		WriteTimeout:          15 * time.Second,
-		IdleTimeout:           60 * time.Second,
-		BodyLimit:             6 * 1024 * 1024, // 5 MB artifact plus multipart overhead
-		DisableStartupMessage: false,
+		AppName:                 "PANDU — Digital Deception Defense API v1.0",
+		ReadTimeout:             15 * time.Second,
+		WriteTimeout:            15 * time.Second,
+		IdleTimeout:             60 * time.Second,
+		BodyLimit:               15 * 1024 * 1024, // 15 MB for evidence artifact & multipart overhead
+		DisableStartupMessage:   false,
+		EnableTrustedProxyCheck: true,
+		TrustedProxies:          []string{"127.0.0.1", "::1"},
+		ProxyHeader:             fiber.HeaderXForwardedFor,
 	})
 
 	// 1. Recover Panic

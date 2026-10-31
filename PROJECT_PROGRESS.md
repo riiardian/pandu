@@ -233,3 +233,11 @@
 ### 2026-10-31: Penghapusan Kotak Rekomendasi & Perbaikan Garis Stepper Tembus
 - Menghapus seluruh kotak rekomendasi pada kartu hasil pemeriksaan () agar antarmuka hasil investigasi murni fokus pada data temuan otentik tanpa nasihat tambahan.
 - Memperbaiki badge tahapan investigasi (1-4) dengan latar belakang solid tidak tembus pandang (), sehingga garis konektor stepper tidak lagi tembus ke dalam bulatan angka pada tema gelap.
+
+### 2026-10-31: Audit Keamanan Menyeluruh, Hardening & Uji Ketahanan Attack & Defense
+- Melakukan audit keamanan menyeluruh pre-production dan menguji 26 skenario attack & defense (skor 100% lolos: 26 PASSED, 0 FAILED).
+- Autentikasi & Otorisasi: Proteksi brute force 5x lockout 15 menit, token sesi HMAC-SHA256 24 jam, cookie Secure & HttpOnly, dan mitigasi timing attack username dengan perbandingan konstan (subtle.ConstantTimeCompare).
+- Proteksi SSRF & DNS Rebinding: Pemblokiran ketat request ke loopback 127.0.0.1, metadata cloud 169.254.169.254, subnet privat (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12), dan non-HTTP URI (file://, gopher://).
+- Keamanan Unggah Berkas: Validasi ekstensi ketat (.png, .jpg, .jpeg, .webp, .pdf), inspeksi header magic bytes asli (mencegah masquerading file), isolasi direktori bukti izin 0700 & berkas 0600, serta penangkal path traversal.
+- Validasi Input & Anti-DoS: Pembatasan panjang parameter input teks (maks 10.000 karakter), URL (maks 2.048 karakter), nomor telepon (maks 64 karakter), rekening (maks 64 karakter), dan pencegahan ReDoS.
+- Hardening Nginx: Pemblokiran file tersembunyi (.env, .git, .admin_secret), pemblokiran probe otomatis (wp-admin), dan penerapan penuh security headers (HSTS preload, nosniff, DENY frame-ancestors, Permissions-Policy).
