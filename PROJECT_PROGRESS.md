@@ -246,3 +246,9 @@
 - Mengubah tema panel admin verifikasi laporan () menjadi tema terang (Light Mode) modern, bersih, dan profesional.
 - Layar Login: Kartu putih solid mengambang dengan border halus, tipografi slate gelap kontras tinggi, dan tombol aksi biru.
 - Dasbor Verifikasi: Latar belakang canvas off-white (#f8fafc), header putih bersih dengan navigasi minimalis, 4 kartu ringkasan metrik bernomor tebal dengan indikator titik semantik (amber, emerald, rose), tab filter bergaris bawah, kartu antrean laporan putih dengan batas pemisah rapi, modal peninjauan catatan, dan penampil bukti lampiran transparan.
+
+### 2026-10-31: Rombak Total UI Panel Admin ke Desain Natural & Human-Designed
+- Menghapus 4 kotak metrik 2x2 yang repetitif dan bulatan warna lalu lintas (merah, hijau, kuning) yang menjadi ciri khas AI-slop boilerplate.
+- Menggabungkan statistik laporan langsung ke dalam filter pills yang ringkas dan hemat ruang: Semua (5), Menunggu (4), Terverifikasi (1), Ditolak (0).
+- Merapikan kartu laporan dengan hierarki manusiawi: format nomor telepon yang nyaman dibaca (0812-9999-0000), tag status natural tanpa bulatan dot, waktu relatif (Hari ini, 14:05), kotak lampiran bukti dengan thumbnail gambar dan tombol 'Periksa Bukti'.
+- Tombol aksi ergonomis untuk mobile: tombol 'Tolak' dan 'Verifikasi' dengan touch target penuh yang nyaman dijangkau jempol satu tangan.

@@ -11,6 +11,10 @@ import {
   RefreshCw,
   LogOut,
   AlertCircle,
+  X,
+  ShieldCheck,
+  Ban,
+  Clock,
 } from "lucide-react";
 import PanduLogo from "@/components/PanduLogo";
 
@@ -38,6 +42,36 @@ interface ReportStats {
   pending_reports: number;
   verified_reports: number;
   rejected_reports: number;
+}
+
+function formatDisplayDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const parts = dateStr.split(" ");
+    if (parts.length === 2) {
+      const datePart = parts[0];
+      const timePart = parts[1].slice(0, 5); // HH:MM
+      const today = new Date().toISOString().slice(0, 10);
+      if (datePart === today) {
+        return `Hari ini, ${timePart}`;
+      }
+      return `${datePart}, ${timePart}`;
+    }
+  } catch {}
+  return dateStr;
+}
+
+function formatTarget(identifier: string, type: string): string {
+  if (!identifier) return "";
+  if (type === "phone" && identifier.startsWith("08") && identifier.length >= 10) {
+    if (identifier.length === 11) {
+      return `${identifier.slice(0, 4)}-${identifier.slice(4, 7)}-${identifier.slice(7)}`;
+    }
+    if (identifier.length >= 12) {
+      return `${identifier.slice(0, 4)}-${identifier.slice(4, 8)}-${identifier.slice(8)}`;
+    }
+  }
+  return identifier;
 }
 
 export default function AdminVerificationPage() {
@@ -250,11 +284,11 @@ export default function AdminVerificationPage() {
     );
   }, [reports, searchQuery]);
 
-  // LOGIN SCREEN (Clean, Modern Light Theme)
+  // LOGIN SCREEN (Natural, Clean Light Theme)
   if (!token) {
     return (
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex items-center justify-center p-4 selection:bg-blue-100">
-        <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 space-y-6 text-left shadow-sm">
+        <div className="w-full max-w-sm rounded-2xl border border-slate-200/80 bg-white p-7 sm:p-8 space-y-6 text-left shadow-sm">
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 pb-1">
               <PanduLogo className="h-4.5 w-auto text-slate-900" />
@@ -309,7 +343,7 @@ export default function AdminVerificationPage() {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full rounded-lg bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer text-center shadow-sm"
+              className="w-full rounded-lg bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer text-center shadow-xs"
             >
               {loginLoading ? "Memverifikasi..." : "Masuk"}
             </button>
@@ -319,12 +353,12 @@ export default function AdminVerificationPage() {
     );
   }
 
-  // DASHBOARD SCREEN (Clean, Modern Light Theme)
+  // DASHBOARD SCREEN (Natural, Human-Designed Mobile-First Layout)
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans selection:bg-blue-100">
       {/* Top Bar */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <PanduLogo className="h-4.5 w-auto text-slate-900" />
             <span className="text-sm font-bold text-slate-900 tracking-tight">
@@ -333,7 +367,7 @@ export default function AdminVerificationPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-medium text-slate-600 hidden sm:inline">
+            <span className="text-xs font-mono font-medium text-slate-500 hidden sm:inline">
               admin_rio
             </span>
 
@@ -360,11 +394,11 @@ export default function AdminVerificationPage() {
         </div>
       </header>
 
-      {/* Main Body */}
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 space-y-6 text-left">
+      {/* Main Container */}
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5 sm:px-6 space-y-4 text-left">
         {/* Feedback Alert */}
         {actionFeedback && (
-          <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-blue-900 flex items-center justify-between">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-blue-900 flex items-center justify-between shadow-xs">
             <span className="font-medium">{actionFeedback}</span>
             <button
               type="button"
@@ -376,50 +410,10 @@ export default function AdminVerificationPage() {
           </div>
         )}
 
-        {/* 1. Clean Neutral Metric Strip */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1 shadow-sm">
-            <span className="text-xs text-slate-500 font-medium block">Total Laporan</span>
-            <div className="text-2xl font-bold font-mono text-slate-900">
-              {stats ? stats.total_reports : "0"}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1 shadow-sm">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-amber-500 inline-block" />
-              <span className="text-xs text-slate-500 font-medium">Menunggu</span>
-            </div>
-            <div className="text-2xl font-bold font-mono text-amber-600">
-              {stats ? stats.pending_reports : "0"}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1 shadow-sm">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-              <span className="text-xs text-slate-500 font-medium">Terverifikasi</span>
-            </div>
-            <div className="text-2xl font-bold font-mono text-emerald-600">
-              {stats ? stats.verified_reports : "0"}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1 shadow-sm">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-rose-500 inline-block" />
-              <span className="text-xs text-slate-500 font-medium">Ditolak</span>
-            </div>
-            <div className="text-2xl font-bold font-mono text-rose-600">
-              {stats ? stats.rejected_reports : "0"}
-            </div>
-          </div>
-        </section>
-
-        {/* 2. Navigation Tabs & Search */}
-        <section className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-slate-200 pb-2">
-          {/* Underline Tabs */}
-          <div className="flex items-center gap-6 text-xs sm:text-sm">
+        {/* 1. Natural Filter Bar & Search Row (No 2x2 bulky boxes, No traffic-light dots) */}
+        <section className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+          {/* Segmented Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
             {[
               { id: "all", label: "Semua", count: stats?.total_reports },
               { id: "pending", label: "Menunggu", count: stats?.pending_reports },
@@ -432,16 +426,22 @@ export default function AdminVerificationPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setStatusFilter(tab.id)}
-                  className={`pb-2.5 transition-colors cursor-pointer border-b-2 -mb-px flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                     active
-                      ? "border-blue-600 text-blue-600 font-semibold"
-                      : "border-transparent text-slate-500 hover:text-slate-900"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-white border border-slate-200/90 text-slate-600 hover:text-slate-900 hover:border-slate-300"
                   }`}
                 >
                   <span>{tab.label}</span>
-                  {tab.count !== undefined && tab.count > 0 && (
-                    <span className="text-[11px] font-mono text-slate-400">
-                      ({tab.count})
+                  {tab.count !== undefined && (
+                    <span
+                      className={`text-[11px] font-mono px-1.5 py-0.2 rounded-full ${
+                        active
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {tab.count}
                     </span>
                   )}
                 </button>
@@ -450,44 +450,72 @@ export default function AdminVerificationPage() {
           </div>
 
           {/* Search Box */}
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+          <div className="relative w-full sm:w-64 shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari target, nomor, ID..."
-              className="w-full rounded-lg border border-slate-300 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-colors"
+              className="w-full rounded-full border border-slate-200 bg-white pl-8.5 pr-8 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-colors shadow-xs"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </section>
 
-        {/* 3. Report Items */}
-        <section className="space-y-3.5">
+        {/* 2. Natural Report Items Queue */}
+        <section className="space-y-3 pt-1">
           {loading && reports.length === 0 ? (
-            <div className="p-10 text-center text-xs font-mono text-slate-500 rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="p-10 text-center text-xs font-mono text-slate-500 rounded-2xl border border-slate-200 bg-white shadow-xs">
               Memuat data laporan...
             </div>
           ) : filteredReports.length === 0 ? (
-            <div className="p-10 text-center text-xs text-slate-500 rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="p-10 text-center text-xs text-slate-500 rounded-2xl border border-slate-200 bg-white shadow-xs">
               Tidak ada laporan yang sesuai.
             </div>
           ) : (
             filteredReports.map((report) => {
               const isPending = report.status === "pending";
               const isVerified = report.status === "verified";
+              const isImage = report.evidence_file_name?.match(/\.(jpg|jpeg|png|webp)$/i);
 
               return (
                 <div
                   key={report.id}
-                  className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 space-y-3.5 shadow-sm"
+                  className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 space-y-3.5 shadow-xs transition-shadow hover:shadow-sm"
                 >
-                  {/* Row 1: ID, Time, Status */}
+                  {/* Row 1: Status Tag, Time, ID */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                    {/* Natural Status Tag (No colored dots) */}
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-blue-600">
-                        {report.id}
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${
+                          isPending
+                            ? "bg-amber-50 text-amber-800 border border-amber-200/70"
+                            : isVerified
+                            ? "bg-emerald-50 text-emerald-800 border border-emerald-200/70"
+                            : "bg-slate-100 text-slate-600 border border-slate-200"
+                        }`}
+                      >
+                        {isPending ? "Menunggu Verifikasi" : isVerified ? "Terverifikasi" : "Ditolak"}
                       </span>
+
+                      <span className="text-xs text-slate-500">
+                        {formatDisplayDate(report.created_at)}
+                      </span>
+                    </div>
+
+                    {/* ID */}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                      <span>{report.id}</span>
                       <button
                         type="button"
                         onClick={() => copyText(report.id, `id-${report.id}`)}
@@ -500,46 +528,14 @@ export default function AdminVerificationPage() {
                           <Copy className="h-3 w-3" />
                         )}
                       </button>
-                      <span className="text-slate-300 text-xs">•</span>
-                      <span className="text-xs font-mono text-slate-500">
-                        {report.created_at}
-                      </span>
-                    </div>
-
-                    {/* Status Badge */}
-                    <div className="flex items-center gap-1.5 text-xs font-semibold">
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          isPending
-                            ? "bg-amber-500"
-                            : isVerified
-                            ? "bg-emerald-500"
-                            : "bg-rose-500"
-                        }`}
-                      />
-                      <span
-                        className={
-                          isPending
-                            ? "text-amber-700"
-                            : isVerified
-                            ? "text-emerald-700"
-                            : "text-rose-700"
-                        }
-                      >
-                        {isPending
-                          ? "Menunggu"
-                          : isVerified
-                          ? "Terverifikasi"
-                          : "Ditolak"}
-                      </span>
                     </div>
                   </div>
 
-                  {/* Row 2: Target Info & Category */}
+                  {/* Row 2: Target & Classification */}
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-slate-900 break-all">
-                        {report.identifier}
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-mono text-base sm:text-lg font-bold text-slate-900 tracking-tight break-all">
+                        {formatTarget(report.identifier, report.type)}
                       </span>
                       <button
                         type="button"
@@ -548,74 +544,87 @@ export default function AdminVerificationPage() {
                         title="Salin Target"
                       >
                         {copiedId === `target-${report.id}` ? (
-                          <Check className="h-3 w-3 text-emerald-600" />
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
                         ) : (
-                          <Copy className="h-3 w-3" />
+                          <Copy className="h-3.5 w-3.5" />
                         )}
                       </button>
                     </div>
 
-                    <div className="text-xs text-slate-600 flex flex-wrap items-center gap-2">
-                      <span>Tipe: <span className="font-medium text-slate-800">{report.type}</span></span>
+                    <div className="text-xs text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
+                        {report.category}
+                      </span>
                       {report.reported_bank && (
-                        <>
-                          <span className="text-slate-300">•</span>
-                          <span className="text-blue-700 font-medium">
-                            Bank: {report.reported_bank}
-                            {report.account_holder ? ` (a/n ${report.account_holder})` : ""}
-                          </span>
-                        </>
+                        <span className="text-blue-700 font-medium">
+                          {report.reported_bank}
+                          {report.account_holder ? ` • a/n ${report.account_holder}` : ""}
+                        </span>
                       )}
-                      <span className="text-slate-300">•</span>
-                      <span>Modus: <span className="font-medium text-slate-800">{report.category}</span></span>
                     </div>
                   </div>
 
-                  {/* Row 3: Chronology */}
+                  {/* Row 3: Chronology (Natural Quote Block) */}
                   {report.chronology && (
-                    <div className="text-xs text-slate-700 leading-relaxed bg-slate-50 border border-slate-100 p-3 rounded-lg">
-                      <span className="text-slate-500 font-mono text-[11px] block font-medium pb-0.5">
-                        Kronologi:
+                    <div className="text-xs text-slate-700 leading-relaxed bg-[#f8fafc] border border-slate-200/60 p-3 rounded-xl">
+                      <span className="text-slate-500 font-medium block text-[11px] pb-0.5">
+                        Kronologi Korban:
                       </span>
                       <p className="whitespace-pre-wrap">{report.chronology}</p>
                     </div>
                   )}
 
-                  {/* Row 4: Evidence File */}
+                  {/* Row 4: Evidence Preview / Thumbnail */}
                   {report.evidence_file_name && (
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs">
-                      <div className="flex items-center gap-1.5 text-slate-600 min-w-0">
-                        <FileText className="h-3.5 w-3.5 text-slate-500 shrink-0" />
-                        <span className="font-mono font-medium truncate text-slate-800">{report.evidence_file_name}</span>
-                        {report.evidence_sha256 && (
-                          <span className="font-mono text-[10px] text-slate-400 hidden md:inline">
-                            ({report.evidence_sha256.slice(0, 16)}...)
-                          </span>
+                    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-slate-200/70 bg-[#f8fafc] text-xs">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {isImage ? (
+                          <img
+                            src={`/api/v1/admin/evidence/${report.id}`}
+                            alt="Bukti Lampiran"
+                            onClick={() => setPreviewEvidence(report)}
+                            className="h-12 w-12 rounded-lg object-cover border border-slate-200 bg-white shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 rounded-lg border border-slate-200 bg-white flex items-center justify-center shrink-0">
+                            <FileText className="h-6 w-6 text-slate-400" />
+                          </div>
                         )}
+
+                        <div className="min-w-0">
+                          <span className="font-medium text-slate-900 block truncate">
+                            {report.evidence_file_name}
+                          </span>
+                          {report.evidence_sha256 && (
+                            <span className="font-mono text-[10px] text-slate-500 block truncate">
+                              SHA: {report.evidence_sha256.slice(0, 16)}...
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => setPreviewEvidence(report)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-pointer shrink-0 shadow-xs"
                       >
-                        <Eye className="h-3 w-3" />
-                        <span>Lihat Lampiran</span>
+                        <Eye className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Periksa Bukti</span>
                       </button>
                     </div>
                   )}
 
                   {/* Row 5: Audit Review Notes (if already verified or rejected) */}
                   {report.reviewed_at && (
-                    <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                      <span>Direview: {report.reviewed_at}</span>
+                    <div className="text-[11px] text-slate-500 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                      <span>Direview: {formatDisplayDate(report.reviewed_at)}</span>
                       {report.review_notes && <span>Catatan: {report.review_notes}</span>}
                     </div>
                   )}
 
-                  {/* Row 6: Action Buttons (Only for Pending) */}
+                  {/* Row 6: Natural Mobile Ergonomic Action Buttons (Only for Pending) */}
                   {isPending && (
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-100 sm:flex sm:justify-end">
                       <button
                         type="button"
                         onClick={() => {
@@ -623,7 +632,7 @@ export default function AdminVerificationPage() {
                           setReviewAction("reject");
                           setReviewNotes("");
                         }}
-                        className="px-3.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:text-rose-600 hover:border-rose-300 transition-colors cursor-pointer shadow-xs"
+                        className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 transition-colors cursor-pointer text-center shadow-xs"
                       >
                         Tolak
                       </button>
@@ -635,7 +644,7 @@ export default function AdminVerificationPage() {
                           setReviewAction("verify");
                           setReviewNotes("Bukti otentik valid.");
                         }}
-                        className="px-3.5 py-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors cursor-pointer shadow-sm"
+                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors cursor-pointer text-center shadow-xs"
                       >
                         Verifikasi
                       </button>
@@ -648,13 +657,13 @@ export default function AdminVerificationPage() {
         </section>
       </main>
 
-      {/* MODAL: VERIFY / REJECT DIALOG (Clean Light Theme) */}
+      {/* MODAL: VERIFY / REJECT DIALOG */}
       {selectedReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 space-y-4 text-left shadow-2xl">
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-slate-900">
-                {reviewAction === "verify" ? "Verifikasi Laporan" : "Tolak Laporan"}
+                {reviewAction === "verify" ? "Konfirmasi Verifikasi Laporan" : "Tolak Laporan"}
               </h3>
               <p className="text-xs text-slate-500 font-mono">
                 {selectedReport.id} • {selectedReport.identifier}
@@ -663,14 +672,14 @@ export default function AdminVerificationPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-slate-700">
-                Catatan (Opsional)
+                Catatan Pemeriksaan (Opsional)
               </label>
               <textarea
                 rows={2}
                 value={reviewNotes}
                 onChange={(e) => setReviewNotes(e.target.value)}
                 placeholder="Tuliskan catatan pemeriksaan..."
-                className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
               />
             </div>
 
@@ -679,7 +688,7 @@ export default function AdminVerificationPage() {
                 type="button"
                 disabled={actionLoading}
                 onClick={() => setSelectedReport(null)}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer shadow-xs"
+                className="px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer shadow-xs"
               >
                 Batal
               </button>
@@ -688,20 +697,20 @@ export default function AdminVerificationPage() {
                 type="button"
                 disabled={actionLoading}
                 onClick={handleExecuteAction}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white cursor-pointer transition-colors shadow-sm ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer transition-colors shadow-xs ${
                   reviewAction === "verify"
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-rose-600 hover:bg-rose-700"
                 }`}
               >
-                {actionLoading ? "Memproses..." : reviewAction === "verify" ? "Konfirmasi Verifikasi" : "Konfirmasi Tolak"}
+                {actionLoading ? "Memproses..." : reviewAction === "verify" ? "Verifikasi & Sinkronkan" : "Tolak Laporan"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: EVIDENCE PREVIEW (Clean Light Theme) */}
+      {/* MODAL: EVIDENCE PREVIEW */}
       {previewEvidence && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-xl max-h-[85vh] flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xl text-left">
@@ -728,7 +737,7 @@ export default function AdminVerificationPage() {
                 <img
                   src={`/api/v1/admin/evidence/${previewEvidence.id}`}
                   alt="Bukti Laporan"
-                  className="max-h-[60vh] w-auto rounded-lg object-contain border border-slate-300 shadow-sm bg-white"
+                  className="max-h-[60vh] w-auto rounded-xl object-contain border border-slate-300 shadow-sm bg-white"
                 />
               ) : (
                 <div className="text-center space-y-2 p-6">
@@ -740,9 +749,9 @@ export default function AdminVerificationPage() {
                     href={`/api/v1/admin/evidence/${previewEvidence.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700"
                   >
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3.5 w-3.5" />
                     <span>Buka Berkas</span>
                   </a>
                 </div>
@@ -751,7 +760,7 @@ export default function AdminVerificationPage() {
 
             <div className="border-t border-slate-200 bg-slate-50 px-4 py-2.5 flex items-center justify-between text-[11px] font-mono text-slate-500">
               <span className="truncate pr-2">
-                SHA-256: {previewEvidence.evidence_sha256}
+                SHA: {previewEvidence.evidence_sha256}
               </span>
               <a
                 href={`/api/v1/admin/evidence/${previewEvidence.id}`}
