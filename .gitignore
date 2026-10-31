@@ -27,6 +27,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.admin_secret
+backend/.admin_secret
+backend/uploads/
+uploads/
 
 # OS
 .DS_Store
