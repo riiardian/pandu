@@ -830,7 +830,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     className={`h-8 w-8 flex items-center justify-center rounded-full font-mono text-xs font-bold select-none ${
                       isReached
                         ? "bg-blue-600 text-white"
-                        : "bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-white/10"
+                        : "bg-white dark:bg-[#121316] text-slate-400 dark:text-slate-500 border border-slate-300 dark:border-white/20"
                     }`}
                   >
                     {sidx + 1}
@@ -988,13 +988,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     );
                   })}
                 </div>
-
-                {result.recommendations && result.recommendations.length > 0 && (
-                  <div className="recommendation-callout rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed mt-2">
-                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
-                    {result.recommendations[0]}
-                  </div>
-                )}
               </div>
             ) : (
               /* Case: Pesan Chat atau Teks */
@@ -1033,13 +1026,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         </li>
                       ))}
                     </ul>
-                  </div>
-                )}
-
-                {(result.ai_agent_analysis?.mitigation_tip || (result.recommendations && result.recommendations.length > 0)) && (
-                  <div className="recommendation-callout rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
-                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
-                    {result.ai_agent_analysis?.mitigation_tip || result.recommendations[0]}
                   </div>
                 )}
               </div>

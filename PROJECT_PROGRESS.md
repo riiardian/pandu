@@ -229,3 +229,7 @@
 - Menghapus kartu ganda redundant "Analisis Intelijen Ancaman" dan menyatukan seluruh visualisasi temuan investigasi ke dalam kartu tunggal "Hasil Pemeriksaan".
 - Menghapus label "Percakapan Normal" / "Percakapan Wajar" pada header kartu analisis pesan chat.
 - Mengoptimasi kontras kotak rekomendasi di tema terang (Light Mode) menggunakan palet ice blue crisp (#f0f7ff, border #bae6fd, teks navy #0f172a / #0284c7) dengan rasio kontras tinggi bebas teks samar.
+
+### 2026-10-31: Penghapusan Kotak Rekomendasi & Perbaikan Garis Stepper Tembus
+- Menghapus seluruh kotak rekomendasi pada kartu hasil pemeriksaan () agar antarmuka hasil investigasi murni fokus pada data temuan otentik tanpa nasihat tambahan.
+- Memperbaiki badge tahapan investigasi (1-4) dengan latar belakang solid tidak tembus pandang (), sehingga garis konektor stepper tidak lagi tembus ke dalam bulatan angka pada tema gelap.
