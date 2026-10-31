@@ -126,14 +126,14 @@ cd pandu
 Buat basis data baru di PostgreSQL:
 ```sql
 CREATE DATABASE pandu_db;
-CREATE USER pandu_user WITH ENCRYPTED PASSWORD 'pandu_secure_pass_2026';
+CREATE USER pandu_user WITH ENCRYPTED PASSWORD 'your_password_here';
 GRANT ALL PRIVILEGES ON DATABASE pandu_db TO pandu_user;
 ```
 
 ### 3. Menjalankan Backend (Go Fiber)
 ```bash
 cd backend
-export DATABASE_URL="postgres://pandu_user:pandu_secure_pass_2026@localhost:5432/pandu_db?sslmode=disable"
+export DATABASE_URL="postgres://pandu_user:your_password_here@localhost:5432/pandu_db?sslmode=disable"
 go run cmd/server/main.go
 # Backend aktif pada http://127.0.0.1:8082
 ```

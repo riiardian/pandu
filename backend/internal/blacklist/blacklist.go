@@ -136,7 +136,7 @@ func InitRegistry(dbURL string) *PostgresRegistry {
 			dbURL = os.Getenv("DATABASE_URL")
 		}
 		if dbURL == "" {
-			dbURL = "postgres://pandu_user:pandu_secure_pass_2026@127.0.0.1:5432/pandu_db?sslmode=disable"
+			dbURL = "postgres://localhost:5432/pandu_db?sslmode=disable"
 		}
 
 		db, err := sql.Open("postgres", dbURL)
@@ -148,11 +148,12 @@ func InitRegistry(dbURL string) *PostgresRegistry {
 		db.SetMaxIdleConns(10)
 		db.SetConnMaxLifetime(5 * time.Minute)
 
+		globalRegistry = &PostgresRegistry{db: db}
 		if err := db.Ping(); err != nil {
-			log.Fatalf("Fatal: Cannot ping PostgreSQL pandu_db: %v", err)
+			log.Printf("Warning: Cannot ping PostgreSQL pandu_db: %v (running in degraded registry mode)", err)
+			return
 		}
 
-		globalRegistry = &PostgresRegistry{db: db}
 		globalRegistry.ensureSchema()
 		log.Println("PANDU PostgreSQL Threat Registry successfully initialized")
 	})
@@ -198,6 +199,9 @@ func (r *PostgresRegistry) ensureSchema() {
 
 // CheckBlacklistByType performs exact, type-scoped matching.
 func (r *PostgresRegistry) CheckBlacklistByType(threatType ThreatType, query string) (*BlacklistEntry, bool) {
+	if r == nil || r.db == nil {
+		return nil, false
+	}
 	clean := normalizeKey(query)
 	if clean == "" {
 		return nil, false
