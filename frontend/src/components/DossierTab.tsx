@@ -8,6 +8,8 @@ import {
   Check,
   ExternalLink,
   ChevronDown,
+  Upload,
+  FileCheck,
 } from "lucide-react";
 
 interface DossierTabProps {
@@ -93,6 +95,11 @@ const SCAM_CATEGORIES = [
     labelId: "Investasi Bodong / Trading Palsu",
     labelEn: "Fake Investment / Fraudulent Trading",
   },
+  {
+    id: "masalah_lain",
+    labelId: "Lainnya / Masalah Lain",
+    labelEn: "Other / Other Issues",
+  },
 ];
 
 export default function DossierTab({ initialData }: DossierTabProps) {
@@ -105,6 +112,10 @@ export default function DossierTab({ initialData }: DossierTabProps) {
   const [reportCategory, setReportCategory] = useState("loker_freelance");
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+  const [legalConfirmed, setLegalConfirmed] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [reportBank, setReportBank] = useState("");
   const [reportAccountHolder, setReportAccountHolder] = useState("");
@@ -160,21 +171,33 @@ export default function DossierTab({ initialData }: DossierTabProps) {
     e.preventDefault();
     if (!reportTarget.trim()) return;
 
+    if (!evidenceFile) {
+      alert(lang === "en" ? "Evidence file (screenshot/receipt) is required." : "Wajib melampirkan berkas bukti (screenshot chat atau bukti transaksi).");
+      return;
+    }
+    if (!legalConfirmed) {
+      alert(lang === "en" ? "Please check the legal declaration statement." : "Wajib mencentang pernyataan pertanggungjawaban hukum.");
+      return;
+    }
+
     setReportSubmitting(true);
     setReportSuccess(null);
 
     try {
+      const formData = new FormData();
+      formData.append("type", reportType);
+      formData.append("identifier", reportTarget.trim());
+      formData.append("category", reportCategory);
+      formData.append("reported_bank", reportBank.trim());
+      formData.append("account_holder", reportAccountHolder.trim());
+      formData.append("chronology", reportChronology.trim());
+      if (evidenceFile) {
+        formData.append("evidence", evidenceFile);
+      }
+
       const res = await fetch("/api/v1/blacklist/report", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: reportType,
-          identifier: reportTarget.trim(),
-          category: reportCategory,
-          reported_bank: reportBank.trim(),
-          account_holder: reportAccountHolder.trim(),
-          chronology: reportChronology.trim(),
-        }),
+        body: formData,
       });
 
       const json = await res.json();
@@ -184,6 +207,9 @@ export default function DossierTab({ initialData }: DossierTabProps) {
         setReportBank("");
         setReportAccountHolder("");
         setReportChronology("");
+        setEvidenceFile(null);
+        setLegalConfirmed(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     } catch (e) {
       console.error("Gagal mengirim laporan", e);
@@ -367,7 +393,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
               {/* Custom Popover Dropdown Menu */}
               {categoryDropdownOpen && (
-                <div className="absolute z-30 left-0 right-0 mt-1.5 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#181a20] shadow-xl p-1.5 space-y-0.5 text-xs sm:text-sm animate-in fade-in-50 zoom-in-95 duration-100">
+                <div className="absolute z-30 left-0 right-0 mt-1.5 max-h-60 overflow-y-auto rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#181a20] shadow-xl p-1.5 space-y-0.5 text-xs sm:text-sm animate-in fade-in-50 zoom-in-95 duration-100">
                   {SCAM_CATEGORIES.map((cat) => {
                     const isSelected = reportCategory === cat.id;
                     const label = lang === "en" ? cat.labelEn : cat.labelId;
@@ -434,10 +460,84 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               />
             </div>
 
+            {/* Lampiran Bukti Otentik (Wajib) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {lang === "en" ? "Evidence File (Mandatory)" : "Lampiran Bukti Percakapan / Transfer (Wajib)"}
+                </label>
+                <span className="text-[10px] text-slate-500">Maks. 10 MB (PNG, JPG, PDF)</span>
+              </div>
+
+              {!evidenceFile ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full rounded-lg border border-dashed border-slate-300 dark:border-white/20 bg-slate-50/60 dark:bg-black/20 p-3.5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/20 dark:hover:bg-blue-600/5 transition-all"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setEvidenceFile(e.target.files[0]);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <div className="flex flex-col items-center gap-1">
+                    <Upload className="h-4 w-4 text-slate-400" />
+                    <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                      {lang === "en" ? "Upload chat screenshot or bank transfer receipt" : "Unggah screenshot chat atau bukti transfer"}
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      {lang === "en" ? "Full screenshot showing date, time, and sender identity" : "Tangkapan layar utuh (memuat tanggal, jam, dan nomor/rekening)"}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-slate-900 dark:text-white truncate">{evidenceFile.name}</p>
+                      <span className="text-[10px] text-slate-500 font-mono">{(evidenceFile.size / 1024).toFixed(1)} KB</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEvidenceFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="text-xs text-rose-500 hover:underline px-2 py-1 cursor-pointer font-medium"
+                  >
+                    {lang === "en" ? "Change" : "Ganti"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Pakta Integritas / Pertanggungjawaban Hukum (Anti-Fitnah) */}
+            <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                required
+                checked={legalConfirmed}
+                onChange={(e) => setLegalConfirmed(e.target.checked)}
+                className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 dark:border-white/20 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+              <span className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                {lang === "en"
+                  ? "I declare that this report is true, supported by authentic evidence, and I am legally accountable under applicable cyber laws against false reports."
+                  : "Saya menyatakan bahwa laporan ini benar, didukung bukti otentik, dan siap bertanggung jawab secara hukum sesuai UU ITE apabila laporan ini palsu atau fitnah."}
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={reportSubmitting}
-              className="w-full rounded-lg bg-blue-600 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+              disabled={reportSubmitting || !reportTarget.trim() || !evidenceFile || !legalConfirmed}
+              className="w-full rounded-lg bg-blue-600 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               {reportSubmitting
                 ? (lang === "en" ? "Saving..." : "Menyimpan...")

@@ -33,6 +33,7 @@ const (
 	CatImpersonasi     ThreatCategory = "impersonasi"
 	CatPinjolIlegal    ThreatCategory = "pinjol_ilegal"
 	CatInvestasiBodong ThreatCategory = "investasi_bodong"
+	CatMasalahLain     ThreatCategory = "masalah_lain"
 )
 
 // BlacklistEntry represents a tracked malicious entity
@@ -55,13 +56,15 @@ type BlacklistEntry struct {
 
 // ReportRequest is the payload to report a new scammer entity
 type ReportRequest struct {
-	Type          ThreatType     `json:"type"`
-	Identifier    string         `json:"identifier"`
-	Category      ThreatCategory `json:"category"`
-	ReportedBank  string         `json:"reported_bank"`
-	AccountHolder string         `json:"account_holder"`
-	Chronology    string         `json:"chronology"`
-	AmountLost    int64          `json:"amount_lost"`
+	Type             ThreatType     `json:"type"`
+	Identifier       string         `json:"identifier"`
+	Category         ThreatCategory `json:"category"`
+	ReportedBank     string         `json:"reported_bank"`
+	AccountHolder    string         `json:"account_holder"`
+	Chronology       string         `json:"chronology"`
+	AmountLost       int64          `json:"amount_lost"`
+	EvidenceSHA256   string         `json:"evidence_sha256"`
+	EvidenceFileName string         `json:"evidence_file_name"`
 }
 
 // BlacklistStats gives summary statistics

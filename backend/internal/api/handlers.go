@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"strings"
@@ -428,22 +430,53 @@ func handleCheckBlacklist(c *fiber.Ctx) error {
 
 func handleReportBlacklist(c *fiber.Ctx) error {
 	var req blacklist.ReportRequest
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
-			"message": "Data laporan tidak valid",
-		})
+	contentType := strings.ToLower(c.Get("Content-Type"))
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		req.Type = blacklist.ThreatType(c.FormValue("type"))
+		req.Identifier = c.FormValue("identifier")
+		req.Category = blacklist.ThreatCategory(c.FormValue("category"))
+		req.ReportedBank = c.FormValue("reported_bank")
+		req.AccountHolder = c.FormValue("account_holder")
+		req.Chronology = c.FormValue("chronology")
+
+		fileHeader, err := c.FormFile("evidence")
+		if err == nil && fileHeader != nil {
+			if fileHeader.Size > 10*1024*1024 {
+				return c.Status(fiber.StatusRequestEntityTooLarge).JSON(fiber.Map{
+					"success": false,
+					"message": "Ukuran berkas bukti maksimal 10 MB",
+				})
+			}
+			f, err := fileHeader.Open()
+			if err == nil {
+				defer f.Close()
+				data, err := io.ReadAll(f)
+				if err == nil && len(data) > 0 {
+					hash := sha256.Sum256(data)
+					req.EvidenceSHA256 = hex.EncodeToString(hash[:])
+					req.EvidenceFileName = fileHeader.Filename
+				}
+			}
+		}
+	} else {
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Data laporan tidak valid",
+			})
+		}
 	}
 
 	if strings.TrimSpace(req.Identifier) == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
-			"message": "Nomor telepon, rekening, atau URL target wajib diisi",
+			"message": "Nomor telepon, rekening, tautan, atau email target wajib diisi",
 		})
 	}
 
 	entry, isNew := blacklist.GetRegistry().ReportThreat(req)
-	msg := "Entitas berhasil ditambahkan ke Daftar Hitam PANDU"
+	msg := "Laporan penipuan berhasil dicatat dalam basis data PANDU"
 	if !isNew {
 		msg = "Laporan berhasil dicatat. Frekuensi laporan untuk entitas ini telah ditingkatkan."
 	}
