@@ -15,7 +15,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Protective Analysis & Navigation for Digital Users — PANDU",
+  title: "Protective Analysis & Navigation for Digital Users",
   description: "Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi.",
 };
 
