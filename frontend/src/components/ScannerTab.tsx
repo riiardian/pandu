@@ -595,7 +595,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     setIsCountryDropdownOpen(!isCountryDropdownOpen);
                     setIsBankDropdownOpen(false);
                   }}
-                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 font-mono font-bold cursor-pointer shrink-0 select-none"
                 >
                   <span className="text-base leading-none">{selectedCountry.flag}</span>
                   <span>{selectedCountry.dialCode}</span>
@@ -631,8 +631,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         setIsCountryDropdownOpen(false);
                         setCountryFilterQuery("");
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                        selectedCountry.code === c.code ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300 hover:bg-white/5"
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs cursor-pointer text-left ${
+                        selectedCountry.code === c.code ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300"
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
@@ -656,7 +656,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     setIsBankDropdownOpen(!isBankDropdownOpen);
                     setIsCountryDropdownOpen(false);
                   }}
-                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 hover:bg-white/10 font-mono font-bold transition-colors cursor-pointer shrink-0 select-none"
+                  className="flex items-center gap-1.5 px-3.5 py-3 text-xs text-white bg-white/5 border-r border-white/10 font-mono font-bold cursor-pointer shrink-0 select-none"
                 >
                   <CreditCard className="h-3.5 w-3.5 text-blue-400" />
                   <span>{selectedBankObj?.code}</span>
@@ -692,8 +692,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                         setIsBankDropdownOpen(false);
                         setBankFilterQuery("");
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer text-left ${
-                        inputBankName.toLowerCase() === b.id.toLowerCase() ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300 hover:bg-white/5"
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs cursor-pointer text-left ${
+                        inputBankName.toLowerCase() === b.id.toLowerCase() ? "bg-blue-600/20 text-blue-300 font-bold" : "text-slate-300"
                       }`}
                     >
                       <span className="truncate">{b.fullName}</span>
@@ -738,7 +738,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     </p>
                   </div>
                 </div>
-                <label className="cursor-pointer rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shrink-0 shadow-sm shadow-blue-600/30">
+                <label className="cursor-pointer rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shrink-0">
                   <span>{selectedFile ? (lang === "en" ? "Change" : "Ganti") : (lang === "en" ? "Choose File" : "Pilih File")}</span>
                   <input
                     type="file"
@@ -757,7 +757,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   </div>
                   <button
                     onClick={() => setSelectedFile(null)}
-                    className="text-xs text-rose-400 hover:text-rose-300 ml-2 shrink-0 cursor-pointer"
+                    className="text-xs text-rose-400 ml-2 shrink-0 cursor-pointer"
                   >
                     Hapus
                   </button>
@@ -779,7 +779,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
           <button
             onClick={handleRunScan}
             disabled={loading}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 focus:outline-none transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white focus:outline-none disabled:opacity-50 cursor-pointer"
           >
             <Search className="h-4 w-4" />
             <span>
@@ -900,7 +900,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     router.push("/lapor");
                   }
                 }}
-                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm sm:text-base font-bold text-white shadow-lg shadow-blue-600/25 active:scale-[0.99] transition-all cursor-pointer text-center"
+                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 text-sm sm:text-base font-bold text-white cursor-pointer text-center"
               >
                 <span>{lang === "en" ? "File Official Report" : "Buat Laporan Aduan"}</span>
               </button>

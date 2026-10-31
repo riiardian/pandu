@@ -133,7 +133,7 @@ export default function HomeTab() {
           <div className="pt-1 flex items-center">
             <Link
               href="/investigasi"
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white"
             >
               <Search className="h-4 w-4" />
               <span>{lang === "en" ? "Start Forensic Analysis" : "Mulai Analisis Forensik"}</span>
@@ -141,9 +141,16 @@ export default function HomeTab() {
           </div>
         </div>
 
-        {/* 2. OSINT Live Forensic Preview Card (Clean, Flat 2D, No Slop Cursor Tilt) */}
-        <div className="lg:col-span-5 w-full">
-          <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+        {/* 2. OSINT Live Forensic Preview Card (3D Isometric Perspective, Stay Still) */}
+        <div className="lg:col-span-5 w-full" style={{ perspective: "1000px" }}>
+          <div
+            className="rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            style={{
+              transform: "rotateX(8deg) rotateY(-12deg) rotateZ(1.5deg)",
+              transformOrigin: "center left",
+              transformStyle: "preserve-3d",
+            }}
+          >
             <LiveTerminalFeed />
           </div>
         </div>
@@ -336,13 +343,11 @@ export default function HomeTab() {
                   <span className="text-sm sm:text-base font-semibold text-white leading-snug">
                     {item.q}
                   </span>
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5">
-                    <ChevronDown
-                      className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${
-                        isOpen ? "rotate-180 text-blue-400" : ""
-                      }`}
-                    />
-                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-300 ${
+                      isOpen ? "rotate-180 text-blue-400" : ""
+                    }`}
+                  />
                 </button>
 
                 {isOpen && (
