@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   CheckCircle2,
@@ -10,6 +11,7 @@ import {
   ChevronDown,
   Upload,
   FileCheck,
+  ArrowRight,
 } from "lucide-react";
 
 interface DossierTabProps {
@@ -673,43 +675,30 @@ export default function DossierTab({ initialData }: DossierTabProps) {
             </div>
           </div>
 
-          {/* 4. Draf Peringatan WhatsApp */}
+          {/* 4. Edukasi & Slogan Perlindungan Keluarga */}
           <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111317] p-5 sm:p-6 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                {lang === "en" ? "Family Warning Draft" : "Draf Peringatan untuk Keluarga"}
+            <div className="space-y-1">
+              <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                {lang === "en"
+                  ? "Protect Your Loved Ones from Digital Manipulation"
+                  : "Bentengi Keluarga dari Jeratan Rekayasa Sosial"}
               </h4>
-              <button
-                type="button"
-                onClick={() =>
-                  copyToClipboard(
-                    lang === "en"
-                      ? `Security alert for family: Please stay vigilant if you receive messages from unknown numbers sending .APK files (disguised as package receipts / traffic tickets) or claiming to be relatives in emergency distress. Never click or install them as they intercept mobile banking SMS OTPs. Always verify directly with the person. Stay safe!`
-                      : `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`,
-                    "family"
-                  )
-                }
-                className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-              >
-                {copiedKey === "family" ? (
-                  <>
-                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-emerald-600 dark:text-emerald-400">{lang === "en" ? "Copied" : "Tersalin"}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3 w-3" />
-                    <span>{lang === "en" ? "Copy Draft" : "Salin Teks"}</span>
-                  </>
-                )}
-              </button>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                {lang === "en"
+                  ? "Modern cyber scams exploit panic and human trust rather than technical flaws. Strengthen your family's digital resilience early through PANDU's interactive social engineering simulations."
+                  : "Modus penipuan modern tidak meretas sistem, melainkan memanfaatkan kepanikan dan kepolosan manusia. Latih ketahanan digital keluarga Anda sejak dini mengenali jebakan siber lewat simulasi interaktif PANDU."}
+              </p>
             </div>
 
-            <p className="p-3 rounded-lg bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
-              {lang === "en"
-                ? `Security alert for family: Please stay vigilant if you receive messages from unknown numbers sending .APK files (disguised as package receipts / traffic tickets) or claiming to be relatives in emergency distress. Never click or install them as they intercept mobile banking SMS OTPs. Always verify directly with the person. Stay safe!`
-                : `Peringatan untuk keluarga: Harap waspada jika ada nomor baru yang mengirim file .APK (pura-pura foto paket kurir / surat tilang) atau mengaku saudara meminjam uang mendesak. Jangan pernah diklik atau diinstal karena itu modus penyadap SMS perbankan. Selalu verifikasi langsung ke orangnya. Tetap waspada!`}
-            </p>
+            <div className="pt-1">
+              <Link
+                href="/simulasi"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shadow-sm"
+              >
+                <span>{lang === "en" ? "Explore Interactive Simulation" : "Mulai Latihan Simulasi"}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
       )}
