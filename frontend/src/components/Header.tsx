@@ -135,7 +135,7 @@ export default function Header() {
     { href: "/", label: lang === "en" ? "Home" : "Beranda", icon: Home, active: isHome },
     { href: "/xray", label: lang === "en" ? "Threat Investigation" : "Investigasi Ancaman", icon: Search, active: isXray },
     { href: "/simulasi", label: lang === "en" ? "Scam Simulation" : "Simulasi Modus Penipuan", icon: BookOpen, active: isSimulasi },
-    { href: "/aksi", label: lang === "en" ? "Report Center & Blacklist" : "Pusat Laporan & Daftar Hitam", icon: FileCheck2, active: isAksi },
+    { href: "/aksi", label: lang === "en" ? "Report Center & Victim Guide" : "Pusat Laporan & Panduan Korban", icon: FileCheck2, active: isAksi },
     { href: "/#alur-kerja", label: lang === "en" ? "System Workflow" : "Alur Kerja Sistem", icon: Workflow, active: false },
     { href: "/#manipulasi-digital", label: lang === "en" ? "Digital Manipulation" : "Bentuk Manipulasi Digital", icon: Fingerprint, active: false },
     { href: "/#faq", label: lang === "en" ? "Frequently Asked Questions (FAQ)" : "Pertanyaan Umum (FAQ)", icon: HelpCircle, active: false },
