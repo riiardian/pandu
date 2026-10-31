@@ -209,6 +209,10 @@ func AuthMiddleware() fiber.Handler {
 		}
 
 		if token == "" {
+			token = c.Query("token")
+		}
+
+		if token == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"success": false,
 				"message": "Akses ditolak: Autentikasi admin diperlukan",

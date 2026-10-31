@@ -272,3 +272,11 @@
 - Menghapus seluruh simbol titik tengah ( / ) pada baris kategori modus dan informasi perbankan kartu laporan.
 - Menghapus simbol bulatan pemisah pada modal dialog konfirmasi verifikasi dan penolakan laporan ( tanpa titik tengah).
 - Memastikan tampilan kartu dan popup konfirmasi 100% bersih, datar, dan bebas dari titik/bulatan pemisah visual yang tidak perlu.
+
+### 2026-10-31: Perbaikan Pratinjau Bukti, Penghapusan Hash SHA & Perapian Modal
+- Menghapus tampilan teks hash SHA-256 baik pada baris lampiran kartu laporan maupun pada footer modal dialog pratinjau bukti agar bersih dari data mentah teknis.
+- Memperbaiki pemuatan gambar bukti fisik: menambahkan autentikasi token via query parameter pada AuthMiddleware Go Fiber sehingga elemen gambar di browser mobile dapat memuat bukti gambar otentik secara instan tanpa error 401 atau icon gambar rusak.
+- Merombak total modal pratinjau bukti fisik:
+  - Header: Nama berkas tebal, konteks ID laporan dan target, serta tombol tutup X minimalis.
+  - Body: Frame kanvas putih berbayang halus yang menampilkan dokumen/gambar bukti secara tajam dan proporsional.
+  - Footer: Kategori modus di kiri dan tombol aksi Unduh dengan ikon download di kanan, bebas dari hash SHA.

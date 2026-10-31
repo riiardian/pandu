@@ -8,10 +8,10 @@ import {
   Eye,
   Search,
   ExternalLink,
-  RefreshCw,
   LogOut,
   AlertCircle,
   X,
+  Download,
 } from "lucide-react";
 import PanduLogo from "@/components/PanduLogo";
 
@@ -523,30 +523,27 @@ export default function AdminVerificationPage() {
                     </div>
                   )}
 
-                  {/* Row 4: Evidence Attachment (Clean Row, NO Button Badge) */}
+                  {/* Row 4: Evidence Attachment (Clean Row, NO Button Badge, NO SHA) */}
                   {report.evidence_file_name && (
                     <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-xs">
                       <div className="flex items-center gap-2.5 min-w-0">
                         {isImage ? (
                           <img
-                            src={`/api/v1/admin/evidence/${report.id}`}
+                            src={`/api/v1/admin/evidence/${report.id}?token=${encodeURIComponent(token || "")}`}
                             alt="Bukti Lampiran"
                             onClick={() => setPreviewEvidence(report)}
-                            className="h-10 w-10 rounded object-cover border border-slate-200 bg-white shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                            className="h-10 w-10 rounded-lg object-cover border border-slate-200 bg-white shrink-0 cursor-pointer hover:opacity-85 transition-opacity shadow-xs"
                           />
                         ) : (
-                          <FileText className="h-5 w-5 text-slate-400 shrink-0" />
+                          <div className="h-10 w-10 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center shrink-0">
+                            <FileText className="h-5 w-5 text-slate-400" />
+                          </div>
                         )}
 
                         <div className="min-w-0">
                           <span className="font-medium text-slate-800 block truncate">
                             {report.evidence_file_name}
                           </span>
-                          {report.evidence_sha256 && (
-                            <span className="font-mono text-[10px] text-slate-400 block truncate">
-                              SHA: {report.evidence_sha256.slice(0, 16)}...
-                            </span>
-                          )}
                         </div>
                       </div>
 
@@ -671,64 +668,71 @@ export default function AdminVerificationPage() {
         </div>
       )}
 
-      {/* MODAL: EVIDENCE PREVIEW */}
+      {/* MODAL: EVIDENCE PREVIEW (Clean, Natural, No SHA) */}
       {previewEvidence && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-xl max-h-[85vh] flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xl text-left">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
-              <div className="min-w-0 pr-2">
-                <span className="text-xs font-bold text-slate-900 block truncate">
-                  Bukti: {previewEvidence.evidence_file_name}
-                </span>
-                <span className="text-[10px] font-mono text-slate-500 block truncate">
-                  {previewEvidence.id}
-                </span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg max-h-[90vh] flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xl text-left">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5 bg-white">
+              <div className="min-w-0 pr-3">
+                <h3 className="text-sm font-bold text-slate-900 truncate">
+                  {previewEvidence.evidence_file_name}
+                </h3>
+                <p className="text-xs text-slate-400 font-mono mt-0.5 truncate">
+                  {previewEvidence.id} / {formatTarget(previewEvidence.identifier, previewEvidence.type)}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setPreviewEvidence(null)}
-                className="text-xs font-medium text-slate-500 hover:text-slate-900 px-2 py-1 cursor-pointer"
+                className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Tutup"
               >
-                Tutup
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-100 min-h-[260px]">
+            <div className="flex-1 overflow-auto p-4 sm:p-5 flex items-center justify-center bg-[#f8fafc] min-h-[260px]">
               {previewEvidence.evidence_file_name?.match(/\.(jpg|jpeg|png|webp)$/i) ? (
                 <img
-                  src={`/api/v1/admin/evidence/${previewEvidence.id}`}
-                  alt="Bukti Laporan"
-                  className="max-h-[60vh] w-auto rounded object-contain border border-slate-300 shadow-sm bg-white"
+                  src={`/api/v1/admin/evidence/${previewEvidence.id}?token=${encodeURIComponent(token || "")}`}
+                  alt="Bukti Lampiran"
+                  className="max-h-[65vh] w-auto max-w-full rounded-lg object-contain shadow-xs border border-slate-200/80 bg-white"
                 />
               ) : (
-                <div className="text-center space-y-2 p-6">
+                <div className="text-center space-y-3 p-6 bg-white rounded-xl border border-slate-200 shadow-xs max-w-sm">
                   <FileText className="h-10 w-10 text-slate-400 mx-auto" />
-                  <p className="text-xs text-slate-600 font-medium">
-                    Berkas non-gambar ({previewEvidence.evidence_file_name})
-                  </p>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800 truncate">
+                      {previewEvidence.evidence_file_name}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Berkas Dokumen / Non-Gambar
+                    </p>
+                  </div>
                   <a
-                    href={`/api/v1/admin/evidence/${previewEvidence.id}`}
+                    href={`/api/v1/admin/evidence/${previewEvidence.id}?token=${encodeURIComponent(token || "")}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-xs"
                   >
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3.5 w-3.5" />
                     <span>Buka Berkas</span>
                   </a>
                 </div>
               )}
             </div>
 
-            <div className="border-t border-slate-200 bg-slate-50 px-4 py-2.5 flex items-center justify-between text-[11px] font-mono text-slate-500">
-              <span className="truncate pr-2">
-                SHA: {previewEvidence.evidence_sha256}
+            <div className="border-t border-slate-100 px-4 py-3 sm:px-5 flex items-center justify-between text-xs bg-white">
+              <span className="text-slate-500 font-medium truncate pr-2">
+                {previewEvidence.category}
               </span>
               <a
-                href={`/api/v1/admin/evidence/${previewEvidence.id}`}
+                href={`/api/v1/admin/evidence/${previewEvidence.id}?token=${encodeURIComponent(token || "")}`}
                 download={previewEvidence.evidence_file_name}
-                className="text-blue-600 font-medium hover:underline shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:border-slate-400 transition-colors shadow-xs shrink-0"
               >
-                Unduh
+                <Download className="h-3.5 w-3.5" />
+                <span>Unduh</span>
               </a>
             </div>
           </div>
