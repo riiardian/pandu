@@ -1,4 +1,4 @@
-# 🧭 PANDU — Guardians of the Digital Space
+# PANDU | Guardians of the Digital Space
 ### *Navigating Digital Deception with Cognitive Profiling, Adversarial Sandbox & Incident Defense*
 
 [![Live Deployment](https://img.shields.io/badge/Live_Deployment-pandu.web.id-2563EB?style=for-the-badge&logo=vercel&logoColor=white)](https://pandu.web.id)
@@ -11,11 +11,11 @@
 **Tema Besar:** *“Guardians of the Digital Space – Empowering Today’s Generation Toward a Safer Cyber Ecosystem”*  
 **Studi Kasus:** The Trust Trap: Navigating Digital Deception  
 **Tim Peserta:** 404Forbidden (Kode Tim: `MIT-002`)  
-**Ketua Tim:** Rio Ardian Pratama — Informatika, Telkom University  
+**Ketua Tim:** Rio Ardian Pratama | Informatika, Telkom University  
 
 ---
 
-## 📌 1. Latar Belakang & Masalah (*The Trust Trap*)
+## 1. Latar Belakang & Masalah (The Trust Trap)
 
 Di era digital saat ini, generasi muda Indonesia setiap hari berhadapan dengan jebakan manipulasi psikologis (*Social Engineering*) yang kian terorganisir dan mengeksploitasi kepolosan manusia:
 
@@ -30,7 +30,7 @@ Korban kerap bertindak impulsif karena panik (*urgency*), tergiur uang kilat (*g
 
 ---
 
-## 💡 2. Solusi: Arsitektur 3 Pilar PANDU
+## 2. Solusi: Arsitektur 3 Pilar PANDU
 
 PANDU dibangun dengan arsitektur terpisah (*Decoupled Architecture*) berperforma tinggi, memadukan backend native **Go Fiber** dengan antarmuka modern **Next.js 16 (Turbopack)**:
 
@@ -53,7 +53,7 @@ PANDU dibangun dengan arsitektur terpisah (*Decoupled Architecture*) berperforma
 
 ---
 
-### 🔍 Pilar 1: Recognize — Investigasi Ancaman Digital (`/investigasi`)
+### Pilar 1: Recognize | Investigasi Ancaman Digital (`/investigasi`)
 Mesin audit ancaman cerdas multi-vektor dengan penjelasan transparan (*Explainable Heuristics*):
 - **Pesan Chat**: *Cognitive Bias Profiler* yang membedah narasi manipulasi (desakan waktu, iming-iming hadiah, penyamaran instansi) dan menerbitkan skor risiko 0–100%.
 - **Tautan Web**: Merayapi konten HTML secara pasif, memeriksa umur domain via RDAP, mendeteksi typosquatting 13 brand perbankan/fintech nasional, mendeteksi konten judi online ilegal, serta mencocokkan feed phishing eksternal (CIRCL & urlscan.io).
@@ -63,7 +63,7 @@ Mesin audit ancaman cerdas multi-vektor dengan penjelasan transparan (*Explainab
 
 ---
 
-### 🎮 Pilar 2: Learn — Simulasi Modus Penipuan (`/simulasi`)
+### Pilar 2: Learn | Simulasi Modus Penipuan (`/simulasi`)
 Arena simulasi interaktif (*Adversarial Chat Sandbox*) berbasis kasus kejahatan digital nyata di Indonesia:
 - **5 Skenario Interaktif**:
   1. *Kurir Paket Ekspedisi (Sniffer APK)*
@@ -77,7 +77,7 @@ Arena simulasi interaktif (*Adversarial Chat Sandbox*) berbasis kasus kejahatan 
 
 ---
 
-### 🛡️ Pilar 3: Act — Formulir Pelaporan & Tanggap Darurat (`/lapor`)
+### Pilar 3: Act | Formulir Pelaporan & Tanggap Darurat (`/lapor`)
 Pemberdayaan korban dan masyarakat untuk menjadi *Guardian* aktif:
 - **Pelaporan Terverifikasi Bukti Otentik**: Formulir aduan masyarakat berstandar hukum UU ITE yang mewajibkan lampiran bukti fisik (tangkapan layar chat/mutasi transfer bank maks 10 MB) dengan pencatatan hash kriptografi SHA-256.
 - **Checklist Isolasi Darurat 5 Menit**: Panduan praktis pertolongan pertama saat terlanjur menjadi korban (langkah putus internet, blokir m-banking, pencabutan izin SMS, dan hotline resmi perbankan/e-wallet nasional).
@@ -85,7 +85,7 @@ Pemberdayaan korban dan masyarakat untuk menjadi *Guardian* aktif:
 
 ---
 
-### 🔐 Pilar 4: Backoffice Forensik Rahasia (`/ops-intel-7f89b`)
+### Pilar 4: Backoffice Forensik Rahasia (`/ops-intel-7f89b`)
 Panel administratif terisolasi untuk verifikasi aduan masyarakat sebelum dipublikasikan:
 - **Zero Reconnaissance Footprint**: Rute umum (`/admin`, `/panel`, `/dashboard`) dikunci menghasilkan status HTTP `404 Not Found`. Akses hanya melalui kunci rahasia `/ops-intel-7f89b`.
 - **Autentikasi Berlapis**: Enkripsi kata sandi kuat via *bcrypt* (cost 12), proteksi *brute-force rate limiter* (5 kali gagal mengunci IP selama 15 menit), token sesi HMAC SHA-256 (24 jam), dan mitigasi timing attack via `subtle.ConstantTimeCompare`.
@@ -93,7 +93,7 @@ Panel administratif terisolasi untuk verifikasi aduan masyarakat sebelum dipubli
 
 ---
 
-## 🛡️ 3. Rekayasa Keamanan & Pengujian (*Security Hardening*)
+## 3. Rekayasa Keamanan & Pengujian (Security Hardening)
 
 Sistem PANDU telah melalui pengujian keamanan menyeluruh (*Attack & Defense Suite*) dengan hasil **26/26 Pemeriksaan Lolos (100% Passed)**:
 
@@ -108,7 +108,7 @@ Sistem PANDU telah melalui pengujian keamanan menyeluruh (*Attack & Defense Suit
 
 ---
 
-## 💻 4. Panduan Menjalankan Secara Lokal (*Local Setup*)
+## 4. Panduan Menjalankan Secara Lokal (Local Setup)
 
 ### Prasyarat
 - **Go**: Versi 1.22 atau lebih baru
@@ -154,13 +154,23 @@ npm run dev
 
 ---
 
-## 👥 5. Tim Pengembang (404Forbidden)
+## 5. Kepatuhan Terhadap Batasan Resmi Kompetisi
 
-- **Ketua Tim & Lead Developer**: Rio Ardian Pratama (`@riiardian`) — S1 Informatika, Telkom University
+Sesuai dengan Petunjuk Teknis dan Ketentuan Studi Kasus MIT-WEEK 2026:
+- **Zero Sensitive Data Invariant**: PANDU tidak mewajibkan dan tidak menyimpan data sensitif riil seperti KTP, password akun pribadi, atau PIN. Seluruh pengujian menggunakan entitas fiktif yang aman.
+- **Safe Sandboxing**: Modul simulasi percakapan adversarial beroperasi di lingkungan sandbox murni tanpa mengeksekusi payload malware atau menyebarkan eksploit nyata.
+- **Explainable & Transparent Detection**: PANDU secara jujur menyajikan batasan sistem dan tidak mengklaim akurasi 100% mutlak, melainkan menyajikan indikator kecurigaan berbasis aturan heuristik (*rule-based heuristic*) yang dapat dipertanggungjawabkan.
+- **Keterbukaan AI**: Penggunaan modul kecerdasan buatan (Computer Vision & heuristic cognitive scoring) disampaikan secara transparan kepada pengguna pada antarmuka.
+
+---
+
+## 6. Tim Pengembang (404Forbidden)
+
+- **Ketua Tim & Lead Developer**: Rio Ardian Pratama (`@riiardian`) | S1 Informatika, Telkom University
 - **Kode Peserta**: `MIT-002`
 - **Tautan Live Deployment**: [https://pandu.web.id](https://pandu.web.id)
 - **Repositori Resmi**: [https://github.com/riiardian/pandu](https://github.com/riiardian/pandu)
 
 ---
 
-<sub>© 2026 Tim 404Forbidden. Dikembangkan untuk Web Development Competition MIT-WEEK 2026.</sub>
+<sub>© 2026 Tim 404Forbidden | Dikembangkan untuk Web Development Competition MIT-WEEK 2026.</sub>
