@@ -542,10 +542,10 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   setIsBankDropdownOpen(false);
                   setIsCountryDropdownOpen(false);
                 }}
-                className={`flex items-center gap-2 py-2 px-3 sm:px-3.5 rounded-lg text-xs font-semibold cursor-pointer shrink-0 border select-none transition-colors ${
+                className={`flex items-center gap-2 py-2 px-3 sm:px-3.5 rounded-lg text-xs font-semibold cursor-pointer shrink-0 border select-none ${
                   isActive
                     ? "bg-blue-600 border-blue-500 text-white shadow-sm"
-                    : "bg-[#060a14] border-white/10 text-slate-400 hover:text-white hover:bg-white/5"
+                    : "bg-[#060a14] border-white/10 text-slate-400"
                 }`}
                 title={tab.label}
               >

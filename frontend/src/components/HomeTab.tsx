@@ -161,14 +161,14 @@ export default function HomeTab() {
           {/* Module 1: X-Ray */}
           <Link
             href="/investigasi"
-            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
+            className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
               <div className="text-blue-400">
                 <Search className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                <h4 className="text-base font-bold text-white">
                   {lang === "en" ? "Digital Threat Investigation" : "Investigasi Ancaman Digital"}
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -179,7 +179,7 @@ export default function HomeTab() {
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-950/40">
                 {lang === "en" ? "Start Scan" : "Mulai Pindai"}
               </span>
             </div>
@@ -188,14 +188,14 @@ export default function HomeTab() {
           {/* Module 2: Simulasi */}
           <Link
             href="/simulasi"
-            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
+            className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
               <div className="text-blue-400">
                 <BookOpen className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                <h4 className="text-base font-bold text-white">
                   {lang === "en" ? "Scam Modus Simulation" : "Simulasi Modus Penipuan"}
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -206,7 +206,7 @@ export default function HomeTab() {
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-950/40">
                 {lang === "en" ? "Enter Simulation" : "Masuk Simulasi"}
               </span>
             </div>
@@ -215,14 +215,14 @@ export default function HomeTab() {
           {/* Module 3: Dossier / Blacklist */}
           <Link
             href="/lapor"
-            className="group rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 hover:border-blue-500/50 hover:bg-[#18191f] transition-all flex flex-col justify-between shadow-xl"
+            className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 flex flex-col justify-between shadow-xl"
           >
             <div className="space-y-3">
               <div className="text-blue-400">
                 <FileCheck2 className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                <h4 className="text-base font-bold text-white">
                   {lang === "en" ? "Report Center & Blacklist" : "Pusat Laporan & Daftar Hitam"}
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -233,7 +233,7 @@ export default function HomeTab() {
               </div>
             </div>
             <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-950/40">
                 {lang === "en" ? "Check Blacklist" : "Cek Daftar Hitam"}
               </span>
             </div>

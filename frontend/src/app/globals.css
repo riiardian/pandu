@@ -189,15 +189,6 @@ html.light header span {
   color: #0f172a !important;
 }
 
-html.light header a:hover,
-html.light header a:hover span,
-html.light header a:hover svg,
-html.light header button:hover,
-html.light header button:hover svg,
-html.light header button:hover span {
-  color: #2563eb !important;
-}
-
 /* Primary and Solid Action Buttons: MUST ALWAYS HAVE PURE WHITE TEXT */
 html.light .bg-blue-600,
 html.light .bg-blue-500,

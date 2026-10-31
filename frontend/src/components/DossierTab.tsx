@@ -632,7 +632,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 <a
                   key={b.name}
                   href={`tel:${b.number}`}
-                  className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5"
                 >
                   <span className="font-bold text-slate-800 dark:text-slate-200">{b.name}</span>
                   <span className="font-mono text-blue-600 dark:text-blue-400 font-semibold">{b.number}</span>

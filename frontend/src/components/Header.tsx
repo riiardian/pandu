@@ -177,16 +177,16 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-transparent border-none">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3.5 sm:px-6">
-          {/* Brand & Identity (Logo replaces letter P, fused into [Logo]ANDU) */}
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
+          {/* Brand & Identity (Logo stays natural color, zero hover color shift) */}
           <Link
             href="/"
-            className="flex items-center gap-[2px] text-left focus:outline-none min-w-0 group"
+            className="flex items-center gap-[2px] text-left focus:outline-none min-w-0"
           >
-            <div className="flex shrink-0 items-center justify-center text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <div className="flex shrink-0 items-center justify-center text-slate-900 dark:text-white">
               <PanduLogo className="h-[18px] sm:h-[20px] w-auto" />
             </div>
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white block leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white block leading-tight">
               ANDU
             </span>
           </Link>
@@ -197,7 +197,7 @@ export default function Header() {
             <button
               onClick={toggleLanguage}
               aria-label="Ubah Bahasa / Switch Language"
-              className="flex items-center gap-1 h-9 px-1 text-xs font-mono font-bold text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
+              className="flex items-center gap-1 h-9 px-1 text-xs font-mono font-bold text-slate-800 dark:text-white transition-colors cursor-pointer select-none focus:outline-none"
               title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
             >
               <Globe className="h-4 w-4 shrink-0" />
@@ -208,7 +208,7 @@ export default function Header() {
             <button
               onClick={toggleTheme}
               aria-label="Ubah Tema / Toggle Theme"
-              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer select-none focus:outline-none"
+              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white transition-colors cursor-pointer select-none focus:outline-none"
               title={theme === "dark" ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
             >
               {theme === "dark" ? (
@@ -218,11 +218,11 @@ export default function Header() {
               )}
             </button>
 
-            {/* Minimalist Hamburger Menu Button */}
+            {/* Mobile / Responsive Navigation Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle Navigation Menu"
-              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors cursor-pointer select-none"
+              aria-label="Buka Menu Navigasi"
+              className="flex h-9 w-9 items-center justify-center text-slate-800 dark:text-white focus:outline-none transition-colors cursor-pointer select-none"
             >
               {isOpen ? (
                 <svg

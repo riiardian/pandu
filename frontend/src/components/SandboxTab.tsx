@@ -287,10 +287,10 @@ export default function SandboxTab() {
               <div
                 key={sc.id}
                 onClick={() => startScenario(sc.id)}
-                className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 shadow-xl hover:border-blue-500/50 hover:bg-[#16181d] transition-all cursor-pointer text-left"
+                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 shadow-xl cursor-pointer text-left"
               >
                 <div className="space-y-2">
-                  <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
                     {displayTitle}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
@@ -299,7 +299,7 @@ export default function SandboxTab() {
                 </div>
 
                 <div className="pt-4 mt-3 border-t border-white/5 flex items-center">
-                  <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold !text-white group-hover:bg-blue-500 transition-colors shadow-md shadow-blue-950/40">
+                  <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold !text-white shadow-md shadow-blue-950/40">
                     {lang === "en" ? "Start Simulation" : "Mulai Simulasi"}
                   </span>
                 </div>
