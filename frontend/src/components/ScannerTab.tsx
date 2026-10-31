@@ -511,7 +511,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-left">
+    <div className="w-full max-w-6xl mx-auto space-y-6 text-left">
       {/* Intro Header Section */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-2 shadow-xl">
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -526,8 +526,8 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
       {/* Main Scanner Card */}
       <section className="rounded-2xl border border-white/10 bg-[#121316]/90 backdrop-blur-md p-5 sm:p-6 space-y-5 shadow-xl">
-        {/* Multi-Target Category Tabs (OSINT Industries Dynamic Pill Dock) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        {/* Multi-Target Category Tabs (Clean Static Tabs, No Slop Accordion) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = scanType === tab.id;
@@ -542,19 +542,15 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   setIsBankDropdownOpen(false);
                   setIsCountryDropdownOpen(false);
                 }}
-                className={`flex items-center gap-2 py-2 px-3.5 rounded-full text-xs transition-all duration-200 cursor-pointer shrink-0 ${
+                className={`flex items-center gap-2 py-2 px-3 sm:px-3.5 rounded-lg text-xs font-semibold cursor-pointer shrink-0 border select-none transition-colors ${
                   isActive
-                    ? "bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30 border border-blue-500"
-                    : "bg-[#060a14] border border-white/10 text-slate-400 hover:text-white hover:border-white/20 hover:bg-white/5"
+                    ? "bg-blue-600 border-blue-500 text-white shadow-sm"
+                    : "bg-[#060a14] border-white/10 text-slate-400 hover:text-white hover:bg-white/5"
                 }`}
                 title={tab.label}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                {isActive && (
-                  <span className="text-xs font-semibold tracking-tight whitespace-nowrap animate-in fade-in duration-200">
-                    {tab.label}
-                  </span>
-                )}
+                <span className="whitespace-nowrap">{tab.label}</span>
               </button>
             );
           })}
@@ -809,13 +805,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {loading && (
         <section className="rounded-2xl border border-white/10 bg-[#121316] p-6 space-y-4">
           {/* Cable & Circular Badges Stepper */}
-          <div className="relative flex items-center justify-between max-w-xs sm:max-w-sm mx-auto px-4 h-10">
+          <div className="relative flex items-center justify-between max-w-xs sm:max-w-md mx-auto px-4 h-10">
             {/* Inactive Cable Base Line (Dead-center) */}
             <div className="absolute left-[34px] right-[34px] top-1/2 -translate-y-1/2 h-[2px] bg-slate-200 dark:bg-white/10 z-0" />
 
             {/* Active Cable Line (Progressively connects completed/active stages) */}
             <div
-              className="absolute left-[34px] top-1/2 -translate-y-1/2 h-[2px] bg-blue-600 z-0 transition-all duration-300 ease-out"
+              className="absolute left-[34px] top-1/2 -translate-y-1/2 h-[2px] bg-blue-600 z-0"
               style={{
                 width: `calc((100% - 68px) * ${
                   TOOL_PIPELINES[scanType].length > 1
@@ -831,7 +827,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               return (
                 <div key={sidx} className="relative z-10 flex items-center justify-center">
                   <div
-                    className={`h-8 w-8 flex items-center justify-center rounded-full font-mono text-xs font-bold transition-colors duration-200 ${
+                    className={`h-8 w-8 flex items-center justify-center rounded-full font-mono text-xs font-bold select-none ${
                       isReached
                         ? "bg-blue-600 text-white"
                         : "bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-white/10"
@@ -853,142 +849,28 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
         </section>
       )}
 
-      {/* Result Section */}
+      {/* Result Section (Balanced 2-Column on Desktop) */}
       {result && (
-        <div className="space-y-4 animate-in fade-in duration-300 pt-2">
-          {/* Borderless Speedometer Gauge (No Box / No Card) */}
-          <div className="py-2 flex flex-col items-center justify-center text-center select-none">
-            <RiskGaugeDial score={result.risk_score} />
-            <div className="mt-2 text-xs font-mono font-bold tracking-widest text-slate-300 uppercase">
-              {lang === "en" ? "RISK INDEX SCORE" : "INDEKS SCORE"} <span className="text-base font-sans font-black ml-1.5" style={{ color: getRiskTierColor(result.risk_score) }}>{result.risk_score}%</span>
-            </div>
-          </div>
-
-          {/* Analisis AI Vision untuk Berkas / Gambar */}
-          {result.ai_vision_result && (
-            <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
-              <div className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Eye className="h-4 w-4" />
-                <span>{lang === "en" ? "AI Vision Analysis" : "Analisis AI Vision"} ({result.ai_vision_result.content_type})</span>
-              </div>
-              <p className="text-slate-300 leading-relaxed">{result.ai_vision_result.explanation}</p>
-              {result.ai_vision_result.extracted_text_summary && (
-                <p className="text-[11px] text-slate-400 font-mono">{lang === "en" ? "Text: " : "Teks: "}{result.ai_vision_result.extracted_text_summary}</p>
-              )}
-            </div>
-          )}
-
-          {/* Hasil Pemeriksaan (Clean & Minimalist) */}
-          {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
-            <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
-              <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
-                {lang === "en" ? "Inspection Results" : "Hasil Pemeriksaan"}
-              </div>
-              <div className="space-y-3.5 pt-0.5">
-                {result.sources.filter((s: any) => s.status === "queried").map((source: any) => {
-                  const isMatch = source.outcome === "match";
-
-                  // Format evidence cleanly without yapping
-                  let evidenceText = "";
-                  if (source.evidence && source.evidence.length > 0) {
-                    const cleanItems = source.evidence
-                      .filter((e: any) => {
-                        if (!isMatch && e.label?.includes("Penalaran")) return false;
-                        if (e.label === "expiration" || e.label === "last changed") return false;
-                        if (e.label === "Ringkasan alur") return false;
-                        if (e.label === "Judul halaman") return false;
-                        return true;
-                      })
-                      .map((e: any) => {
-                        if (e.label === "Temuan Konten" || e.label === "Status Konten" || e.label === "Status Intelijen" || e.label === "Feed Phishing Terstruktur" || e.label === "Aduan Penipuan Publik") {
-                          return e.value;
-                        }
-                        if (e.label === "Alamat IP publik") {
-                          const ips = (e.value || "").split(", ").filter((ip: string) => !ip.includes(":")).slice(0, 2).join(", ");
-                          return `IP: ${ips || e.value}`;
-                        }
-                        if (e.label === "Umur Domain Aktif") return `${lang === "en" ? "Domain Age" : "Umur"}: ${e.value}`;
-                        if (e.label === "Domain registry") return `Registry: ${e.value}`;
-                        if (e.label === "Penerbit") return `${lang === "en" ? "Issuer" : "Penerbit"}: ${e.value}`;
-                        if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
-                        if (e.label === "Kategori") return `${lang === "en" ? "Category" : "Kategori"}: ${e.value}`;
-                        if (e.label === "Laporan terverifikasi") return `${lang === "en" ? "Verified reports" : "Laporan terverifikasi"}: ${e.value}`;
-                        if (e.label === "MX aktif") return `${lang === "en" ? "Active MX" : "MX aktif"}: ${e.value}`;
-                        if (e.label === "Status registrasi") return `${lang === "en" ? "Registration status" : "Status registrasi"}: ${e.value}`;
-                        if (e.label === "Frekuensi laporan") return `${lang === "en" ? "Report frequency" : "Frekuensi laporan"}: ${e.value}`;
-                        if (e.label === "Confidence sumber") return `${lang === "en" ? "Source confidence" : "Confidence sumber"}: ${e.value}`;
-                        if (e.label?.startsWith("Temuan Modus")) return `${lang === "en" ? e.label.replace("Temuan Modus", "Detected Modus") : e.label}: ${e.value}`;
-                        if (e.label?.includes("Analisis Intelijen")) return `${lang === "en" ? "AI Intelligence Analysis" : e.label}: ${e.value}`;
-                        return `${e.label}: ${e.value}`;
-                      });
-                    evidenceText = cleanItems.join(" • ");
-                  }
-
-                  if (!evidenceText) {
-                    evidenceText = isMatch
-                      ? (lang === "en" ? "Suspicious records or threat indicators detected." : "Ditemukan catatan kecurigaan.")
-                      : (lang === "en" ? "No crime history or public complaints found." : "Tidak ditemukan riwayat kejahatan / aduan.");
-                  } else if (lang === "en") {
-                    evidenceText = evidenceText
-                      // URL scanner findings & status
-                      .replace(/Terindikasi situs perjudian \/ taruhan online ilegal:\s*/gi, "Indicated as illegal online gambling / betting site: ")
-                      .replace(/Tidak ditemukan riwayat kejahatan, feed phishing, atau aduan publik\.?/gi, "No criminal records, phishing feeds, or public complaints found.")
-                      .replace(/Tidak ditemukan indikasi manipulasi formulir, umpan jebakan, atau konten ilegal\.?/gi, "No form manipulation, phishing traps, or illegal content detected.")
-                      .replace(/Halaman web tidak memuat konten mencurigakan atau tidak dapat diakses publik\.?/gi, "Web page contains no suspicious content or is publicly inaccessible.")
-                      .replace(/Domain tercatat pada feed ancaman phishing OpenPhish \(via urlscan\.io\)/gi, "Domain listed in OpenPhish phishing threat feed (via urlscan.io)")
-                      .replace(/Ditemukan catatan aduan penipuan \/ laporan korban di internet/gi, "Public fraud complaints or victim reports found on the internet")
-                      .replace(/Alamat IP langsung tidak diproses pada feed nama domain publik\.?/gi, "Direct IP addresses are not processed in public domain name feeds.")
-                      // Registry & general threat intel
-                      .replace(/Tidak ditemukan riwayat kejahatan \/ aduan\.?/gi, "No crime history or public complaints found.")
-                      .replace(/Tidak ditemukan catatan kecurigaan\.?/gi, "No suspicious records found.")
-                      .replace(/Ditemukan catatan kecurigaan\.?/gi, "Suspicious records or threat indicators detected.")
-                      .replace(/Tidak ada rekaman insiden atau aduan penipuan\.?/gi, "No incident records or scam complaints found.")
-                      .replace(/Tidak ada riwayat aduan publik\.?/gi, "No public complaint records found.")
-                      .replace(/Tidak ada cuplikan halaman publik yang ditemukan pada indeks mesin pencari\.?/gi, "No public complaint records found in search index.")
-                      .replace(/Tidak ditemukan catatan hash berbahaya pada database CIRCL\.?/gi, "No malicious hash records found in CIRCL database.")
-                      .replace(/Terdaftar dalam aduan publik/gi, "Listed in public complaint records")
-                      .replace(/Terindikasi penipuan/gi, "Indicated as fraudulent")
-                      .replace(/Entitas berisiko tinggi/gi, "High-risk entity")
-                      .replace(/Aman \/ belum ada aduan/gi, "Safe / no complaints recorded")
-                      .replace(/Konten judi online \/ taruhan ilegal/gi, "Online gambling / illegal betting content")
-                      .replace(/Indikator phishing \/ pencurian data/gi, "Phishing indicators / data harvesting")
-                      .replace(/Situs web phishing/gi, "Phishing website")
-                      .replace(/Rekening terindikasi penipuan/gi, "Bank account indicated in fraud")
-                      .replace(/Nomor terindikasi penipuan/gi, "Phone number indicated in fraud")
-                      .replace(/Ditemukan riwayat laporan/gi, "Complaint report history found");
-                  }
-
-                  const displayName = lang === "en"
-                    ? (source.name === "Pemeriksaan Konten & Alur Situs" || source.name.includes("Konten & Alur")
-                        ? "Page Content & Site Flow Inspection"
-                        : source.name === "Intelijen Ancaman & Rekam Jejak Siber" || source.name.includes("Intelijen Ancaman")
-                        ? "Threat Intelligence & Cyber Footprint"
-                        : source.name === "Registri Ancaman & Rekam Laporan" || source.name.includes("Registri Ancaman")
-                        ? "Threat Registry & Report Records"
-                        : source.name === "Intelijen Jejak & Riwayat Siber" || source.name.includes("Intelijen Jejak")
-                        ? "Footprint Intelligence & Cyber History"
-                        : source.name)
-                    : source.name;
-
-                  return (
-                    <div key={source.id} className="space-y-1">
-                      <div className="text-sm font-semibold text-white">
-                        {displayName}
-                      </div>
-                      <p className={`text-xs leading-relaxed ${isMatch ? "text-rose-300 font-medium" : "text-slate-400"}`}>
-                        {evidenceText}
-                      </p>
-                    </div>
-                  );
-                })}
+        <div className="pt-2 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-300">
+          {/* Left Column: Risk Gauge & Action CTA */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 flex flex-col items-center justify-center text-center select-none shadow-xl">
+              <RiskGaugeDial score={result.risk_score} />
+              <div className="mt-2 text-xs font-mono font-bold tracking-widest text-slate-300 uppercase">
+                {lang === "en" ? "RISK INDEX SCORE" : "INDEKS SCORE"}{" "}
+                <span
+                  className="text-base font-sans font-black ml-1.5"
+                  style={{ color: getRiskTierColor(result.risk_score) }}
+                >
+                  {result.risk_score}%
+                </span>
               </div>
             </div>
-          )}
 
-          {/* Action CTA (Hanya muncul jika di luar batas aman / skor > 20) */}
-          {result.risk_score > 20 && (
-            <div className="pt-1 flex justify-end">
+            {/* Action CTA (Hanya muncul jika di luar batas aman / skor > 20) */}
+            {result.risk_score > 20 && (
               <button
+                type="button"
                 onClick={() => {
                   const payload = {
                     category:
@@ -1022,8 +904,168 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
               >
                 <span>{lang === "en" ? "File Official Report" : "Buat Laporan Aduan"}</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Right Column: AI Vision & Evidence Findings */}
+          <div className="lg:col-span-7 space-y-4">
+            {/* Analisis AI Agent (Pesan Chat / Heuristik) */}
+            {result.ai_agent_analysis && (
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
+                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
+                  <span className="text-xs font-sans font-bold text-rose-400">
+                    {result.ai_agent_analysis.detected_category}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-200 leading-relaxed">
+                  {result.ai_agent_analysis.explanation}
+                </p>
+                {result.ai_agent_analysis.key_indicators && result.ai_agent_analysis.key_indicators.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="text-xs font-mono font-bold text-slate-400 uppercase">
+                      {lang === "en" ? "Key Indicators:" : "Indikator Utama:"}
+                    </div>
+                    <ul className="space-y-1 text-xs text-rose-300">
+                      {result.ai_agent_analysis.key_indicators.map((ind: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-rose-400">•</span>
+                          <span>{ind}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {result.ai_agent_analysis.mitigation_tip && (
+                  <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
+                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
+                    {result.ai_agent_analysis.mitigation_tip}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Analisis AI Vision untuk Berkas / Gambar */}
+            {result.ai_vision_result && (
+              <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
+                <div className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Eye className="h-4 w-4" />
+                  <span>{lang === "en" ? "AI Vision Analysis" : "Analisis AI Vision"} ({result.ai_vision_result.content_type})</span>
+                </div>
+                <p className="text-slate-300 leading-relaxed">{result.ai_vision_result.explanation}</p>
+                {result.ai_vision_result.extracted_text_summary && (
+                  <p className="text-[11px] text-slate-400 font-mono">{lang === "en" ? "Text: " : "Teks: "}{result.ai_vision_result.extracted_text_summary}</p>
+                )}
+              </div>
+            )}
+
+            {/* Hasil Pemeriksaan (Clean & Minimalist) */}
+            {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
+              <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
+                  {lang === "en" ? "Inspection Results" : "Hasil Pemeriksaan"}
+                </div>
+                <div className="space-y-3.5 pt-0.5">
+                  {result.sources.filter((s: any) => s.status === "queried").map((source: any) => {
+                    const isMatch = source.outcome === "match";
+
+                    // Format evidence cleanly without yapping
+                    let evidenceText = "";
+                    if (source.evidence && source.evidence.length > 0) {
+                      const cleanItems = source.evidence
+                        .filter((e: any) => {
+                          if (!isMatch && e.label?.includes("Penalaran")) return false;
+                          if (e.label === "expiration" || e.label === "last changed") return false;
+                          if (e.label === "Ringkasan alur") return false;
+                          if (e.label === "Judul halaman") return false;
+                          return true;
+                        })
+                        .map((e: any) => {
+                          if (e.label === "Temuan Konten" || e.label === "Status Konten" || e.label === "Status Intelijen" || e.label === "Feed Phishing Terstruktur" || e.label === "Aduan Penipuan Publik") {
+                            return e.value;
+                          }
+                          if (e.label === "Alamat IP publik") {
+                            const ips = (e.value || "").split(", ").filter((ip: string) => !ip.includes(":")).slice(0, 2).join(", ");
+                            return `IP: ${ips || e.value}`;
+                          }
+                          if (e.label === "Umur Domain Aktif") return `${lang === "en" ? "Domain Age" : "Umur"}: ${e.value}`;
+                          if (e.label === "Domain registry") return `Registry: ${e.value}`;
+                          if (e.label === "Penerbit") return `${lang === "en" ? "Issuer" : "Penerbit"}: ${e.value}`;
+                          if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
+                          if (e.label === "Kategori") return `${lang === "en" ? "Category" : "Kategori"}: ${e.value}`;
+                          if (e.label === "Laporan terverifikasi") return `${lang === "en" ? "Verified reports" : "Laporan terverifikasi"}: ${e.value}`;
+                          if (e.label === "MX aktif") return `${lang === "en" ? "Active MX" : "MX aktif"}: ${e.value}`;
+                          if (e.label === "Status registrasi") return `${lang === "en" ? "Registration status" : "Status registrasi"}: ${e.value}`;
+                          if (e.label === "Frekuensi laporan") return `${lang === "en" ? "Report frequency" : "Frekuensi laporan"}: ${e.value}`;
+                          if (e.label === "Confidence sumber") return `${lang === "en" ? "Source confidence" : "Confidence sumber"}: ${e.value}`;
+                          if (e.label?.startsWith("Temuan Modus")) return `${lang === "en" ? e.label.replace("Temuan Modus", "Detected Modus") : e.label}: ${e.value}`;
+                          if (e.label?.includes("Analisis Intelijen")) return `${lang === "en" ? "AI Intelligence Analysis" : e.label}: ${e.value}`;
+                          return `${e.label}: ${e.value}`;
+                        });
+                      evidenceText = cleanItems.join(" • ");
+                    }
+
+                    if (!evidenceText) {
+                      evidenceText = isMatch
+                        ? (lang === "en" ? "Suspicious records or threat indicators detected." : "Ditemukan catatan kecurigaan.")
+                        : (lang === "en" ? "No crime history or public complaints found." : "Tidak ditemukan riwayat kejahatan / aduan.");
+                    } else if (lang === "en") {
+                      evidenceText = evidenceText
+                        // URL scanner findings & status
+                        .replace(/Terindikasi situs perjudian \/ taruhan online ilegal:\s*/gi, "Indicated as illegal online gambling / betting site: ")
+                        .replace(/Tidak ditemukan riwayat kejahatan, feed phishing, atau aduan publik\.?/gi, "No criminal records, phishing feeds, or public complaints found.")
+                        .replace(/Tidak ditemukan indikasi manipulasi formulir, umpan jebakan, atau konten ilegal\.?/gi, "No form manipulation, phishing traps, or illegal content detected.")
+                        .replace(/Halaman web tidak memuat konten mencurigakan atau tidak dapat diakses publik\.?/gi, "Web page contains no suspicious content or is publicly inaccessible.")
+                        .replace(/Domain tercatat pada feed ancaman phishing OpenPhish \(via urlscan\.io\)/gi, "Domain listed in OpenPhish phishing threat feed (via urlscan.io)")
+                        .replace(/Ditemukan catatan aduan penipuan \/ laporan korban di internet/gi, "Public fraud complaints or victim reports found on the internet")
+                        .replace(/Alamat IP langsung tidak diproses pada feed nama domain publik\.?/gi, "Direct IP addresses are not processed in public domain name feeds.")
+                        // Registry & general threat intel
+                        .replace(/Tidak ditemukan riwayat kejahatan \/ aduan\.?/gi, "No crime history or public complaints found.")
+                        .replace(/Tidak ditemukan catatan kecurigaan\.?/gi, "No suspicious records found.")
+                        .replace(/Ditemukan catatan kecurigaan\.?/gi, "Suspicious records or threat indicators detected.")
+                        .replace(/Tidak ada rekaman insiden atau aduan penipuan\.?/gi, "No incident records or scam complaints found.")
+                        .replace(/Tidak ada riwayat aduan publik\.?/gi, "No public complaint records found.")
+                        .replace(/Tidak ada cuplikan halaman publik yang ditemukan pada indeks mesin pencari\.?/gi, "No public complaint records found in search index.")
+                        .replace(/Tidak ditemukan catatan hash berbahaya pada database CIRCL\.?/gi, "No malicious hash records found in CIRCL database.")
+                        .replace(/Terdaftar dalam aduan publik/gi, "Listed in public complaint records")
+                        .replace(/Terindikasi penipuan/gi, "Indicated as fraudulent")
+                        .replace(/Entitas berisiko tinggi/gi, "High-risk entity")
+                        .replace(/Aman \/ belum ada aduan/gi, "Safe / no complaints recorded")
+                        .replace(/Konten judi online \/ taruhan ilegal/gi, "Online gambling / illegal betting content")
+                        .replace(/Indikator phishing \/ pencurian data/gi, "Phishing indicators / data harvesting")
+                        .replace(/Situs web phishing/gi, "Phishing website")
+                        .replace(/Rekening terindikasi penipuan/gi, "Bank account indicated in fraud")
+                        .replace(/Nomor terindikasi penipuan/gi, "Phone number indicated in fraud")
+                        .replace(/Ditemukan riwayat laporan/gi, "Complaint report history found");
+                    }
+
+                    const displayName = lang === "en"
+                      ? (source.name === "Pemeriksaan Konten & Alur Situs" || source.name.includes("Konten & Alur")
+                          ? "Page Content & Site Flow Inspection"
+                          : source.name === "Intelijen Ancaman & Rekam Jejak Siber" || source.name.includes("Intelijen Ancaman")
+                          ? "Threat Intelligence & Cyber Footprint"
+                          : source.name === "Registri Ancaman & Rekam Laporan" || source.name.includes("Registri Ancaman")
+                          ? "Threat Registry & Report Records"
+                          : source.name === "Intelijen Jejak & Riwayat Siber" || source.name.includes("Intelijen Jejak")
+                          ? "Footprint Intelligence & Cyber History"
+                          : source.name)
+                      : source.name;
+
+                    return (
+                      <div key={source.id} className="space-y-1">
+                        <div className="text-sm font-semibold text-white">
+                          {displayName}
+                        </div>
+                        <p className={`text-xs leading-relaxed ${isMatch ? "text-rose-300 font-medium" : "text-slate-400"}`}>
+                          {evidenceText}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

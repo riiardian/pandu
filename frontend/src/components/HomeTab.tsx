@@ -116,41 +116,36 @@ export default function HomeTab() {
   const FAQS = lang === "en" ? FAQS_EN : FAQS_ID;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 sm:space-y-16 pt-6 pb-0">
-      {/* 1. Hero Section */}
-      <section className="text-left space-y-4 max-w-xl">
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.14] font-sans">
-          <TypewriterAcronymHeadline />
-        </h1>
+    <div className="w-full max-w-6xl mx-auto space-y-12 sm:space-y-16 pt-6 pb-0">
+      {/* 1. Hero Section & Live Forensic Preview (Balanced 2-Column on Desktop) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-2 pb-8">
+        <div className="lg:col-span-7 text-left space-y-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight text-white leading-[1.14] font-sans">
+            <TypewriterAcronymHeadline />
+          </h1>
 
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
-          {lang === "en"
-            ? "Practical analysis service to verify the authenticity of messages, suspicious links, and fraudulent APK files instantly without harvesting personal data. Time to strengthen cyber defense and stop digital manipulation."
-            : "Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi. Saatnya memperkuat pertahanan siber dan menghentikan manipulasi di ruang digital."}
-        </p>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-xl">
+            {lang === "en"
+              ? "Practical analysis service to verify the authenticity of messages, suspicious links, and fraudulent APK files instantly without harvesting personal data. Time to strengthen cyber defense and stop digital manipulation."
+              : "Layanan analisis praktis untuk memeriksa keaslian pesan, tautan mencurigakan, dan file APK penipuan secara instan tanpa mengambil data pribadi. Saatnya memperkuat pertahanan siber dan menghentikan manipulasi di ruang digital."}
+          </p>
 
-        <div className="pt-1 flex items-center">
-          <Link
-            href="/investigasi"
-            className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
-          >
-            <Search className="h-4 w-4" />
-            <span>{lang === "en" ? "Start Forensic Analysis" : "Mulai Analisis Forensik"}</span>
-          </Link>
+          <div className="pt-1 flex items-center">
+            <Link
+              href="/investigasi"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-950/40"
+            >
+              <Search className="h-4 w-4" />
+              <span>{lang === "en" ? "Start Forensic Analysis" : "Mulai Analisis Forensik"}</span>
+            </Link>
+          </div>
         </div>
-      </section>
 
-      {/* 2. OSINT Live Forensic Preview Card (Tilted 3D Isometric Perspective) */}
-      <section className="relative pt-2 pb-6" style={{ perspective: "1000px" }}>
-        <div
-          className="rounded-2xl transition-transform duration-300 ease-out hover:rotate-0"
-          style={{
-            transform: "rotateX(8deg) rotateY(-12deg) rotateZ(1.5deg)",
-            transformOrigin: "center left",
-            transformStyle: "preserve-3d",
-          }}
-        >
-          <LiveTerminalFeed />
+        {/* 2. OSINT Live Forensic Preview Card (Clean, Flat 2D, No Slop Cursor Tilt) */}
+        <div className="lg:col-span-5 w-full">
+          <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+            <LiveTerminalFeed />
+          </div>
         </div>
       </section>
 

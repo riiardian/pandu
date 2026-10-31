@@ -89,37 +89,25 @@ export default function AnimatedPipeline() {
   return (
     <div className="relative space-y-4 sm:space-y-5 text-left my-4 select-none">
       {/* Sleek 1px Vertical Cable Conduit (Centered with 32px circular badges at left:15.5px) */}
-      <div className="absolute left-[15.5px] sm:left-[17.5px] top-6 bottom-6 w-[1px] bg-slate-800 pipeline-conduit overflow-hidden pointer-events-none">
-        {/* Subtle traveling spark down the cable */}
-        <div
-          className={`absolute left-0 w-full h-20 bg-gradient-to-b from-transparent via-cyan-400 to-transparent transition-all ${
-            phase === "traveling" ? "duration-700 ease-in-out opacity-100" : "duration-300 opacity-20"
-          }`}
-          style={{
-            top: phase === "traveling" ? `${((activeStep + 1) % 4) * 26}%` : `${activeStep * 26}%`,
-          }}
-        />
-      </div>
+      <div className="absolute left-[15.5px] sm:left-[17.5px] top-6 bottom-6 w-[1px] bg-slate-800 pointer-events-none" />
 
       {PIPELINE_STEPS.map((item) => {
         const isCurrent = activeStep === item.idx;
-        const isLit = isCurrent && phase !== "traveling";
 
         return (
           <div
             key={item.step}
             onClick={() => {
               setActiveStep(item.idx);
-              setPhase("igniting");
             }}
             className="flex items-center cursor-pointer group"
           >
-            {/* 1. Circular Step Badge (Clean, thin 1px border) */}
+            {/* 1. Circular Step Badge (Clean, flat 1px border) */}
             <div
-              className={`relative z-10 flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold transition-all duration-500 border ${
-                isLit
-                  ? "bg-[#06101e] border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.4)]"
-                  : "bg-[#0a0c10] border-slate-700 text-slate-500 hover:border-slate-500"
+              className={`relative z-10 flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold border transition-colors select-none ${
+                isCurrent
+                  ? "bg-blue-600 border-blue-500 text-white"
+                  : "bg-[#0a0c10] border-slate-700 text-slate-400"
               }`}
             >
               {item.step}
@@ -127,48 +115,26 @@ export default function AnimatedPipeline() {
 
             {/* 2. Thin 1px Horizontal Connecting Wire */}
             <div
-              className={`h-[1px] shrink-0 w-3 sm:w-5 transition-all duration-500 ${
-                isLit
-                  ? "bg-cyan-400 shadow-[0_0_6px_#22d3ee]"
+              className={`h-[1px] shrink-0 w-3 sm:w-5 ${
+                isCurrent
+                  ? "bg-blue-500"
                   : "bg-slate-800"
               }`}
             />
 
-            {/* 3. Card Container: Single crisp 1px border, thin and lightweight */}
+            {/* 3. Card Container: Single crisp 1px border */}
             <div
-              className={`relative flex-1 rounded-2xl p-4 sm:p-5 transition-all duration-500 overflow-hidden border ${
-                isLit
-                  ? "border-cyan-400/80 bg-[#070e1b] shadow-[0_0_18px_rgba(34,211,238,0.18)] opacity-100"
-                  : "border-white/10 bg-[#0c0d12]/70 opacity-45 hover:opacity-75 hover:border-white/20"
+              className={`relative flex-1 rounded-2xl p-4 sm:p-5 overflow-hidden border transition-colors ${
+                isCurrent
+                  ? "border-blue-500/80 bg-[#070e1b] opacity-100"
+                  : "border-white/10 bg-[#0c0d12]/70 opacity-70 hover:opacity-100"
               }`}
             >
-              {/* Internal Sheen Overlay ONLY (border-none to eliminate duplicate thick borders) */}
-              {isCurrent && phase === "igniting" && (
-                <div
-                  key={`ignite-${activeStep}`}
-                  className="absolute inset-0 pointer-events-none animate-sweep-in bg-gradient-to-r from-cyan-400/15 via-blue-500/10 to-transparent border-none"
-                />
-              )}
-
-              {isCurrent && phase === "active" && (
-                <div
-                  key={`active-${activeStep}`}
-                  className="absolute inset-0 pointer-events-none bg-gradient-to-r from-cyan-400/15 via-blue-500/10 to-transparent border-none"
-                />
-              )}
-
-              {isCurrent && phase === "receding" && (
-                <div
-                  key={`recede-${activeStep}`}
-                  className="absolute inset-0 pointer-events-none animate-sweep-out bg-gradient-to-r from-cyan-400/15 via-blue-500/10 to-transparent border-none"
-                />
-              )}
-
               {/* Clean Minimalist Header: Tahap 1, Tahap 2, etc. */}
               <div className="relative z-10 mb-1">
                 <span
                   className={`text-xs font-mono font-bold uppercase tracking-wider transition-colors ${
-                    isLit ? "text-cyan-400" : "text-slate-400"
+                    isCurrent ? "text-blue-400" : "text-slate-400"
                   }`}
                 >
                   Tahap {item.step}
@@ -179,14 +145,14 @@ export default function AnimatedPipeline() {
               <div className="relative z-10 space-y-1">
                 <h4
                   className={`text-sm sm:text-base font-bold transition-colors leading-snug ${
-                    isLit ? "text-white" : "text-slate-300"
+                    isCurrent ? "text-white" : "text-slate-300"
                   }`}
                 >
                   {item.title}
                 </h4>
                 <p
                   className={`text-xs leading-relaxed transition-colors ${
-                    isLit ? "text-slate-200" : "text-slate-400"
+                    isCurrent ? "text-slate-200" : "text-slate-400"
                   }`}
                 >
                   {item.desc}
