@@ -336,6 +336,33 @@ html.light .bg-white\/10 {
   border-color: #cbd5e1 !important;
 }
 
+/* Recommendation & Callout Boxes in Light Mode */
+html.light .recommendation-callout,
+html.light .bg-blue-950\/20,
+html.light .bg-blue-950\/30,
+html.light .bg-blue-950\/40 {
+  background-color: #f0f7ff !important;
+  border-color: #bae6fd !important;
+  color: #0f172a !important;
+}
+
+html.light .recommendation-callout *,
+html.light .bg-blue-950\/20 *,
+html.light .bg-blue-950\/30 *,
+html.light .bg-blue-950\/40 * {
+  color: #0f172a !important;
+}
+
+html.light .recommendation-callout span.font-bold,
+html.light .bg-blue-950\/20 span.font-bold {
+  color: #0284c7 !important;
+}
+
+html.light .text-blue-200:not(button.bg-blue-600 *):not(a.bg-blue-600 *),
+html.light .text-blue-300:not(button.bg-blue-600 *):not(a.bg-blue-600 *) {
+  color: #0284c7 !important;
+}
+
 /* Live Terminal Card Container in Light & Dark Modes */
 div[style*="rotateX"],
 html.light div[style*="rotateX"],

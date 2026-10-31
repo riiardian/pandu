@@ -870,81 +870,6 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
 
           {/* Right Column: AI Vision & Evidence Findings */}
           <div className="lg:col-span-7 space-y-4">
-            {/* Analisis AI Agent (Pesan Chat / Heuristik) */}
-            {result.ai_agent_analysis ? (
-              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
-                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
-                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
-                  <span className="text-xs font-sans font-bold text-rose-400">
-                    {result.ai_agent_analysis.detected_category}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-200 leading-relaxed">
-                  {result.ai_agent_analysis.explanation}
-                </p>
-                {result.ai_agent_analysis.key_indicators && result.ai_agent_analysis.key_indicators.length > 0 && (
-                  <div className="space-y-1.5 pt-1">
-                    <div className="text-xs font-mono font-bold text-slate-400 uppercase">
-                      {lang === "en" ? "Key Indicators:" : "Indikator Utama:"}
-                    </div>
-                    <ul className="space-y-1 text-xs text-rose-300">
-                      {result.ai_agent_analysis.key_indicators.map((ind: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-1.5">
-                          <span className="text-rose-400">•</span>
-                          <span>{ind}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {result.ai_agent_analysis.mitigation_tip && (
-                  <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
-                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
-                    {result.ai_agent_analysis.mitigation_tip}
-                  </div>
-                )}
-              </div>
-            ) : (result.red_flags && result.red_flags.length > 0) ? (
-              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
-                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
-                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
-                  <span className="text-xs font-sans font-bold text-rose-400">
-                    {result.detected_category || result.threat_level}
-                  </span>
-                </div>
-                {result.red_flags.map((rf: any, idx: number) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="text-xs font-semibold text-rose-300">{rf.title}</div>
-                    <p className="text-sm text-slate-200 leading-relaxed">{rf.explanation}</p>
-                  </div>
-                ))}
-                {result.recommendations && result.recommendations.length > 0 && (
-                  <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
-                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
-                    {result.recommendations[0]}
-                  </div>
-                )}
-              </div>
-            ) : (!result.sources || result.sources.filter((s: any) => s.status === "queried").length === 0) ? (
-              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
-                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
-                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
-                  <span className="text-xs font-sans font-bold text-slate-300">
-                    {result.detected_category || result.threat_level || (lang === "en" ? "Normal Pattern" : "Pola Komunikasi Wajar")}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-200 leading-relaxed">
-                  {result.threat_level || (lang === "en" ? "No strong indicators of digital fraud or coercive manipulation detected." : "Pemeriksaan pesan selesai. Tidak ditemukan indikator penipuan atau pemerasan manipulatif.")}
-                </p>
-                {result.recommendations && result.recommendations.length > 0 && (
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300 leading-relaxed">
-                    <span className="font-bold text-white">{lang === "en" ? "Recommendation:" : "Rekomendasi:"} </span>
-                    {result.recommendations[0]}
-                  </div>
-                )}
-              </div>
-            ) : null}
-
             {/* Analisis AI Vision untuk Berkas / Gambar */}
             {result.ai_vision_result && (
               <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 space-y-2 text-xs">
@@ -960,9 +885,9 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
             )}
 
             {/* Hasil Pemeriksaan (Clean & Minimalist) */}
-            {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 && (
-              <div className="rounded-xl border border-white/5 bg-[#0a0d14] p-4 space-y-3">
-                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/5 pb-2">
+            {result.sources && result.sources.filter((s: any) => s.status === "queried").length > 0 ? (
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-4 shadow-xl">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2">
                   {lang === "en" ? "Inspection Results" : "Hasil Pemeriksaan"}
                 </div>
                 <div className="space-y-3.5 pt-0.5">
@@ -1063,6 +988,60 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                     );
                   })}
                 </div>
+
+                {result.recommendations && result.recommendations.length > 0 && (
+                  <div className="recommendation-callout rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed mt-2">
+                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
+                    {result.recommendations[0]}
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Case: Pesan Chat atau Teks */
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-4 shadow-xl">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
+                  <span>{lang === "en" ? "Inspection Results" : "Hasil Pemeriksaan"}</span>
+                  {result.ai_agent_analysis?.is_suspicious &&
+                   result.risk_score > 20 &&
+                   result.ai_agent_analysis.detected_category &&
+                   !result.ai_agent_analysis.detected_category.toLowerCase().includes("normal") &&
+                   !result.ai_agent_analysis.detected_category.toLowerCase().includes("wajar") && (
+                    <span className="text-xs font-sans font-bold text-rose-400">
+                      {result.ai_agent_analysis.detected_category}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-sm text-slate-200 leading-relaxed">
+                  {result.ai_agent_analysis?.explanation ||
+                   (result.red_flags && result.red_flags[0]?.explanation) ||
+                   result.coverage_summary ||
+                   result.threat_level ||
+                   (lang === "en" ? "Message inspection complete. No malicious indicators found." : "Pemeriksaan pesan selesai. Tidak ditemukan indikator penipuan atau pemerasan manipulatif.")}
+                </p>
+
+                {result.ai_agent_analysis?.key_indicators && result.ai_agent_analysis.key_indicators.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="text-xs font-mono font-bold text-slate-400 uppercase">
+                      {lang === "en" ? "Key Indicators:" : "Indikator Utama:"}
+                    </div>
+                    <ul className="space-y-1 text-xs text-rose-300">
+                      {result.ai_agent_analysis.key_indicators.map((ind: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-rose-400">•</span>
+                          <span>{ind}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {(result.ai_agent_analysis?.mitigation_tip || (result.recommendations && result.recommendations.length > 0)) && (
+                  <div className="recommendation-callout rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
+                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
+                    {result.ai_agent_analysis?.mitigation_tip || result.recommendations[0]}
+                  </div>
+                )}
               </div>
             )}
           </div>

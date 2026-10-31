@@ -114,7 +114,7 @@ Jika pesan adalah percakapan biasa sehari-hari antar teman/keluarga tanpa desaka
 
 Kembalikan HANYA JSON valid tanpa markdown formatting:
 {
-  "detected_category": "kategori penipuan atau Percakapan Normal",
+  "detected_category": "kategori penipuan (kosongkan string jika pesan aman / bukan penipuan)",
   "is_suspicious": true/false,
   "risk_score": 0-100,
   "explanation": "penjelasan logis mengapa pesan ini manipulatif atau aman",

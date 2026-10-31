@@ -224,3 +224,8 @@
 - Menghapus tombol CTA "Buat Laporan Aduan" / "File Official Report" pada kartu hasil pemindaian di .
 - Memastikan alur pelaporan terpusat murni lewat halaman pelaporan resmi ().
 - Menyelaraskan layout 2-kolom hasil pemindaian pada desktop: kolom kiri murni menampilkan dial Speedometer & Skor Indeks Risiko secara simetris, dan kolom kanan menampilkan analisis intelijen ancaman serta rekomendasi tindakan.
+
+### 2026-10-31: Penyederhanaan Hasil Investigasi & Peningkatan Kontras Light Mode
+- Menghapus kartu ganda redundant "Analisis Intelijen Ancaman" dan menyatukan seluruh visualisasi temuan investigasi ke dalam kartu tunggal "Hasil Pemeriksaan".
+- Menghapus label "Percakapan Normal" / "Percakapan Wajar" pada header kartu analisis pesan chat.
+- Mengoptimasi kontras kotak rekomendasi di tema terang (Light Mode) menggunakan palet ice blue crisp (#f0f7ff, border #bae6fd, teks navy #0f172a / #0284c7) dengan rasio kontras tinggi bebas teks samar.
