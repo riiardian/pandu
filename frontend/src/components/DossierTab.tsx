@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   CheckCircle2,
   Copy,
   Check,
   ExternalLink,
+  ChevronDown,
 } from "lucide-react";
 
 interface DossierTabProps {
@@ -61,14 +62,50 @@ const OFFICIAL_CHANNELS = [
   },
 ];
 
+const SCAM_CATEGORIES = [
+  {
+    id: "loker_freelance",
+    labelId: "Loker Freelance (Misi Like / Deposit)",
+    labelEn: "Freelance Task Scam (Like / Deposit)",
+  },
+  {
+    id: "kurir_apk",
+    labelId: "Penyebaran File APK (Kurir / Surat Tilang)",
+    labelEn: "Malicious APK (Fake Courier / Traffic Ticket)",
+  },
+  {
+    id: "phishing_bank",
+    labelId: "Phishing Bank (Pencurian OTP & Kredensial)",
+    labelEn: "Bank Phishing (OTP & Balance Theft)",
+  },
+  {
+    id: "impersonasi",
+    labelId: "Impersonasi Teman / WhatsApp Hijacking",
+    labelEn: "Relative Impersonation / WhatsApp Hijack",
+  },
+  {
+    id: "pinjol_ilegal",
+    labelId: "Pinjol Ilegal & Pemerasan Kontak",
+    labelEn: "Illegal Online Loan & Contact Extortion",
+  },
+  {
+    id: "investasi_bodong",
+    labelId: "Investasi Bodong / Trading Palsu",
+    labelEn: "Fake Investment / Fraudulent Trading",
+  },
+];
+
 export default function DossierTab({ initialData }: DossierTabProps) {
   const lang = useLanguage();
   const [activeTab, setActiveTab] = useState<"report" | "guide">("report");
 
   // Report Form State
-  const [reportType, setReportType] = useState<"phone" | "bank_account" | "url" | "apk_hash">("phone");
+  const [reportType, setReportType] = useState<"phone" | "bank_account" | "url" | "email">("phone");
   const [reportTarget, setReportTarget] = useState("");
   const [reportCategory, setReportCategory] = useState("loker_freelance");
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const [reportBank, setReportBank] = useState("");
   const [reportAccountHolder, setReportAccountHolder] = useState("");
   const [reportChronology, setReportChronology] = useState("");
@@ -77,6 +114,17 @@ export default function DossierTab({ initialData }: DossierTabProps) {
 
   // Copy state
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Handle forwarded data from X-Ray
   useEffect(() => {
@@ -158,8 +206,8 @@ export default function DossierTab({ initialData }: DossierTabProps) {
         return lang === "en" ? "Bank Account / E-Wallet Number" : "Nomor Rekening / Akun E-Wallet";
       case "url":
         return lang === "en" ? "Website Link / URL" : "Tautan / URL Website Target";
-      case "apk_hash":
-        return lang === "en" ? "APK File Name or Hash" : "Nama Berkas atau Hash APK Target";
+      case "email":
+        return lang === "en" ? "Target Email Address" : "Alamat Email Target";
       default:
         return lang === "en" ? "Target Identifier" : "Identitas Target";
     }
@@ -173,12 +221,15 @@ export default function DossierTab({ initialData }: DossierTabProps) {
         return lang === "en" ? "e.g. 8271039481 or 0858... (DANA)" : "Contoh: 8271039481 atau 0858... (DANA)";
       case "url":
         return lang === "en" ? "e.g. https://shopee-vip-toko.site" : "Contoh: https://shopee-vip-toko.site";
-      case "apk_hash":
-        return lang === "en" ? "e.g. Lihat_Foto_Paket.apk or sha256..." : "Contoh: Lihat_Foto_Paket.apk atau sha256...";
+      case "email":
+        return lang === "en" ? "e.g. info@promo-bank.com or scammer@gmail.com" : "Contoh: penipu@gmail.com atau cs@bank-promo.com";
       default:
         return "";
     }
   };
+
+  const selectedCategoryObj = SCAM_CATEGORIES.find((c) => c.id === reportCategory) || SCAM_CATEGORIES[0];
+  const selectedCategoryLabel = lang === "en" ? selectedCategoryObj.labelEn : selectedCategoryObj.labelId;
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto text-left">
@@ -262,7 +313,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                   { id: "phone", label: lang === "en" ? "Phone / WA" : "Nomor Telepon" },
                   { id: "bank_account", label: lang === "en" ? "Bank / E-Wallet" : "Rekening Bank" },
                   { id: "url", label: lang === "en" ? "Website Link" : "Tautan Web" },
-                  { id: "apk_hash", label: lang === "en" ? "File APK" : "File APK" },
+                  { id: "email", label: lang === "en" ? "Email Address" : "Email" },
                 ].map((t) => (
                   <button
                     type="button"
@@ -286,7 +337,7 @@ export default function DossierTab({ initialData }: DossierTabProps) {
                 {getDynamicTargetLabel()}
               </label>
               <input
-                type="text"
+                type={reportType === "email" ? "email" : "text"}
                 required
                 placeholder={getDynamicTargetPlaceholder()}
                 value={reportTarget}
@@ -295,23 +346,52 @@ export default function DossierTab({ initialData }: DossierTabProps) {
               />
             </div>
 
-            {/* Category */}
-            <div>
+            {/* Custom Aesthetic Dropdown for Category */}
+            <div className="relative" ref={dropdownRef}>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                {lang === "en" ? "Scam Modus Category" : "Kategori Modus"}
+                {lang === "en" ? "Scam Modus Category" : "Kategori Modus Penipuan"}
               </label>
-              <select
-                value={reportCategory}
-                onChange={(e) => setReportCategory(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-black/30 p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition-colors"
+
+              <button
+                type="button"
+                onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+                className="w-full rounded-lg border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-black/30 p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white flex items-center justify-between focus:border-blue-500 focus:outline-none transition-colors cursor-pointer text-left"
               >
-                <option value="loker_freelance">{lang === "en" ? "Freelance Task Scam (Like / Deposit)" : "Loker Freelance (Misi Like / Deposit)"}</option>
-                <option value="kurir_apk">{lang === "en" ? "Malicious APK (Fake Courier / Traffic Ticket)" : "Penyebaran File APK (Kurir / Surat Tilang)"}</option>
-                <option value="phishing_bank">{lang === "en" ? "Bank Phishing (OTP & Balance Theft)" : "Phishing Bank (Pencurian OTP & Kredensial)"}</option>
-                <option value="impersonasi">{lang === "en" ? "Relative Impersonation / WhatsApp Hijack" : "Impersonasi Teman / WhatsApp Hijacking"}</option>
-                <option value="pinjol_ilegal">{lang === "en" ? "Illegal Online Loan & Contact Extortion" : "Pinjol Ilegal & Pemerasan Kontak"}</option>
-                <option value="investasi_bodong">{lang === "en" ? "Fake Investment / Fraudulent Trading" : "Investasi Bodong / Trading Palsu"}</option>
-              </select>
+                <span className="truncate pr-2">{selectedCategoryLabel}</span>
+                <ChevronDown
+                  className={`h-4 w-4 text-slate-400 transition-transform duration-200 shrink-0 ${
+                    categoryDropdownOpen ? "rotate-180 text-blue-500" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Custom Popover Dropdown Menu */}
+              {categoryDropdownOpen && (
+                <div className="absolute z-30 left-0 right-0 mt-1.5 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#181a20] shadow-xl p-1.5 space-y-0.5 text-xs sm:text-sm animate-in fade-in-50 zoom-in-95 duration-100">
+                  {SCAM_CATEGORIES.map((cat) => {
+                    const isSelected = reportCategory === cat.id;
+                    const label = lang === "en" ? cat.labelEn : cat.labelId;
+                    return (
+                      <button
+                        type="button"
+                        key={cat.id}
+                        onClick={() => {
+                          setReportCategory(cat.id);
+                          setCategoryDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-colors cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-50 dark:bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
+                            : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{label}</span>
+                        {isSelected && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Bank details if bank_account */}
