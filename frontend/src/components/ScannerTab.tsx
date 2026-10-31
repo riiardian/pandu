@@ -852,7 +852,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
       {/* Result Section (Balanced 2-Column on Desktop) */}
       {result && (
         <div className="pt-2 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-300">
-          {/* Left Column: Risk Gauge & Action CTA */}
+          {/* Left Column: Risk Gauge */}
           <div className="lg:col-span-5 space-y-4">
             <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 flex flex-col items-center justify-center text-center select-none shadow-xl">
               <RiskGaugeDial score={result.risk_score} />
@@ -866,51 +866,12 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                 </span>
               </div>
             </div>
-
-            {/* Action CTA (Hanya muncul jika di luar batas aman / skor > 20) */}
-            {result.risk_score > 20 && (
-              <button
-                type="button"
-                onClick={() => {
-                  const payload = {
-                    category:
-                      result.detected_category?.includes("APK") || result.file_type_category === "APK_TROJAN"
-                        ? "APK_SNIFFER"
-                        : result.detected_category?.includes("Loker")
-                        ? "LOKER_FREELANCE"
-                        : "PHISHING_URL",
-                    suspect_url:
-                      result.normalized_url ||
-                      result.clean_number ||
-                      result.email ||
-                      result.file_name ||
-                      "",
-                    chronology: `Hasil investigasi PANDU: ${
-                      result.detected_category || result.threat_level || "indikator digital"
-                    }. Indeks indikator ${result.risk_score}%.`,
-                  };
-                  if (typeof window !== "undefined") {
-                    try {
-                      sessionStorage.setItem("pandu_forward_dossier", JSON.stringify(payload));
-                    } catch (e) {}
-                  }
-                  if (onForwardToDossier) {
-                    onForwardToDossier(payload);
-                  } else {
-                    router.push("/lapor");
-                  }
-                }}
-                className="w-full py-3.5 px-6 rounded-xl bg-blue-600 text-sm sm:text-base font-bold text-white cursor-pointer text-center"
-              >
-                <span>{lang === "en" ? "File Official Report" : "Buat Laporan Aduan"}</span>
-              </button>
-            )}
           </div>
 
           {/* Right Column: AI Vision & Evidence Findings */}
           <div className="lg:col-span-7 space-y-4">
             {/* Analisis AI Agent (Pesan Chat / Heuristik) */}
-            {result.ai_agent_analysis && (
+            {result.ai_agent_analysis ? (
               <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
                 <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
                   <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
@@ -943,7 +904,46 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                   </div>
                 )}
               </div>
-            )}
+            ) : (result.red_flags && result.red_flags.length > 0) ? (
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
+                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
+                  <span className="text-xs font-sans font-bold text-rose-400">
+                    {result.detected_category || result.threat_level}
+                  </span>
+                </div>
+                {result.red_flags.map((rf: any, idx: number) => (
+                  <div key={idx} className="space-y-1">
+                    <div className="text-xs font-semibold text-rose-300">{rf.title}</div>
+                    <p className="text-sm text-slate-200 leading-relaxed">{rf.explanation}</p>
+                  </div>
+                ))}
+                {result.recommendations && result.recommendations.length > 0 && (
+                  <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-xs text-blue-200 leading-relaxed">
+                    <span className="font-bold text-blue-300">{lang === "en" ? "Action:" : "Rekomendasi:"} </span>
+                    {result.recommendations[0]}
+                  </div>
+                )}
+              </div>
+            ) : (!result.sources || result.sources.filter((s: any) => s.status === "queried").length === 0) ? (
+              <div className="rounded-2xl border border-white/10 bg-[#121316]/90 p-5 sm:p-6 space-y-3.5 shadow-xl">
+                <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 pb-2 flex items-center justify-between">
+                  <span>{lang === "en" ? "Threat Intelligence Analysis" : "Analisis Intelijen Ancaman"}</span>
+                  <span className="text-xs font-sans font-bold text-slate-300">
+                    {result.detected_category || result.threat_level || (lang === "en" ? "Normal Pattern" : "Pola Komunikasi Wajar")}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-200 leading-relaxed">
+                  {result.threat_level || (lang === "en" ? "No strong indicators of digital fraud or coercive manipulation detected." : "Pemeriksaan pesan selesai. Tidak ditemukan indikator penipuan atau pemerasan manipulatif.")}
+                </p>
+                {result.recommendations && result.recommendations.length > 0 && (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300 leading-relaxed">
+                    <span className="font-bold text-white">{lang === "en" ? "Recommendation:" : "Rekomendasi:"} </span>
+                    {result.recommendations[0]}
+                  </div>
+                )}
+              </div>
+            ) : null}
 
             {/* Analisis AI Vision untuk Berkas / Gambar */}
             {result.ai_vision_result && (

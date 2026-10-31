@@ -219,3 +219,8 @@
   - Seluruh cuplikan hasil scraping dikirim langsung ke model AI Agent (`ag/gemini-3.8-flash-high`) via `QueryAIAgentOSINT`.
   - AI Agent membaca, membedah, dan menalar apakah entitas (nomor HP, rekening bank, domain) benar-benar dilaporkan dalam kasus penipuan riil atau hanya muncul di direktori umum (Truecaller/Kredibel) tanpa aduan spesifik.
   - Waktu respons komputasi AI murni alami (8-10 detik) dan menyajikan argumen penalaran intelijen yang otentik.
+
+### 2026-10-31: Penghapusan Tombol Laporan pada Hasil Investigasi Ancaman
+- Menghapus tombol CTA "Buat Laporan Aduan" / "File Official Report" pada kartu hasil pemindaian di .
+- Memastikan alur pelaporan terpusat murni lewat halaman pelaporan resmi ().
+- Menyelaraskan layout 2-kolom hasil pemindaian pada desktop: kolom kiri murni menampilkan dial Speedometer & Skor Indeks Risiko secara simetris, dan kolom kanan menampilkan analisis intelijen ancaman serta rekomendasi tindakan.
