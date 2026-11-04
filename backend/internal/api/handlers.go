@@ -64,8 +64,14 @@ func registrySource(name, attributionURL string, entry *blacklist.BlacklistEntry
 	if found && entry != nil && entry.Verified {
 		result.Outcome = scanner.OutcomeMatch
 		result.Matches = entry.ReportCount
+
+		catDisplay := string(entry.Category)
+		if catDisplay == "judi_online" || catDisplay == "masalah_lain" || strings.Contains(strings.ToLower(catDisplay), "judi") {
+			catDisplay = "Indikasi Perjudian"
+		}
+
 		result.Evidence = append(result.Evidence,
-			scanner.EvidenceItem{Label: "Kategori", Value: string(entry.Category)},
+			scanner.EvidenceItem{Label: "Kategori", Value: catDisplay},
 			scanner.EvidenceItem{Label: "Laporan terverifikasi", Value: fmt.Sprintf("%d", entry.ReportCount), ObservedAt: entry.LastReported},
 		)
 	}

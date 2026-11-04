@@ -917,7 +917,13 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                           if (e.label === "Domain registry") return `Registry: ${e.value}`;
                           if (e.label === "Penerbit") return `${lang === "en" ? "Issuer" : "Penerbit"}: ${e.value}`;
                           if (e.label === "Form publik ditemukan") return `Form: ${e.value}`;
-                          if (e.label === "Kategori") return `${lang === "en" ? "Category" : "Kategori"}: ${e.value}`;
+                          if (e.label === "Kategori") {
+                            let catVal = e.value;
+                            if (catVal === "judi_online" || catVal === "masalah_lain" || catVal.includes("judi") || catVal.includes("perjudian")) {
+                              catVal = lang === "en" ? "Online Gambling Indication" : "Indikasi Perjudian";
+                            }
+                            return `${lang === "en" ? "Category" : "Kategori"}: ${catVal}`;
+                          }
                           if (e.label === "Laporan terverifikasi") return `${lang === "en" ? "Verified reports" : "Laporan terverifikasi"}: ${e.value}`;
                           if (e.label === "MX aktif") return `${lang === "en" ? "Active MX" : "MX aktif"}: ${e.value}`;
                           if (e.label === "Status registrasi") return `${lang === "en" ? "Registration status" : "Status registrasi"}: ${e.value}`;
@@ -927,7 +933,7 @@ export default function ScannerTab({ onForwardToDossier }: ScannerTabProps) {
                           if (e.label?.includes("Analisis Intelijen")) return `${lang === "en" ? "AI Intelligence Analysis" : e.label}: ${e.value}`;
                           return `${e.label}: ${e.value}`;
                         });
-                      evidenceText = cleanItems.join(" • ");
+                      evidenceText = cleanItems.join(" | ");
                     }
 
                     if (!evidenceText) {
